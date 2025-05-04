@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportsBets360FMK - Plataforma de Apuestas</title>
+    <link rel="stylesheet" href="../Css/StyleMenu.css">
+</head>
+<body>
+    <div class="top-navigation">
+        <div class="logo">
+            <img src="../img/inicio (2).jpg" alt="SportsBets360FMK">
+            <h1>SportsBets360FMK</h1>
+        </div>
+        
+        <!-- Barra de usuario con saldo -->
+        <div class="user-bar">
+            <div class="balance-container">
+                <span class="balance-label">Saldo:</span>
+                <span class="balance-amount">$ 0</span>
+                <img src="/api/placeholder/24/24" alt="Moneda" class="coin-icon">
+            </div>
+            
+            <div class="user-info">
+                <span class="user-name">Nombre: <span class="current-user">Invitado</span></span>
+                <button class="logout-btn" id="logout-btn">SALIR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="#" id="home-link">
+            <i class="nav-icon home-icon"></i>
+            Home
+        </a>
+        <a href="#" id="equipos-link">
+            <i class="nav-icon equipos-icon"></i>
+            Equipos
+        </a>
+        <a href="#" id="resultados-link">
+            <i class="nav-icon results-icon"></i>
+            Resultados
+        </a>
+        <a href="#" id="dar-dinero-link">
+            <i class="nav-icon money-icon"></i>
+            Dar Dinero
+        </a>
+        <a href="#" id="recargas-link">
+            <i class="nav-icon recharge-icon"></i>
+            Recargas
+        </a>
+    </div>
+    
+    <div class="sidebar-overlay"></div>
+    
+    <div class="sidebar">
+        <input type="text" placeholder="Ingresa el nombre del equipo">
+        <div class="menu-title">MENÚ</div>
+        <div class="menu-item">⚽ Futbol</div>
+        <div class="menu-item">🎾 Tenis</div>
+        <div class="menu-item">🏀 Baloncesto</div>
+        <div class="menu-item">🏈 Fútbol americano</div>
+        <div class="menu-item">⚾ Béisbol</div>
+        <div class="menu-item">🏐 Voleibol</div>
+        <div class="menu-item">🥊 Boxeo</div>
+        <div class="menu-item">🏎️ Carreras de autos</div>
+        <div class="menu-item">🏍️ Carreras de motos</div>
+        <div class="casino-promo">
+            <img src="/api/placeholder/200/150" alt="Casino">
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="sports-categories">
+            <div class="sport-category">
+                <div class="sport-icon play-icon">▶️</div>
+                <div class="sport-name">EN VIVO</div>
+            </div>
+            <div class="sport-category active">
+                <div class="sport-icon">⚽</div>
+                <div class="sport-name">FÚTBOL</div>
+            </div>
+            <div class="sport-category">
+                <div class="sport-icon">🎾</div>
+                <div class="sport-name">TENIS</div>
+            </div>
+            <div class="sport-category">
+                <div class="sport-icon">🏐</div>
+                <div class="sport-name">VOLEIBOL</div>
+            </div>
+            <div class="sport-category">
+                <div class="sport-icon">⚾</div>
+                <div class="sport-name">BÉISBOL</div>
+            </div>
+            <div class="sport-category">
+                <div class="sport-icon">🥊</div>
+                <div class="sport-name">BOXEO</div>
+            </div>
+        </div>
+        
+        <div class="live-events-header">
+            <div class="football-indicator">
+                <span class="football-icon">⚽</span>
+                <span>FÚTBOL</span>
+            </div>
+            <div class="live-now">EN VIVO AHORA</div>
+        </div>
+        
+        <div class="matches-container">
+            <div class="match-container">
+                <div class="match-info">
+                    Colombia <span class="vs-text">Vs</span> Brazil
+                </div>
+                <div class="bet-options">
+                    <div class="bet-option team1">
+                        <div class="team-name">Colombia</div>
+                        <div class="odds">2.00</div>
+                    </div>
+                    <div class="bet-option draw">
+                        <div class="team-name">Empate</div>
+                        <div class="odds">3.90</div>
+                    </div>
+                    <div class="bet-option team2">
+                        <div class="team-name">Brazil</div>
+                        <div class="odds">8.00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="match-container">
+                <div class="match-info">
+                    USA <span class="vs-text">Vs</span> Peru
+                </div>
+                <div class="bet-options">
+                    <div class="bet-option team1">
+                        <div class="team-name">USA</div>
+                        <div class="odds">7.00</div>
+                    </div>
+                    <div class="bet-option draw">
+                        <div class="team-name">Empate</div>
+                        <div class="odds">5.00</div>
+                    </div>
+                    <div class="bet-option team2">
+                        <div class="team-name">Peru</div>
+                        <div class="odds">5.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="betting-slip">
+            <div class="betting-slip-header">
+                CUPÓN - LÍNEAS
+            </div>
+            
+            <div class="form-group">
+                <label>Total de líneas</label>
+                <input type="text" value="0" id="total-lineas" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Monto a apostar</label>
+                <input type="text" value="0" id="monto-apostar">
+            </div>
+            
+            <div class="form-group">
+                <label>Cuota Total</label>
+                <input type="text" value="0" id="cuota-total" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Ganancia Total</label>
+                <input type="text" value="0" id="ganancia-total" readonly>
+            </div>
+            
+            <button class="realizar-apuesta" id="realizar-apuesta-btn">REALIZAR APUESTA</button>
+            
+            <div class="no-balance">
+                No tienes saldo
+            </div>
+        </div>
+        
+        <div class="casino-ad">
+            <img src="/api/placeholder/300/100" alt="Casino">
+        </div>
+        
+        <!-- Apuestas de usuarios section -->
+        <div class="apuestas-usuarios-container">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                <h2>Apuestas de usuarios</h2>
+            </div>
+            
+            <div class="buscador">
+                <div class="search-container">
+                    <input type="text" placeholder="Busca por fecha de apuesta ( 29/09/2019 )" id="search-apuestas">
+                    <div class="search-buttons">
+                        <button class="btn-buscar">Buscar</button>
+                        <button class="btn-todos">Todos</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="apuestas-table">
+                <div class="table-header">
+                    <div class="header-cell">Apuesta</div>
+                    <div class="header-cell">Porcentaje</div>
+                    <div class="header-cell">Ganancia</div>
+                    <div class="header-cell">Equipo ganador</div>
+                    <div class="header-cell">Estado</div>
+                    <div class="header-cell">Usuario</div>
+                    <div class="header-cell">Fecha</div>
+                    <div class="header-cell">Ticket</div>
+                    <div class="header-cell">Pagar</div>
+                    <div class="header-cell">Estado</div>
+                    <div class="header-cell">Eliminar</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell payment-cell">
+                        <div class="payment-icon"></div>
+                    </div>
+                    <div class="cell status-cell">
+                        <div class="status-indicator"></div>
+                    </div>
+                    <div class="cell delete-cell">
+                        <div class="delete-icon"></div>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell payment-cell">
+                        <div class="payment-icon"></div>
+                    </div>
+                    <div class="cell status-cell">
+                        <div class="status-indicator"></div>
+                    </div>
+                    <div class="cell delete-cell">
+                        <div class="delete-icon"></div>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell"></div>
+                    <div class="cell payment-cell">
+                        <div class="payment-icon"></div>
+                    </div>
+                    <div class="cell status-cell">
+                        <div class="status-indicator"></div>
+                    </div>
+                    <div class="cell delete-cell">
+                        <div class="delete-icon"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Formulario de Recarga Modal -->
+    <div id="recargas-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>PAGO</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" placeholder="Nombre">
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" id="apellido" placeholder="Apellido">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="correo">Correo</label>
+                    <input type="email" id="correo" placeholder="Correo">
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" placeholder="Teléfono">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="medio-pago">Medio de pago</label>
+                <select id="medio-pago">
+                    <option value="efecty">Efecty</option>
+                    <option value="nequi">Nequi</option>
+                    <option value="daviplata">Daviplata</option>
+                    <option value="bancolombia">Bancolombia</option>
+                </select>
+            </div>
+            
+            <div class="form-group upload-container">
+                <label>Foto del pago</label>
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-placeholder">
+                        <div>Click para subir foto</div>
+                        <div>La imagen debe estar legible</div>
+                    </div>
+                    <input type="file" id="comprobante" accept="image/*" style="display:none">
+                </div>
+            </div>
+            
+            <button type="button" class="submit-btn">Enviar comprobante de pago</button>
+        </div>
+    </div>
+
+    <script src="../Js/apuestas.js"></script>
+    <script src="../Js/ApuestasUsuario.js"></script>
+    <script src="../Js/BarraLateral.js"></script>
+    <script src="../Js/CuponApuestas.js"></script>
+    <script src="../Js/Deportes.js"></script>
+    <script src="../Js/Navegacion.js"></script>
+    <script src="../Js/Principal.js"></script>
+    <script src="../Js/Recargas.js"></script>
+    <script src="../Js/Utilidades.js"></script>
+</body>
+</html>

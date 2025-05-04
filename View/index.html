@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportsBets360FMk</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/Css/StyleIndex.css">
+</head>
+<body>
+    
+    <div class="pagina-completa">
+        <!-- Navbar with Bootstrap -->
+        <nav class="navbar navbar-expand-lg barra-navegacion">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="website.html">SportsBets360FMK</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav" id="elementos-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Sobre Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Servicios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contacto</a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <button class="boton-iniciar-sesion" data-bs-toggle="modal" data-bs-target="#formulario-login">
+                                <i class="fas fa-user me-2"></i>Iniciar Sesión
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Login/Register Modal with Bootstrap -->
+        <div class="modal fade" id="formulario-login" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content caja-formulario">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLabel">
+                            <i class="fas fa-user-circle me-2"></i>Acceso a Usuario
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs caja-botones" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active boton-toggle" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login" aria-selected="true" onclick="iniciarSesion()">
+                                    Iniciar Sesión
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link boton-toggle" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab" aria-controls="register" aria-selected="false" onclick="registrarse()">
+                                    Registrarse
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                                                    
+                            <!-- Login Tab -->
+                            <div class="tab-pane fade show active grupo-entrada-login" id="login" role="tabpanel" aria-labelledby="login-tab">
+                                <form method="post" action="/Conexion/login.php">
+                                    <div class="mb-3">
+                                        <input type="email" class="campo-entrada" name="correo" placeholder="Correo Electrónico" required>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <input type="password" class="campo-entrada" name="password" placeholder="Contraseña" required>
+                                        <span class="input-group-text toggle-password">
+                                            <i class="fas fa-eye-slash"></i>
+                                        </span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <input type="checkbox" class="caja-verificacion"> Recordar Contraseña
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="boton-enviar">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                                    </button>
+                                    <div class="text-center mt-3">
+                                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            
+                            <!-- Register Tab -->
+                            <div class="tab-pane fade grupo-entrada-registro" id="register" role="tabpanel" aria-labelledby="register-tab">
+                                
+                                <form method="post" action="/Conexion/registro.php">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label>Primer Nombre:</label>
+                                            <input type="text" name="primer_nombre" class="form-control" required placeholder="Ingresa tu Primer Nombre" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Segundo Nombre:</label>
+                                            <input type="text" name="segundo_nombre" class="form-control" required placeholder="Ingresa tu Segundo Nombre" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Primer Apellido:</label>
+                                            <input type="text" name="primer_apellido" class="form-control" required placeholder="Ingresa tu Primer Apellido" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Segundo Apellido:</label>
+                                            <input type="text" name="segundo_apellido" class="form-control" required placeholder="Ingresa tu Segundo Apellido" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Sexo:</label>
+                                            <select class="form-control" name="sexo" required>
+                                                <option value="">Escoja opción</option>
+                                                <option value="Masculino">Masculino</option>
+                                                <option value="Femenino">Femenino</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Tipo Documento:</label>
+                                            <select class="form-control" name="tipo_documento" required>
+                                                <option value="">Escoja opción</option>
+                                                <option value="CC">Cédula de Ciudadanía</option>
+                                                <option value="CE">Cédula de Extranjería</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Número de Documento:</label>
+                                            <input type="text" name="numero_documento" class="form-control" required placeholder="Ingresa tu Número de Documento" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Teléfono:</label>
+                                            <input type="text" name="telefono" class="form-control" required placeholder="Ingresa tu Número de Teléfono" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Departamento de Expedición:</label>
+                                            <select class="form-control" name="departamento" required>
+                                                <option value="">Elige una opción</option>
+                                                <option value="Antioquia">Antioquia</option>
+                                                <option value="Bogotá">Bogotá</option>
+                                                <option value="Cundinamarca">Cundinamarca</option>
+                                                <option value="Valle del Cauca">Valle del Cauca</option>
+                                                <!-- Agrega más opciones según sea necesario -->
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email:</label>
+                                            <input type="email" name="email" class="form-control" required placeholder="Ingresa tu Email" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Repetir Email:</label>
+                                            <input type="email" name="repetir_email" class="form-control" required placeholder="Repite tu Email" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Contraseña:</label>
+                                            <input type="password" name="contrasena" class="form-control" required placeholder="Ingresa tu Contraseña" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Repetir Contraseña:</label>
+                                            <input type="password" name="repetir_contrasena" class="form-control" required placeholder="Repite tu Contraseña" />
+                                        </div>    
+                                        <div class="text-center" style="margin-top: 15px;">
+                                            <button type="submit" class="btn btn-primary">Registrar</button>
+                                        </div>
+                                            
+                                    </fieldset>
+                                </form>
+                                
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nueva sección de características -->
+        <div class="container features-section">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt fa-2x mb-3 text-warning"></i>
+                        <h4>Apuestas Seguras</h4>
+                        <p>Plataforma 100% segura y regulada para tus apuestas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="fas fa-bolt fa-2x mb-3 text-warning"></i>
+                        <h4>Pagos Rápidos</h4>
+                        <p>Retira tus ganancias en menos de 24 horas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="fas fa-gift fa-2x mb-3 text-warning"></i>
+                        <h4>Bonos Exclusivos</h4>
+                        <p>Obtén hasta 100% en tu primer depósito.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Mejorado -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Sobre SportBest360FMK</h5>
+                        <p>Tu plataforma confiable de apuestas deportivas en línea.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Enlaces Rápidos</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-decoration-none">Términos y Condiciones</a></li>
+                            <li><a href="#" class="text-decoration-none">Política de Privacidad</a></li>
+                            <li><a href="#" class="text-decoration-none">Juego Responsable</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Síguenos</h5>
+                        <div class="social-icons">
+                            <a href="#"><img src="/img/Facebook.png" alt="Facebook"></a>
+                            <a href="#"><img src="/img/twiter.png" alt="Twitter"></a>
+                            <a href="#"><img src="/img/instagram.jpeg" alt="Instagram"></a>
+                            <a href="#"><img src="/img/linkedin.jpeg" alt="LinkedIn"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <p>&copy; 2024 SportBest360FMK. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function iniciarSesion() {
+            document.getElementById("register").classList.remove("show", "active");
+            document.getElementById("login").classList.add("show", "active");
+        }
+
+        function registrarse() {
+            document.getElementById("login").classList.remove("show", "active");
+            document.getElementById("register").classList.add("show", "active");
+        }
+
+        function redirigirAlMenu() {
+            window.location.href = "View/index.html"; 
+        }
+        
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(function(element) {
+            element.addEventListener('click', function() {
+                const passwordField = this.previousElementSibling;
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
+</body>
+</html>
