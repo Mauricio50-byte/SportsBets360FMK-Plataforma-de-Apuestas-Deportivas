@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    background-image: url('/img/inicio\ \(2\).jpg'); 
+    background-size: cover;  
+    background-position: center;  
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+}
+
+nav {
+    max-width: 100%;
+    background-color: rgba(20, 20, 20, 0.85);
+    padding: 10px 0;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.menu-horizontal {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu-horizontal > li {
+    position: relative;
+}
+
+.menu-horizontal > li > a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 12px 18px;
+    transition: background 0.3s, color 0.3s;
+    border-radius: 5px;
+}
+
+.menu-horizontal > li:hover > a {
+    background-color: #ff5722;
+    color: #fff;
+}
+
+.menu-vertical {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    list-style: none;
+    display: none;
+    min-width: 180px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.menu-horizontal li:hover .menu-vertical {
+    display: block;
+}
+
+.menu-vertical li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    transition: background 0.3s;
+}
+
+.menu-vertical li:hover {
+    background-color: #ff5722;
+}
