@@ -32,19 +32,25 @@ body {
 .logo {
     display: flex;
     align-items: center;
+    width: 48%;         /* Asegura que ocupe todo el ancho disponible */
+    justify-content: flex-start; /* Alinea el contenido al inicio */
+    max-height: 30%;    /* Controla la altura máxima */
+    overflow: visible;   /* Permite que el contenido sea visible incluso si desborda */
+    gap: 40px; /* Añade espacio entre los elementos del flex container */
 }
 
+/* Si el logo es una imagen, puedes ajustar también estas propiedades */
 .logo img {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-    margin-right: 10px;
+    max-width: 27%;    /* La imagen se ajustará al ancho disponible */
+    height: auto;       /* Mantiene la proporción de la imagen */
+    object-fit: contain; /* Asegura que toda la imagen sea visible */
 }
 
 .logo h1 {
     font-size: 1.4rem;
     font-weight: bold;
     margin: 0;
+    margin-left: 40px; /* Espacio adicional a la izquierda del texto */
 }
 
 /* Estilos actualizados para la barra de usuario con mayor espaciado */
@@ -544,4 +550,91 @@ h2 {
         top: 130px;
         height: calc(100vh - 130px);
     }
+}
+
+welcome-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 80px); /* Ajusta según la altura de tus botones de deportes */
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Reemplaza la definición incorrecta de welcome-container (falta el punto) */
+.welcome-container {
+    position: fixed; /* Cambiado de absolute a fixed para cubrir toda la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Cambiado para cubrir toda la pantalla */
+    z-index: 1050; /* Aumentado para asegurar que esté por encima de todo */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centrado vertical completo */
+    background-color: rgba(0, 0, 0, 0.8); /* Oscurecido para mejor contraste */
+}
+
+.welcome-content {
+    width: 80%;
+    max-width: 800px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease-in-out; /* Animación al aparecer */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mejoras adicionales para el modal de bienvenida */
+#welcomeCarousel {
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+#welcomeCarousel img {
+    border-radius: 8px;
+    height: 300px;
+    object-fit: cover;
+}
+
+.modal-title {
+    color: #f2a900;
+    font-weight: bold;
+}
+
+.modal-header {
+    padding: 15px 20px;
+}
+
+.lead {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.btn-custom {
+    background-color: #8b0000;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #a50000;
+    transform: scale(1.05);
+    color: white;
 }

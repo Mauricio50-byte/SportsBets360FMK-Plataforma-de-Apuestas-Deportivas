@@ -14,8 +14,8 @@
 <body>
     <div class="top-navigation">
         <div class="logo">
-            <img src="../img/inicio (2).jpg" alt="SportsBets360FMK">
-            <h1>SportsBets360FMK</h1>
+            <img src="../img/logo1.png" alt="SportsBets360FMK">
+            <h1>BIENVENIDO AL MANICOMIO DE LOS APOSTADORES</h1>
         </div>
         
         <!-- Barra de usuario con saldo -->
@@ -26,7 +26,7 @@
                 <img src="/api/placeholder/24/24" alt="Moneda" class="coin-icon">
             </div>
             
-            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span>
+            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span></span>
             <button class="logout-btn" id="logout-btn">SALIR</button>
         </div>
     </div>
@@ -66,44 +66,77 @@
         <div class="menu-item">🏐 Voleibol</div>
         <div class="menu-item">🥊 Boxeo</div>
         <div class="casino-promo">
-            <img src="/api/placeholder/200/150" alt="Casino">
+            <img src="../img/preview2.jpeg" alt="Casino">
         </div>
     </div>
     
     <div class="content">
         <div class="sports-categories">
             <button class="sport-button">
-                <div class="sport-icon play-icon"><i class="bi bi-play-fill"></i></div>
+                <div class="sport-icon">📺</div>
                 <div class="sport-name">EN VIVO</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-dribbble"></i></div>
+                <div class="sport-icon">⚽</div>
                 <div class="sport-name">FÚTBOL</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-bullseye"></i></div>
+                <div class="sport-icon">🎾</div>
                 <div class="sport-name">TENIS</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-balloon"></i></div>
+                <div class="sport-icon">🏐</div>
                 <div class="sport-name">VOLEIBOL</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-circle"></i></div>
+                <div class="sport-icon">⚾</div>
                 <div class="sport-name">BÉISBOL</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-dice-5"></i></div>
+                <div class="sport-icon">🥊</div>
                 <div class="sport-name">BOXEO</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-ui-radios"></i></div>
+                <div class="sport-icon">🏀</div>
                 <div class="sport-name">BALONCESTO</div>
             </button>
             <button class="sport-button">
-                <div class="sport-icon"><i class="bi bi-pentagon"></i></div>
+                <div class="sport-icon">🏈</div>
                 <div class="sport-name">FÚTBOL AMERICANO</div>
             </button>
+        </div>
+        
+        <!-- Reemplaza el div #welcomeModal actual con este -->
+        <div id="welcomeModal" class="welcome-container">
+            <div class="welcome-content bg-dark text-light">
+                <div class="modal-header border-0">
+                    <h4 class="modal-title">¡Bienvenido a SportsBets360FMK!</h4>
+                    <button type="button" class="btn-close btn-close-white" id="closeWelcomeModal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="lead">La mejor plataforma de apuestas deportivas en línea</p>
+                    <div id="welcomeCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="../img/preview.avif" class="d-block w-100" alt="Preview 1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="../img/preview2.jpeg" class="d-block w-100" alt="Preview 2">
+                            </div>
+                        </div>
+                        <!-- Indicadores del carousel -->
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#welcomeCarousel" data-bs-slide-to="0" 
+                                    class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#welcomeCarousel" data-bs-slide-to="1" 
+                                    aria-label="Slide 2"></button>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button class="btn btn-custom" id="startNowBtn">¡Comenzar Ahora!</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- Contenedor principal para los resultados y otras secciones -->
@@ -115,9 +148,11 @@
             </div>
         </div>
         
+        <!--
         <div class="casino-ad">
-            <img src="/api/placeholder/300/100" alt="Casino">
-        </div>
+            <img src="../img/preview.avif" alt="Casino">
+        </div> -->
+        
     </div>
     
     <!-- Formulario de Recarga Modal -->
@@ -160,16 +195,6 @@
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="medio-pago">Medio de pago</label>
-                    <select id="medio-pago">
-                        <option value="efecty">Efecty</option>
-                        <option value="nequi">Nequi</option>
-                        <option value="daviplata">Daviplata</option>
-                        <option value="bancolombia">Bancolombia</option>
-                    </select>
-                </div>
-                
                 <button type="submit" class="submit-btn">Realizar recarga</button>
             </form>
         </div>
@@ -181,37 +206,42 @@
             <span class="close-modal">&times;</span>
             <h2>SOLICITUD DE RETIRO</h2>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="nombre-retiro">Nombre</label>
-                    <input type="text" id="nombre-retiro" placeholder="Nombre">
+            <form id="retiro-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id-retiro">ID Retiro</label>
+                        <input type="text" id="id-retiro" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha-retiro">Fecha</label>
+                        <input type="text" id="fecha-retiro" readonly>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="apellido-retiro">Apellido</label>
-                    <input type="text" id="apellido-retiro" placeholder="Apellido">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre-usuario-retiro">Usuario</label>
+                        <input type="text" id="nombre-usuario-retiro" placeholder="Nombre de usuario">
+                    </div>
+                    <div class="form-group">
+                        <label for="documento-usuario-retiro">Documento</label>
+                        <input type="text" id="documento-usuario-retiro" placeholder="Número de documento">
+                    </div>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="monto-retiro">Monto a retirar</label>
-                <input type="number" id="monto-retiro" placeholder="Monto">
-            </div>
-            
-            <div class="form-group">
-                <label for="medio-retiro">Medio de retiro</label>
-                <select id="medio-retiro">
-                    <option value="nequi">Nequi</option>
-                    <option value="daviplata">Daviplata</option>
-                    <option value="bancolombia">Bancolombia</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="numero-cuenta">Número de cuenta/teléfono</label>
-                <input type="text" id="numero-cuenta" placeholder="Número">
-            </div>
-            
-            <button type="button" class="submit-btn">Solicitar retiro</button>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="correo-usuario-retiro">Correo</label>
+                        <input type="email" id="correo-usuario-retiro" placeholder="Correo electrónico">
+                    </div>
+                    <div class="form-group">
+                        <label for="monto-retiro">Saldo a retirar</label>
+                        <input type="number" id="monto-retiro" placeholder="Monto" min="1">
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Solicitar retiro</button>
+            </form>
         </div>
     </div>
 
@@ -226,6 +256,8 @@
                 <button class="reporte-btn" data-tipo="deportes">Buscar apuestas por deportes</button>
                 <button class="reporte-btn" data-tipo="ganadas">Apuestas ganadas</button>
                 <button class="reporte-btn" data-tipo="perdidas">Apuestas perdidas</button>
+                <button class="reporte-btn" data-tipo="Reportes_recarga">Reportes por Recargas</button>
+                <button class="reporte-btn" data-tipo="Reportes_retiro">Reportes por Retiros</button>
             </div>
             
             <div id="filtro-reporte" class="filtro-container">
@@ -242,11 +274,37 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
-   <!-- servicio de almacenamiento -->
+    <!-- servicio de almacenamiento -->
     <script src="../Js/Recargas y Retiro/Almacenamiento.js"></script>
     
     <!-- Script principal con todas las funcionalidades -->
     <script src="../Js/Recargas y Retiro/Recargas.js"></script>
     <script src="../Js/Recargas y Retiro/Retiros.js"></script>
+    
+    <!-- Script para el modal de bienvenida -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Asegurar que el modal de bienvenida aparezca inmediatamente
+            const welcomeContainer = document.getElementById('welcomeModal');
+            welcomeContainer.style.display = 'flex';
+            
+            // Inicializar el carrusel de Bootstrap
+            var myCarousel = new bootstrap.Carousel(document.getElementById('welcomeCarousel'), {
+                interval: 3000, // Cambiar imagen cada 3 segundos
+                ride: 'carousel',
+                wrap: true
+            });
+            
+            // Cerrar el contenedor al hacer clic en el botón de cerrar
+            document.getElementById('closeWelcomeModal').addEventListener('click', function() {
+                welcomeContainer.style.display = 'none';
+            });
+            
+            // Cerrar el contenedor al hacer clic en "Comenzar Ahora"
+            document.getElementById('startNowBtn').addEventListener('click', function() {
+                welcomeContainer.style.display = 'none';
+            });
+        });
+    </Script>
 </body>
 </html>
