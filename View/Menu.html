@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportsBets360FMK - Plataforma de Apuestas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="../Css/StyleMenu.css">
+</head>
+<body>
+    <div class="top-navigation">
+        <div class="logo">
+            <img src="../img/inicio (2).jpg" alt="SportsBets360FMK">
+            <h1>SportsBets360FMK</h1>
+        </div>
+        
+        <!-- Barra de usuario con saldo -->
+        <div class="user-bar">
+            <div class="balance-container">
+                <span class="balance-label">Saldo:</span>
+                <span class="balance-amount" id="user-balance">$ 0</span>
+                <img src="/api/placeholder/24/24" alt="Moneda" class="coin-icon">
+            </div>
+            
+            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span>
+            <button class="logout-btn" id="logout-btn">SALIR</button>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="#" id="inicio-link" class="active">
+            <i class="bi bi-house-door nav-icon"></i>
+            Inicio
+        </a>
+        <a href="#" id="resultados-link">
+            <i class="bi bi-list-ol nav-icon"></i>
+            Resultados
+        </a>
+        <a href="#" id="recargas-link">
+            <i class="bi bi-cash-coin nav-icon"></i>
+            Recargas
+        </a>
+        <a href="#" id="retiros-link">
+            <i class="bi bi-wallet2 nav-icon"></i>
+            Retiros
+        </a>
+        <a href="#" id="reportes-link">
+            <i class="bi bi-file-earmark-text nav-icon"></i>
+            Reportes
+        </a>
+    </div>
+    
+    <div class="sidebar-overlay"></div>
+    
+    <div class="sidebar">
+        <div class="menu-title">DEPORTES</div>
+        <div class="menu-item">⚽ Futbol</div>
+        <div class="menu-item">🎾 Tenis</div>
+        <div class="menu-item">🏀 Baloncesto</div>
+        <div class="menu-item">🏈 Fútbol americano</div>
+        <div class="menu-item">⚾ Béisbol</div>
+        <div class="menu-item">🏐 Voleibol</div>
+        <div class="menu-item">🥊 Boxeo</div>
+        <div class="casino-promo">
+            <img src="/api/placeholder/200/150" alt="Casino">
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="sports-categories">
+            <button class="sport-button">
+                <div class="sport-icon play-icon"><i class="bi bi-play-fill"></i></div>
+                <div class="sport-name">EN VIVO</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-dribbble"></i></div>
+                <div class="sport-name">FÚTBOL</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-bullseye"></i></div>
+                <div class="sport-name">TENIS</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-balloon"></i></div>
+                <div class="sport-name">VOLEIBOL</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-circle"></i></div>
+                <div class="sport-name">BÉISBOL</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-dice-5"></i></div>
+                <div class="sport-name">BOXEO</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-ui-radios"></i></div>
+                <div class="sport-name">BALONCESTO</div>
+            </button>
+            <button class="sport-button">
+                <div class="sport-icon"><i class="bi bi-pentagon"></i></div>
+                <div class="sport-name">FÚTBOL AMERICANO</div>
+            </button>
+        </div>
+        
+        <!-- Contenedor principal para los resultados y otras secciones -->
+        <div id="contenido-principal">
+            <!-- Esta sección se llenará dinámicamente según la opción elegida -->
+            <div class="bienvenida-container">
+                <h2>Bienvenido a SportsBets360FMK</h2>
+                <p>Selecciona una opción del menú para comenzar</p>
+            </div>
+        </div>
+        
+        <div class="casino-ad">
+            <img src="/api/placeholder/300/100" alt="Casino">
+        </div>
+    </div>
+    
+    <!-- Formulario de Recarga Modal -->
+    <div id="recargas-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>RECARGA DE SALDO</h2>
+            
+            <form id="recargar-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id-recarga">ID Recarga</label>
+                        <input type="text" id="id-recarga" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha-recarga">Fecha</label>
+                        <input type="text" id="fecha-recarga" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre-usuario">Usuario</label>
+                        <input type="text" id="nombre-usuario" placeholder="Nombre de usuario">
+                    </div>
+                    <div class="form-group">
+                        <label for="documento-usuario">Documento</label>
+                        <input type="text" id="documento-usuario" placeholder="Número de documento">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="correo-usuario">Correo</label>
+                        <input type="email" id="correo-usuario" placeholder="Correo electrónico">
+                    </div>
+                    <div class="form-group">
+                        <label for="monto-recarga">Saldo a recargar</label>
+                        <input type="number" id="monto-recarga" placeholder="Monto" min="1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medio-pago">Medio de pago</label>
+                    <select id="medio-pago">
+                        <option value="efecty">Efecty</option>
+                        <option value="nequi">Nequi</option>
+                        <option value="daviplata">Daviplata</option>
+                        <option value="bancolombia">Bancolombia</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn">Realizar recarga</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Formulario de Retiros Modal -->
+    <div id="retiros-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>SOLICITUD DE RETIRO</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombre-retiro">Nombre</label>
+                    <input type="text" id="nombre-retiro" placeholder="Nombre">
+                </div>
+                <div class="form-group">
+                    <label for="apellido-retiro">Apellido</label>
+                    <input type="text" id="apellido-retiro" placeholder="Apellido">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="monto-retiro">Monto a retirar</label>
+                <input type="number" id="monto-retiro" placeholder="Monto">
+            </div>
+            
+            <div class="form-group">
+                <label for="medio-retiro">Medio de retiro</label>
+                <select id="medio-retiro">
+                    <option value="nequi">Nequi</option>
+                    <option value="daviplata">Daviplata</option>
+                    <option value="bancolombia">Bancolombia</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="numero-cuenta">Número de cuenta/teléfono</label>
+                <input type="text" id="numero-cuenta" placeholder="Número">
+            </div>
+            
+            <button type="button" class="submit-btn">Solicitar retiro</button>
+        </div>
+    </div>
+
+    <!-- Menú de Reportes Modal -->
+    <div id="reportes-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>REPORTES DE APUESTAS</h2>
+            
+            <div class="reportes-menu">
+                <button class="reporte-btn" data-tipo="fecha">Buscar apuestas por fecha</button>
+                <button class="reporte-btn" data-tipo="deportes">Buscar apuestas por deportes</button>
+                <button class="reporte-btn" data-tipo="ganadas">Apuestas ganadas</button>
+                <button class="reporte-btn" data-tipo="perdidas">Apuestas perdidas</button>
+            </div>
+            
+            <div id="filtro-reporte" class="filtro-container">
+                <!-- Se llenará dinámicamente según el tipo de reporte seleccionado -->
+            </div>
+            
+            <div id="resultado-reporte" class="resultado-container">
+                <!-- Se llenará dinámicamente con los resultados del reporte -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS y Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    
+   <!-- servicio de almacenamiento -->
+    <script src="../Js/Recargas y Retiro/Almacenamiento.js"></script>
+    
+    <!-- Script principal con todas las funcionalidades -->
+    <script src="../Js/Recargas y Retiro/Recargas.js"></script>
+    <script src="../Js/Recargas y Retiro/Retiros.js"></script>
+</body>
+</html>

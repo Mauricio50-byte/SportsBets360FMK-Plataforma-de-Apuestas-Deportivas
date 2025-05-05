@@ -1,0 +1,392 @@
+/* Estilos Generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Fondo y estructura principal */
+.pagina-completa {
+    min-height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('../img/EstadioSportBest360.png');
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+/* Navegación */
+.barra-navegacion {
+    padding: 15px 0;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.navbar-brand {
+    color: #FF4500 !important;
+    font-size: 28px;
+    font-weight: bold;
+    padding-left: 20px;
+    text-decoration: none;
+}
+
+.navbar-brand:hover {
+    color: #FF6347 !important;
+}
+
+.nav-link {
+    text-decoration: none;
+    font-size: 18px;
+    color: #FFD700 !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #00FFFF !important;
+}
+
+/* Botón de inicio de sesión */
+.boton-iniciar-sesion {
+    font-size: 18px;
+    color: #FFD700;
+    background-color: transparent;
+    border: 2px solid #FFD700;
+    border-radius: 30px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.boton-iniciar-sesion:hover {
+    background-color: #FFD700;
+    color: #000;
+}
+
+/* Modal y formulario */
+.modal-content {
+    background-color: rgba(0, 0, 0, 0.85) !important;
+    color: white;
+    border-radius: 15px !important;
+    border: 1px solid #FFD700 !important;
+}
+
+.caja-formulario {
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+/* Pestaña de navegación (tabs) */
+.caja-botones {
+    width: 100%;
+    margin: 0 0 30px 0;
+    border-bottom: 1px solid #FFD700 !important;
+}
+
+.nav-tabs {
+    border-bottom: none !important;
+}
+
+.boton-toggle {
+    padding: 10px 30px;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    outline: none;
+    position: relative;
+    font-size: 18px;
+    font-weight: bold;
+    color: #FFD700 !important;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent !important;
+    color: #FFD700 !important;
+    border: none !important;
+    border-bottom: 3px solid #FFD700 !important;
+}
+
+/* Campos de formulario */
+.campo-entrada {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #FFD700;
+    outline: none;
+    background: rgba(30, 30, 30, 0.7);
+    color: #FFF;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.campo-entrada::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.campo-entrada:focus {
+    border-color: #FFA500;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+select.campo-entrada {
+    appearance: none;
+    background: rgba(30, 30, 30, 0.7);
+    color: #FFF;
+    cursor: pointer;
+}
+
+select.campo-entrada option {
+    background: #000;
+    color: #FFF;
+}
+
+/* Checkbox */
+.caja-verificacion {
+    margin-right: 10px;
+}
+
+/* Botón de enviar */
+.boton-enviar {
+    width: 100%;
+    padding: 12px 30px;
+    cursor: pointer;
+    display: block;
+    margin: 15px auto 0;
+    background: #FFD700;
+    border: 0;
+    outline: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    transition: background 0.3s ease;
+}
+
+.boton-enviar:hover {
+    background: #FFA500;
+}
+
+/* Posicionamiento de formularios */
+.grupo-entrada-login, .grupo-entrada-registro {
+    width: 100%;
+    transition: .5s;
+}
+
+/* Enlaces */
+.forgot-password, .terms-link {
+    color: #FFD700;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover, .terms-link:hover {
+    color: #FFA500;
+    text-decoration: underline;
+}
+
+/* Elementos adicionales */
+.modal-title {
+    color: #FFD700;
+    font-weight: bold;
+}
+
+.input-group-text {
+    background-color: rgba(30, 30, 30, 0.7);
+    border: 1px solid #FFD700;
+    color: #FFD700;
+    cursor: pointer;
+}
+
+.toggle-password:hover {
+    background-color: rgba(70, 69, 69, 0.7);
+}
+
+/* Estilos para la sección de características */
+.features-section {
+    padding: 50px 0;
+    margin-top: 100px;  /* Aumentado para bajar la sección */
+    background-color: rgba(0, 0, 0, 0.8);  /* Color de fondo para la sección */
+    border-radius: 10px;
+}
+
+.features-section .container {
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Espacio entre las tarjetas */
+.features-section .col-md-4 {
+    padding: 15px;
+}
+
+.feature-card {
+    background-color: rgba(20, 20, 20, 0.7);  /* Un poco más oscuro que el fondo */
+    border: 1px solid #FFD700;
+    border-radius: 15px;
+    padding: 25px 20px;
+    text-align: center;
+    color: white;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+}
+
+.feature-card h4 {
+    color: #FFD700;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.feature-card p {
+    color: #FFF;
+    font-size: 16px;
+}
+
+/* Estilos para el footer */
+.footer {
+    background-color: rgba(0, 0, 0, 0.50);
+    color: white;
+    padding: 40px 0 20px;
+    border-top: 2px solid #FFD700;
+    margin-top: 50px;  /* Espacio adicional antes del footer */
+}
+
+.footer h5 {
+    color: #FFD700;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.footer p {
+    color: #CCC;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+}
+
+.footer ul li a {
+    color: #CCC;
+    transition: color 0.3s ease;
+}
+
+.footer ul li a:hover {
+    color: #FFD700;
+}
+
+/* Estilo para iconos de redes sociales con imágenes */
+.social-icons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.social-icons a {
+    display: block;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 1px solid #FFD700;
+}
+
+
+/* Mejorar la visualización de las imágenes */
+.social-icons a {
+    display: block;
+    width: 36px; /* Un poco más grande */
+    height: 36px; /* Un poco más grande */
+    overflow: hidden;
+    border-radius: 50%;
+    border: 1px solid #FFD700;
+    background-color: #fff; /* Fondo blanco para las imágenes */
+    margin-right: 10px;
+}
+
+.social-icons a img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Cambiado de 'cover' a 'contain' */
+    transition: transform 0.3s ease;
+    padding: 2px; /* Pequeño padding para que no quede al borde */
+}
+
+/* Alternativa para usar Font Awesome en lugar de imágenes */
+.social-icons a i {
+    font-size: 16px;
+}
+
+.footer .text-center p {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .caja-formulario {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .boton-toggle {
+        padding: 8px 15px;
+        font-size: 16px;
+    }
+    
+    .campo-entrada {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .boton-enviar {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+    
+    
+    /* También hacer más transparente la sección de características */
+    .features-section {
+        padding: 50px 0;
+        margin-top: 100px;
+        background-color: rgba(0, 0, 0, 0.6); /* Más transparente (0.6 en lugar de 0.8) */
+        border-radius: 10px;
+    }
+
+    .feature-card {
+        background-color: rgba(20, 20, 20, 0.5); /* Más transparente (0.5 en lugar de 0.7) */
+        border: 1px solid rgba(255, 215, 0, 0.8);
+        border-radius: 15px;
+        padding: 25px 20px;
+        text-align: center;
+        color: white;
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .footer {
+        text-align: center;
+    }
+    
+    .social-icons {
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+}
