@@ -1,0 +1,135 @@
+/* Stylesobrenosotros.css */
+
+body {
+    background-color: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Encabezado principal */
+.sobre-nosotros h1 {
+    color: #1c1c1c;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 3px solid #007bff;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+/* Subtítulos */
+.sobre-nosotros h2 {
+    color: #007bff;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* Párrafos */
+.sobre-nosotros p {
+    font-size: 1rem;
+    color: #444;
+}
+
+/* Listas */
+.sobre-nosotros ul {
+    padding-left: 20px;
+}
+
+.sobre-nosotros ul li {
+    margin-bottom: 10px;
+}
+
+/* Miembros del equipo */
+.miembro-img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border: 4px solid #007bff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.miembro-img:hover {
+    transform: scale(1.05);
+}
+
+/* Botón volver */
+.volver-btn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-weight: bold;
+    border-radius: 25px;
+    background: linear-gradient(to right, #007bff, #00c6ff);
+    border: none;
+}
+
+/* Misión y Visión - Temática deportiva */
+.mision, .vision {
+    background: url('../img/soccer-pattern.png'), #e6f2ff;
+    background-repeat: repeat;
+    border-left: 6px solid #00aaff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 170, 255, 0.2);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mision::before, .vision::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background: url('../img/ball-icon.png');
+    background-size: 60px 60px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.1;
+    transform: rotate(-20deg);
+}
+
+.mision h2, .vision h2 {
+    color: #0056b3;
+    font-weight: 700;
+}
+
+.mision p, .vision p {
+    color: #2c2c2c;
+    font-size: 1.1rem;
+}
+
+/* Historia y Filosofía con estilo igual a Misión y Visión */
+.historia, .filosofia {
+    background: url('../img/soccer-pattern.png'), #e6f2ff;
+    background-repeat: repeat;
+    border-left: 6px solid #00aaff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 170, 255, 0.2);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.historia::before, .filosofia::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background: url('../img/ball-icon.png');
+    background-size: 60px 60px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.1;
+    transform: rotate(-20deg);
+}
+
+.historia h2, .filosofia h2 {
+    color: #0056b3;
+    font-weight: 700;
+}
+
+.historia p, .filosofia p {
+    color: #2c2c2c;
+    font-size: 1.1rem;
+}
