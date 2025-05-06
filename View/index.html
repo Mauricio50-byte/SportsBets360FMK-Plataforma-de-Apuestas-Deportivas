@@ -196,18 +196,20 @@
                     <div class="col-md-4">
                         <h5>Enlaces Rápidos</h5>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-decoration-none">Términos y Condiciones</a></li>
-                            <li><a href="#" class="text-decoration-none">Política de Privacidad</a></li>
-                            <li><a href="#" class="text-decoration-none">Juego Responsable</a></li>
+                            <li><a href="terminos.html" class="text-decoration-none" target="_blank">Términos y Condiciones</a></li>
+                            <li><a href="privacidad.html" class="text-decoration-none" target="_blank">Política de Privacidad</a></li>
+                            <ul class="list-unstyled">
+                                <li><a href="juego_responsable.html" class="text-decoration-none" target="_blank">Juego Responsable</a></li>
+                            </ul>
                         </ul>
                     </div>
                     <div class="col-md-4">
                         <h5>Síguenos</h5>
                         <div class="social-icons">
-                            <a href="#"><img src="../img/Facebook.png" alt="Facebook"></a>
-                            <a href="#"><img src="../img/twiter.png" alt="Twitter"></a>
-                            <a href="#"><img src="../img/instagram.jpeg" alt="Instagram"></a>
-                            <a href="#"><img src="../img/linkedin.jpeg" alt="LinkedIn"></a>
+                            <a href="https://www.facebook.com/profile.php?id=100071135037241" target="_blank" title="Facebook"><img src="../img/Facebook.png" alt="Facebook"></a>
+                            <a href="https://x.com/Kranflin16" target="_blank" title="Twitter"><img src="../img/twiter.png" alt="Twitter"></a>
+                            <a href="https://www.instagram.com/frank060317/" target="_blank" title="Instagram"><img src="../img/instagram.jpeg" alt="Instagram"></a>
+                            <a href="https://www.linkedin.com/company/SportBest360FMK" target="_blank" title="LinkedIn"><img src="../img/linkedin.jpeg" alt="LinkedIn"></a>
                         </div>
                     </div>
                 </div>
@@ -256,6 +258,22 @@
                     window.location.href = "index.html";
                 });
             }
+            
+            // Función para manejar clicks en los íconos de redes sociales
+            document.querySelectorAll('.social-icons a').forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    // Si los enlaces ya están configurados, no necesitamos hacer nada adicional
+                    console.log('Redirigiendo a: ' + this.href);
+                    
+                    // Verificamos si el enlace está configurado
+                    if (this.href === window.location.href + '#') {
+                        e.preventDefault();
+                        alert('El enlace a esta red social aún no está configurado.');
+                    }
+                    
+                    // La redirección ocurre automáticamente gracias al atributo href
+                });
+            });
         });
     </script>
 </body>
