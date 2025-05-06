@@ -224,17 +224,21 @@ body {
 }
 
 .menu-title {
-    padding: 10px;
+    padding: 8px;
     font-weight: bold;
     border-bottom: 1px solid #444;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
-.menu-item {
+.sport-display {
     padding: 10px;
-    cursor: pointer;
     border-radius: 5px;
-    transition: background-color 0.3s;
+    margin-bottom: 5px;
+    background-color: #2a2a2a;
+    color: #ddd;
+    border-left: 3px solid #8b0000;
+    pointer-events: none; /* Esto evita cualquier interacción con el mouse */
+    user-select: none; /* Evita que el texto sea seleccionable */
 }
 
 .menu-item:hover {

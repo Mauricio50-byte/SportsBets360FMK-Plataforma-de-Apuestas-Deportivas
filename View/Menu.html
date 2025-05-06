@@ -26,7 +26,7 @@
                 <img src="/api/placeholder/24/24" alt="Moneda" class="coin-icon">
             </div>
             
-            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span></span>
+            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span>
             <button class="logout-btn" id="logout-btn">SALIR</button>
         </div>
     </div>
@@ -57,14 +57,14 @@
     <div class="sidebar-overlay"></div>
     
     <div class="sidebar">
-        <div class="menu-title">DEPORTES</div>
-        <div class="menu-item">⚽ Futbol</div>
-        <div class="menu-item">🎾 Tenis</div>
-        <div class="menu-item">🏀 Baloncesto</div>
-        <div class="menu-item">🏈 Fútbol americano</div>
-        <div class="menu-item">⚾ Béisbol</div>
-        <div class="menu-item">🏐 Voleibol</div>
-        <div class="menu-item">🥊 Boxeo</div>
+        <div class="menu-title">DEPORTES DISPONIBLES</div>
+        <div class="sport-display">⚽ Futbol</div>
+        <div class="sport-display">🎾 Tenis</div>
+        <div class="sport-display">🏀 Baloncesto</div>
+        <div class="sport-display">🏈 Fútbol americano</div>
+        <div class="sport-display">⚾ Béisbol</div>
+        <div class="sport-display">🏐 Voleibol</div>
+        <div class="sport-display">🥊 Boxeo</div>
         <div class="casino-promo">
             <img src="../img/preview2.jpeg" alt="Casino">
         </div>
@@ -274,12 +274,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
+    <script src="../Js/Futbol/MenuFutbol.js"></script>
+
     <!-- servicio de almacenamiento -->
-    <script src="../Js/Recargas y Retiro/Almacenamiento.js"></script>
+    <script src="../Js/Recargas_Retiros/Almacenamiento.js"></script>
     
     <!-- Script principal con todas las funcionalidades -->
-    <script src="../Js/Recargas y Retiro/Recargas.js"></script>
-    <script src="../Js/Recargas y Retiro/Retiros.js"></script>
+    <script src="../Js/Recargas_Retiros/RecargaService.js"></script>
+    <script src="../Js/UIService.js"></script>
+    <script src="../Js/NavigationService.js"></script>
+    <!-- <script src="../Js/Recargas_Retiros/Recargas.js"></script> -->
+    <script src="../Js/Recargas_Retiros/Retiros.js"></script>
     
     <!-- Script para el modal de bienvenida -->
     <script>
@@ -290,7 +295,7 @@
             
             // Inicializar el carrusel de Bootstrap
             var myCarousel = new bootstrap.Carousel(document.getElementById('welcomeCarousel'), {
-                interval: 3000, // Cambiar imagen cada 3 segundos
+                interval: 1000, // Cambiar imagen cada 1 segundos
                 ride: 'carousel',
                 wrap: true
             });

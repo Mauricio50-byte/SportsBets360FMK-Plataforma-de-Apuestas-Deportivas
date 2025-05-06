@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enfrentamientos de Fútbol</title>
+    <link rel="stylesheet" href="../Css/Futbol.css">
+</head>
+<body>
+    <div class="futbol-container">
+        <h2 class="futbol-title">Enfrentamientos de Fútbol del Día</h2>
+        <p class="fecha-enfrentamientos" id="fecha-actual">Cargando fecha...</p>
+        
+        <div class="enfrentamientos-container" id="enfrentamientos-container">
+            <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
+            <div class="cargando">Cargando enfrentamientos...</div>
+        </div>
+        
+        <div class="leyenda">
+            <div class="estado-item">
+                <span class="estado-indicator no-comenzado"></span>
+                <span>No ha comenzado</span>
+            </div>
+            <div class="estado-item">
+                <span class="estado-indicator en-vivo"></span>
+                <span>En vivo</span>
+            </div>
+            <div class="estado-item">
+                <span class="estado-indicator finalizado"></span>
+                <span>Finalizado</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Js/Futbol/Futbol.js"></script>
+</body>
+</html>
