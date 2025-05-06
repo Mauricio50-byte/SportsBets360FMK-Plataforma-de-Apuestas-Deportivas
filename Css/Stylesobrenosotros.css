@@ -1,135 +1,159 @@
-/* Stylesobrenosotros.css */
+/* sobrenosotros.css - Estilo premium apuestas */
+
+:root {
+    --color-gold: #ffd700;
+    --color-gold-dark: #ccac00;
+    --color-green: #28a745;
+    --color-green-light: #33cc55;
+    --color-dark: #121212;
+    --color-dark-gray: #1a1a1a;
+    --color-medium-gray: #2a2a2a;
+    --color-light-gray: #e0e0e0;
+    --card-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    --card-glow: 0 0 15px rgba(255, 215, 0, 0.3);
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+}
 
 body {
-    background-color: #f0f4f8;
+    background-color: var(--color-dark);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--color-light-gray);
+    margin: 0;
+    padding: 0;
     line-height: 1.6;
 }
 
-/* Encabezado principal */
 .sobre-nosotros h1 {
-    color: #1c1c1c;
+    font-family: 'Playfair Display', serif;
+    color: var(--color-gold);
     font-weight: 700;
     text-transform: uppercase;
-    border-bottom: 3px solid #007bff;
+    border-bottom: 3px solid var(--color-gold);
     display: inline-block;
     padding-bottom: 10px;
+    letter-spacing: 1px;
+    position: relative;
 }
 
-/* Subtítulos */
+.sobre-nosotros h1::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-green), var(--color-gold));
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
 .sobre-nosotros h2 {
-    color: #007bff;
+    color: var(--color-gold);
     font-weight: 600;
     margin-bottom: 15px;
 }
 
-/* Párrafos */
 .sobre-nosotros p {
     font-size: 1rem;
-    color: #444;
+    color: var(--color-light-gray);
 }
 
-/* Listas */
 .sobre-nosotros ul {
     padding-left: 20px;
+    list-style-type: none;
 }
 
 .sobre-nosotros ul li {
     margin-bottom: 10px;
+    color: var(--color-light-gray);
+    position: relative;
+    padding-left: 25px;
 }
 
-/* Miembros del equipo */
+.sobre-nosotros ul li::before {
+    content: "♦";
+    color: var(--color-gold);
+    position: absolute;
+    left: 0;
+    font-size: 12px;
+    top: 4px;
+}
+
 .miembro-img {
     width: 180px;
     height: 180px;
     object-fit: cover;
-    border: 4px solid #007bff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
+    border: 4px solid var(--color-gold);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed) ease;
+    border-radius: 50%;
 }
 
 .miembro-img:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
+    box-shadow: var(--card-shadow), var(--card-glow);
 }
 
-/* Botón volver */
 .volver-btn {
     margin-top: 20px;
-    padding: 12px 25px;
+    padding: 12px 30px;
     font-weight: bold;
-    border-radius: 25px;
-    background: linear-gradient(to right, #007bff, #00c6ff);
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--color-green), var(--color-green-light));
     border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
 }
 
-/* Misión y Visión - Temática deportiva */
-.mision, .vision {
-    background: url('../img/soccer-pattern.png'), #e6f2ff;
-    background-repeat: repeat;
-    border-left: 6px solid #00aaff;
+.volver-btn:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, var(--color-green-light), var(--color-green));
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.6);
+}
+
+.historia, .filosofia, .mision, .vision {
+    background: linear-gradient(145deg, var(--color-dark) 0%, var(--color-dark-gray) 100%);
+    border-left: 6px solid var(--color-gold);
     padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0, 170, 255, 0.2);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
     margin-bottom: 40px;
     position: relative;
     overflow: hidden;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-.mision::before, .vision::before {
-    content: "";
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    background: url('../img/ball-icon.png');
-    background-size: 60px 60px;
-    width: 60px;
-    height: 60px;
-    opacity: 0.1;
-    transform: rotate(-20deg);
+.historia:hover, .filosofia:hover, .mision:hover, .vision:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow), var(--card-glow);
 }
 
-.mision h2, .vision h2 {
-    color: #0056b3;
+.historia h2, .filosofia h2, .mision h2, .vision h2 {
+    color: var(--color-green-light);
     font-weight: 700;
 }
 
-.mision p, .vision p {
-    color: #2c2c2c;
-    font-size: 1.1rem;
+.historia p, .filosofia p, .mision p, .vision p {
+    color: var(--color-light-gray);
+    font-size: 1.05rem;
 }
 
-/* Historia y Filosofía con estilo igual a Misión y Visión */
-.historia, .filosofia {
-    background: url('../img/soccer-pattern.png'), #e6f2ff;
-    background-repeat: repeat;
-    border-left: 6px solid #00aaff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0, 170, 255, 0.2);
-    margin-bottom: 40px;
-    position: relative;
-    overflow: hidden;
+/* Animación pulse para destacar */
+.highlight {
+    animation: pulse 2s infinite;
 }
 
-.historia::before, .filosofia::before {
-    content: "";
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    background: url('../img/ball-icon.png');
-    background-size: 60px 60px;
-    width: 60px;
-    height: 60px;
-    opacity: 0.1;
-    transform: rotate(-20deg);
-}
-
-.historia h2, .filosofia h2 {
-    color: #0056b3;
-    font-weight: 700;
-}
-
-.historia p, .filosofia p {
-    color: #2c2c2c;
-    font-size: 1.1rem;
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+    }
 }
