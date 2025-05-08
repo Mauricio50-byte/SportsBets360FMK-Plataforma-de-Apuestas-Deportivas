@@ -1,138 +1,96 @@
 /**
- * UIService.js
- * Servicio encargado de gestionar la interfaz de usuario
+ * Script de inicialización corregido que conecta todos los servicios
+ * SportsBets360FMK - Sistema de gestión de saldo, recargas y retiros
  */
-
-class UIService {
-    /**
-     * Inicializa el servicio de UI
-     */
-    static init() {
-        // Inicializar los eventos relacionados con la UI
-        this.initEventos();
-    }
-
-    /**
-     * Inicializa los eventos relacionados con la UI
-     */
-    static initEventos() {
-        // Eventos para la barra lateral
-        const logoEl = document.querySelector('.logo');
-        const sidebarOverlayEl = document.querySelector('.sidebar-overlay');
-        
-        if (logoEl) logoEl.addEventListener('click', this.toggleSidebar);
-        if (sidebarOverlayEl) sidebarOverlayEl.addEventListener('click', this.closeSidebar);
-        
-        // Eventos para los modales
-        const closeButtons = document.querySelectorAll('.close-modal');
-        closeButtons.forEach(button => {
-            button.addEventListener('click', this.cerrarModal);
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Iniciando aplicación SportsBets360FMK...');
+   
+    // Inicializar el servicio de almacenamiento
+    window.storageService = new AlmacenamientoService();
+    console.log('AlmacenamientoService inicializado');
+   
+    // Inicializar servicios que dependen del almacenamiento
+    window.recargaService = new RecargaService(window.storageService);
+    console.log('RecargaService inicializado');
+   
+    // Corregido: se usa RetirosService en lugar de RetiroService
+    window.retirosService = new RetirosService(window.storageService);
+    console.log('RetirosService inicializado');
+   
+    // Reemplazar RecargaService con la versión corregida que sí actualiza la UI
+    window.recargaService = new FixedRecargaService(window.storageService);
+    console.log('RecargaService reemplazado por versión corregida');
+   
+    // Actualizar la interfaz con los datos del usuario actual (si existe)
+    actualizarInterfazUsuario();
+   
+    // Configurar el botón de logout si existe
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            window.storageService.logout();
+            alert('Sesión cerrada. ¡Hasta pronto!');
+            actualizarInterfazUsuario();
+           
+            // Redirigir a la página de inicio o login si es necesario
+            // window.location.href = 'login.html';
         });
-        
-        // Evento para botón de cierre de sesión
-        const logoutBtnEl = document.getElementById('logout-btn');
-        if (logoutBtnEl) {
-            logoutBtnEl.addEventListener('click', this.cerrarSesion);
-        }
+        console.log('Botón de logout configurado');
     }
-
-    /**
-     * Muestra el usuario actualmente logueado
-     */
-    static mostrarUsuarioLogueado() {
-        // En una aplicación real, esto vendría de una sesión
-        const usuarios = StorageDB.getUsuarios();
-        if (usuarios.length > 0) {
-            const usuario = usuarios[0];
-            const currentUserEl = document.getElementById('current-user');
-            const userBalanceEl = document.getElementById('user-balance');
-            
-            if (currentUserEl) currentUserEl.textContent = usuario.usuario;
-            if (userBalanceEl) userBalanceEl.textContent = `$ ${usuario.saldo}`;
-        }
-    }
-
-    /**
-     * Actualiza el saldo del usuario en la interfaz
-     * @param {number} saldo - Nuevo saldo del usuario
-     */
-    static actualizarSaldoEnUI(saldo) {
-        const userBalanceEl = document.getElementById('user-balance');
-        if (userBalanceEl) {
-            userBalanceEl.textContent = `$ ${saldo}`;
-        }
-    }
-
-    /**
-     * Muestra un mensaje al usuario
-     * @param {string} mensaje - Mensaje a mostrar
-     */
-    static mostrarMensaje(mensaje) {
-        alert(mensaje);
-    }
-
-    /**
-     * Alterna la visibilidad de la barra lateral
-     */
-    static toggleSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.sidebar-overlay');
-        const content = document.querySelector('.content');
-        
-        if (sidebar && overlay && content) {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-            content.classList.toggle('sidebar-open');
-        }
-    }
-
-    /**
-     * Cierra la barra lateral
-     */
-    static closeSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.sidebar-overlay');
-        const content = document.querySelector('.content');
-        
-        if (sidebar && overlay && content) {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            content.classList.remove('sidebar-open');
-        }
-    }
-
-    /**
-     * Cierra todos los modales abiertos
-     */
-    static cerrarModal() {
-        const modales = document.querySelectorAll('.modal');
-        modales.forEach(modal => {
-            modal.style.display = 'none';
+   
+    // Asegurar que el evento de apertura del formulario de recarga funcione
+    const recargasLink = document.getElementById('recargas-link');
+    if (recargasLink) {
+        recargasLink.addEventListener('click', function() {
+            window.recargaService.openRecargaModal();
         });
     }
 
-    /**
-     * Muestra la sección especificada
-     * @param {string} idSeccion - ID de la sección a mostrar
-     */
-    static mostrarSeccion(idSeccion) {
-        // Desactivar todos los enlaces de navegación
-        const navLinks = document.querySelectorAll('.nav-links a');
-        navLinks.forEach(link => link.classList.remove('active'));
-        
-        // Activar el enlace correspondiente
-        const activeLink = document.getElementById(`${idSeccion}-link`);
-        if (activeLink) {
-            activeLink.classList.add('active');
-        }
+    // Configurar evento para abrir modal de retiros
+    const retirosLink = document.getElementById('retiros-link');
+    if (retirosLink) {
+        retirosLink.addEventListener('click', function() {
+            window.retirosService.openRetiroModal();
+        });
     }
+   
+    console.log('Inicialización completa');
+});
 
-    /**
-     * Cierra la sesión del usuario (simulada)
-     */
-    static cerrarSesion() {
-        // En una aplicación real, esto enviaría una petición al servidor
-        UIService.mostrarMensaje('Sesión cerrada correctamente');
-        location.reload();
+/**
+ * Actualiza la interfaz de usuario con los datos de la sesión actual
+ */
+function actualizarInterfazUsuario() {
+    const currentUser = window.storageService.getCurrentUser();
+   
+    // Actualizar nombre de usuario
+    const userNameElement = document.getElementById('current-user');
+    if (userNameElement) {
+        userNameElement.textContent = currentUser ? (currentUser.nombre || 'Usuario') : 'Invitado';
+    }
+   
+    // Actualizar saldo - importante que esto sea consistente en toda la aplicación
+    const balanceElement = document.getElementById('user-balance');
+    if (balanceElement) {
+        const saldo = currentUser ? (currentUser.saldo || 0) : 0;
+        balanceElement.textContent = `$ ${saldo.toFixed(2)}`;
+        console.log('Saldo actualizado en la UI:', saldo);
+    } else {
+        console.error('No se pudo encontrar el elemento de saldo (user-balance)');
     }
 }
+
+/**
+ * Función global para actualizar el saldo del usuario en la interfaz
+ * Esta función puede ser llamada desde cualquier parte de la aplicación
+ */
+window.actualizarSaldoUI = function() {
+    const currentUser = window.storageService.getCurrentUser();
+    if (currentUser) {
+        const balanceElement = document.getElementById('user-balance');
+        if (balanceElement) {
+            balanceElement.textContent = `$ ${currentUser.saldo.toFixed(2)}`;
+            console.log('Saldo actualizado mediante función global:', currentUser.saldo);
+        }
+    }
+};
