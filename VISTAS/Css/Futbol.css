@@ -9,7 +9,7 @@
 .futbol-title {
     text-align: center;
     margin-bottom: 10px;
-    color: #1a3b5d;
+    color: #170ec3;
     font-size: 24px;
 }
 
@@ -17,7 +17,7 @@
     text-align: center;
     margin-bottom: 20px;
     font-size: 16px;
-    color: #555;
+    color: #ffffff;
     font-weight: bold;
 }
 
@@ -34,7 +34,7 @@
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    background-color: #ffffff;
     transition: transform 0.2s ease;
 }
 
@@ -157,7 +157,7 @@
     text-align: center;
     margin-top: 30px;
     padding: 15px;
-    background-color: #f5f5f5;
+    background-color: #f02f2f;
     border-radius: 8px;
 }
 
@@ -218,7 +218,7 @@
 .resumen-predicciones {
     margin-top: 20px;
     padding: 15px;
-    background-color: #e8f5e9;
+    background-color: #0a9115;
     border-radius: 8px;
     text-align: center;
 }

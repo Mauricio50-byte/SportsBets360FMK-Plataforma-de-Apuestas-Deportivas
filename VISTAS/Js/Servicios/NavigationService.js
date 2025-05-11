@@ -31,26 +31,34 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Añadir el HTML del contenido de fútbol
         futbolContainer.innerHTML = `
-            <h2 class="futbol-title">Enfrentamientos de Fútbol del Día</h2>
-            <p class="fecha-enfrentamientos" id="fecha-actual">Cargando fecha...</p>
-            
-            <div class="enfrentamientos-container" id="enfrentamientos-container">
-                <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
-                <div class="cargando">Cargando enfrentamientos...</div>
-            </div>
-            
-            <div class="leyenda">
-                <div class="estado-item">
-                    <span class="estado-indicator no-comenzado"></span>
-                    <span>No ha comenzado</span>
+            <div class="futbol-container">
+                <h2 class="futbol-title">Enfrentamientos de Fútbol del Día</h2>
+                <p class="fecha-enfrentamientos" id="fecha-actual">Cargando fecha...</p>
+                
+                <div class="enfrentamientos-container" id="enfrentamientos-container">
+                    <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
+                    <div class="cargando">Cargando enfrentamientos...</div>
                 </div>
-                <div class="estado-item">
-                    <span class="estado-indicator en-vivo"></span>
-                    <span>En vivo</span>
+                
+                <div class="leyenda">
+                    <div class="estado-item">
+                        <span class="estado-indicator no-comenzado"></span>
+                        <span>No ha comenzado</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-indicator en-vivo"></span>
+                        <span>En vivo</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-indicator finalizado"></span>
+                        <span>Finalizado</span>
+                    </div>
                 </div>
-                <div class="estado-item">
-                    <span class="estado-indicator finalizado"></span>
-                    <span>Finalizado</span>
+                
+                <!-- Instrucciones para el juego de predicción -->
+                <div class="prediccion-instrucciones">
+                    <h3>¡Adivina el Resultado!</h3>
+                    <p>Haz tu predicción sobre los partidos que aún no han comenzado.</p>
                 </div>
             </div>
         `;
@@ -68,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Fútbol
     function cargarEstilosFutbol() {
-        if (!document.querySelector('link[href*="Futbol.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css"]')) {
             console.log('Cargando estilos de Fútbol');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
@@ -80,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar script de Fútbol
     function cargarScriptFutbol() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src*="Futbol.js"]')) {
+        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Futbol/Futbol.js"]')) {
             console.log('Cargando script de Fútbol');
             const script = document.createElement('script');
             script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Futbol/Futbol.js';
