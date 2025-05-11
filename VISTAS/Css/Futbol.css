@@ -151,3 +151,88 @@
     color: #666;
     font-style: italic;
 }
+
+/* Nuevos estilos para predicción */
+.prediccion-instrucciones {
+    text-align: center;
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.prediccion-instrucciones h3 {
+    color: #1a3b5d;
+    margin-bottom: 10px;
+}
+
+.prediccion-botones {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-prediccion {
+    padding: 6px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-prediccion:hover {
+    transform: scale(1.05);
+}
+
+.btn-pierde {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-empate {
+    background-color: #ff9800;
+    color: white;
+}
+
+.btn-gana {
+    background-color: #4caf50;
+    color: white;
+}
+
+.prediccion-resultado {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.prediccion-correcta {
+    color: #4caf50;
+}
+
+.prediccion-incorrecta {
+    color: #f44336;
+}
+
+/* Estilos para el resumen de predicciones */
+.resumen-predicciones {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.resumen-predicciones h3 {
+    color: #1a3b5d;
+    margin-bottom: 10px;
+}
+
+.contador-predicciones {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.contador-predicciones span {
+    font-weight: bold;
+}

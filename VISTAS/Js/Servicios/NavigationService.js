@@ -1,109 +1,236 @@
-/**
- * NavigationService.js
- * Servicio encargado de gestionar la navegación entre secciones
- */
+// NavigationService.js - Servicio para gestionar la navegación entre secciones
 
-class NavigationService {
-    /**
-     * Inicializa el servicio de navegación
-     */
-    static init() {
-        // Inicializar los eventos relacionados con la navegación
-        this.initEventos();
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('NavigationService cargado correctamente');
+    
+    // Seleccionar elementos del menú
+    const inicioLink = document.getElementById('inicio-link');
+    const resultadosLink = document.getElementById('resultados-link');
+    const recargasLink = document.getElementById('recargas-link');
+    const retirosLink = document.getElementById('retiros-link');
+    const reportesLink = document.getElementById('reportes-link');
+    
+    // Seleccionar botones deportes
+    const sportButtons = document.querySelectorAll('.sport-button');
+    
+    // Seleccionar elementos del sidebar
+    const sidebarItems = document.querySelectorAll('.sport-display');    
+    // Función para cargar contenido de Fútbol
+    function cargarContenidoFutbol() {
+        console.log('Intentando cargar contenido de fútbol');
+        const contenidoPrincipal = document.getElementById('contenido-principal');
+        
+        if (!contenidoPrincipal) {
+            console.error('No se encontró el elemento contenido-principal');
+            return;
+        }
+        
+        // Crear el contenedor para el contenido de fútbol
+        const futbolContainer = document.createElement('div');
+        futbolContainer.className = 'futbol-container';
+        
+        // Añadir el HTML del contenido de fútbol
+        futbolContainer.innerHTML = `
+            <h2 class="futbol-title">Enfrentamientos de Fútbol del Día</h2>
+            <p class="fecha-enfrentamientos" id="fecha-actual">Cargando fecha...</p>
+            
+            <div class="enfrentamientos-container" id="enfrentamientos-container">
+                <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
+                <div class="cargando">Cargando enfrentamientos...</div>
+            </div>
+            
+            <div class="leyenda">
+                <div class="estado-item">
+                    <span class="estado-indicator no-comenzado"></span>
+                    <span>No ha comenzado</span>
+                </div>
+                <div class="estado-item">
+                    <span class="estado-indicator en-vivo"></span>
+                    <span>En vivo</span>
+                </div>
+                <div class="estado-item">
+                    <span class="estado-indicator finalizado"></span>
+                    <span>Finalizado</span>
+                </div>
+            </div>
+        `;
+        
+        // Limpiar contenido actual y añadir el contenedor de fútbol
+        contenidoPrincipal.innerHTML = '';
+        contenidoPrincipal.appendChild(futbolContainer);
+        
+        // Cargar los estilos si no están ya cargados
+        cargarEstilosFutbol();
+        
+        // Cargar y ejecutar el script de Fútbol
+        cargarScriptFutbol();
     }
-
-    /**
-     * Inicializa los eventos relacionados con la navegación
-     */
-    static initEventos() {
-        // Eventos para navegación principal
-        const inicioLinkEl = document.getElementById('inicio-link');
-        const resultadosLinkEl = document.getElementById('resultados-link');
-        const recargasLinkEl = document.getElementById('recargas-link');
-        const retirosLinkEl = document.getElementById('retiros-link');
-        const reportesLinkEl = document.getElementById('reportes-link');
-        
-        if (inicioLinkEl) inicioLinkEl.addEventListener('click', this.mostrarInicio);
-        if (resultadosLinkEl) resultadosLinkEl.addEventListener('click', this.mostrarResultados);
-        if (recargasLinkEl) recargasLinkEl.addEventListener('click', RecargaService.mostrarRecargas);
-        if (retirosLinkEl) retirosLinkEl.addEventListener('click', RetiroService.mostrarRetiros);
-        if (reportesLinkEl) reportesLinkEl.addEventListener('click', ReporteService.mostrarReportes);
-        
-        // Eventos para los botones de deportes
-        const sportButtons = document.querySelectorAll('.sport-button');
-        sportButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                sportButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                const deporteEl = button.querySelector('.sport-name');
-                if (deporteEl) {
-                    this.mostrarDeporte(deporteEl.textContent);
+    
+    // Función para cargar estilos de Fútbol
+    function cargarEstilosFutbol() {
+        if (!document.querySelector('link[href*="Futbol.css"]')) {
+            console.log('Cargando estilos de Fútbol');
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css';
+            document.head.appendChild(link);
+        }
+    }
+    
+    // Función para cargar script de Fútbol
+    function cargarScriptFutbol() {
+        // Verificar si ya existe el script
+        if (!document.querySelector('script[src*="Futbol.js"]')) {
+            console.log('Cargando script de Fútbol');
+            const script = document.createElement('script');
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Futbol/Futbol.js';
+            script.onload = function() {
+                console.log('Script de Fútbol cargado correctamente');
+                // Si existe la clase, inicializar
+                if (typeof EnfrentamientosFutbol === 'function') {
+                    console.log('Inicializando EnfrentamientosFutbol');
+                    const manager = new EnfrentamientosFutbol();
+                    manager.renderizarEnfrentamientos();
+                } else {
+                    console.error('La clase EnfrentamientosFutbol no está disponible');
                 }
-            });
+            };
+            document.body.appendChild(script);
+        } else {
+            console.log('Script de Fútbol ya está cargado, inicializando');
+            // Si el script ya está cargado, intentar inicializar
+            if (typeof EnfrentamientosFutbol === 'function') {
+                const manager = new EnfrentamientosFutbol();
+                manager.renderizarEnfrentamientos();
+            }
+        }
+    }
+    
+    // Añadir eventos para los botones de deportes
+    sportButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remover clase active de todos los botones
+            sportButtons.forEach(btn => btn.classList.remove('active'));
+            // Añadir clase active al botón actual
+            this.classList.add('active');
+            
+            // Verificar qué deporte se ha seleccionado
+            const sportName = this.querySelector('.sport-name')?.textContent;
+            console.log('Deporte seleccionado:', sportName);
+            
+            if (sportName === 'FÚTBOL') {
+                cargarContenidoFutbol();
+            } else if (sportName === 'EN VIVO') {
+                // Cargar contenido de eventos en vivo
+                // Implementación futura
+            } else {
+                // Mostrar mensaje de funcionalidad en desarrollo
+                const contenidoPrincipal = document.getElementById('contenido-principal');
+                if (contenidoPrincipal) {
+                    contenidoPrincipal.innerHTML = `
+                        <div class="mensaje-desarrollo">
+                            <h3>Próximamente</h3>
+                            <p>La sección de ${sportName} estará disponible pronto.</p>
+                        </div>
+                    `;
+                }
+            }
         });
-        
-        // Inicializar los elementos del menú lateral
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                menuItems.forEach(mi => mi.classList.remove('active'));
-                item.classList.add('active');
-                this.mostrarDeporte(item.textContent.trim());
-                UIService.closeSidebar();
-            });
+    });
+    
+    // Añadir eventos para los elementos del sidebar
+    sidebarItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const sportText = this.textContent.trim();
+            console.log('Deporte seleccionado desde sidebar:', sportText);
+            
+            if (sportText === '⚽ Futbol') {
+                cargarContenidoFutbol();
+            } else {
+                // Mostrar mensaje de funcionalidad en desarrollo
+                const contenidoPrincipal = document.getElementById('contenido-principal');
+                if (contenidoPrincipal) {
+                    contenidoPrincipal.innerHTML = `
+                        <div class="mensaje-desarrollo">
+                            <h3>Próximamente</h3>
+                            <p>La sección de ${sportText} estará disponible pronto.</p>
+                        </div>
+                    `;
+                }
+            }
+        });
+    });
+    
+    // Añadir eventos para los links del menú principal
+    if (resultadosLink) {
+        resultadosLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const contenidoPrincipal = document.getElementById('contenido-principal');
+            if (contenidoPrincipal) {
+                contenidoPrincipal.innerHTML = `
+                    <div class="mensaje-desarrollo">
+                        <h3>Próximamente</h3>
+                        <p>La sección de Resultados estará disponible pronto.</p>
+                    </div>
+                `;
+            }
         });
     }
-
-    /**
-     * Muestra la página de inicio
-     */
-    static mostrarInicio() {
-        UIService.mostrarSeccion('inicio');
-        const contenidoPrincipal = document.getElementById('contenido-principal');
-        if (contenidoPrincipal) {
-            contenidoPrincipal.innerHTML = `
-                <div class="bienvenida-container">
-                    <h2>Bienvenido a SportsBets360FMK</h2>
-                    <p>La mejor plataforma de apuestas deportivas</p>
-                    <p>Selecciona un deporte para comenzar a apostar</p>
-                </div>
-            `;
-        }
+    
+    if (recargasLink) {
+        recargasLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const recargasModal = document.getElementById('recargas-modal');
+            if (recargasModal) {
+                recargasModal.style.display = 'flex';
+            }
+        });
     }
-
-    /**
-     * Muestra la página de resultados
-     */
-    static mostrarResultados() {
-        UIService.mostrarSeccion('resultados');
-        const contenidoPrincipal = document.getElementById('contenido-principal');
-        if (contenidoPrincipal) {
-            contenidoPrincipal.innerHTML = `
-                <h2>Resultados Deportivos</h2>
-                <p>Aquí podrás ver los resultados de los eventos deportivos más recientes.</p>
-                <div class="resultados-placeholder">
-                    <p>Cargando resultados...</p>
-                </div>
-            `;
-        }
-        // Aquí se cargarían los resultados desde una API
+    
+    if (retirosLink) {
+        retirosLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const retirosModal = document.getElementById('retiros-modal');
+            if (retirosModal) {
+                retirosModal.style.display = 'flex';
+            }
+        });
     }
-
-    /**
-     * Muestra la página del deporte seleccionado
-     * @param {string} deporte - Nombre del deporte a mostrar
-     */
-    static mostrarDeporte(deporte) {
-        const contenidoPrincipal = document.getElementById('contenido-principal');
-        if (contenidoPrincipal) {
-            contenidoPrincipal.innerHTML = `
-                <h2>${deporte}</h2>
-                <p>Próximos partidos para apostar:</p>
-                <div class="eventos-deportivos">
-                    <p>Cargando eventos de ${deporte}...</p>
-                </div>
-            `;
-        }
-        // Aquí se cargarían los eventos desde una API
+    
+    if (reportesLink) {
+        reportesLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const reportesModal = document.getElementById('reportes-modal');
+            if (reportesModal) {
+                reportesModal.style.display = 'flex';
+            }
+        });
     }
-}
+    
+    // Cerrar modales al hacer clic en el botón de cierre
+    const closeButtons = document.querySelectorAll('.close-modal');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+    
+    // Añadir un poco de CSS para el mensaje de desarrollo
+    const style = document.createElement('style');
+    style.textContent = `
+        .mensaje-desarrollo {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+        .mensaje-desarrollo h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #1a3b5d;
+        }
+    `;
+    document.head.appendChild(style);
+});

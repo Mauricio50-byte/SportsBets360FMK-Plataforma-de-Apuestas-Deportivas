@@ -10,7 +10,7 @@ window.userService = {
      */
     checkSession: async function() {
         try {
-            const response = await fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/check_session.php');
+            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php');
             const data = await response.json();
             
             if (data.loggedIn) {
@@ -48,8 +48,8 @@ window.userService = {
      */
     logout: async function() {
         try {
-            await fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/logout.php');
-            window.location.href = '/index.html?success=logout';
+            await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/logout.php');
+            window.location.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/View/index.html?success=logout';
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }

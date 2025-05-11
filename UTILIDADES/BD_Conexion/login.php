@@ -46,16 +46,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['ultimo_acceso'] = time();
         
         // Redireccionar al menú principal
-        header('Location: /VISTAS/View/Menu.html');
+        header('Location: http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/View/Menu.html');
         exit;
     } else {
         // Autenticación fallida, mostrar mensaje de error
-        header('Location: /index.html?error=credenciales_invalidas');
+        header('Location: http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/View/index.html?error=credenciales_invalidas');
         exit;
     }
 } else {
     // Si no es una petición POST, redirigir a la página de inicio
-    header('Location: /index.html');
+    header('Location: http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/View/index.html');
     exit;
 }
 

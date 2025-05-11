@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Estilos propios -->
     <link rel="stylesheet" href="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/StyleMenu.css">
-    <link rel="stylesheet" href="../Css/StyleRecargasService.css">
-    <link rel="stylesheet" href="../Css/StyleRetirosService.css">
+    <link rel="stylesheet" href="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/Css/StyleRecargasService.css">
+    <link rel="stylesheet" href="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/Css/StyleRetirosService.css">
 </head>
 <body>
     <div class="top-navigation">
@@ -276,15 +276,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
     <!-- Servicio de almacenamiento -->
-    <script src="../Js/Servicios/AlmacenamientoService.js"></script>
-        
+    
     <!-- Servicios de recarga y retiro -->
-    <script src="/VISTAS/Js/Servicios/RecargaService.js"></script>
-    <script src="/VISTAS/Js/Servicios/RetirosService.js"></script>
 
     <!-- Script principal con todas las funcionalidades -->
-    <script src="../Js/Servicios/UIService.js"></script>
-    <script src="../Js/Servicios/NavigationService.js"></script>
+    <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/NavigationService.js"></script>
     <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Mensajes/UserService.js"></script>
 
 
@@ -313,5 +309,16 @@
             });
         });
     </Script>
+
+    <!-- Script para Refrescar la página -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Acción para recargar la página cuando se presione "Inicio"
+            document.getElementById('inicio-link').addEventListener('click', function(e) {
+                e.preventDefault(); // Evitar que el enlace haga un salto # 
+                location.reload();  // Recargar la página
+            });
+        });
+    </script>
 </body>
 </html>

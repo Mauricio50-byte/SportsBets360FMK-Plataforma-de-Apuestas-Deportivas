@@ -32,9 +32,16 @@ class EnfrentamientosFutbol {
         
         // Clave para almacenamiento local
         this.STORAGE_KEY = 'enfrentamientos-futbol';
+        this.PREDICCIONES_KEY = 'predicciones-futbol';
         
         // Inicializar enfrentamientos
         this.enfrentamientos = this.obtenerEnfrentamientosDia();
+        
+        // Inicializar predicciones
+        this.predicciones = this.obtenerPredicciones();
+        
+        // Contador de aciertos
+        this.contadorAciertos = this.obtenerContadorAciertos();
         
         // Iniciar intervalo para actualización automática
         this.iniciarActualizacionAutomatica();
@@ -65,6 +72,17 @@ class EnfrentamientosFutbol {
             fecha: hoy,
             enfrentamientos: nuevosEnfrentamientos
         }));
+        
+        // Reiniciar predicciones en nuevo día
+        localStorage.removeItem(this.PREDICCIONES_KEY);
+        this.predicciones = {};
+        
+        // Reiniciar contador de aciertos
+        localStorage.setItem('contador-aciertos', JSON.stringify({
+            total: 0,
+            aciertos: 0
+        }));
+        this.contadorAciertos = { total: 0, aciertos: 0 };
         
         return nuevosEnfrentamientos;
     }
@@ -108,7 +126,8 @@ class EnfrentamientosFutbol {
                 resultado: {
                     golesLocal: null,
                     golesVisitante: null
-                }
+                },
+                resultadoPredicho: false
             });
         }
         
@@ -164,6 +183,12 @@ class EnfrentamientosFutbol {
             if (enfrentamiento.resultado.golesLocal === null) {
                 enfrentamiento.resultado.golesLocal = Math.floor(Math.random() * 5);
                 enfrentamiento.resultado.golesVisitante = Math.floor(Math.random() * 5);
+                
+                // Guardar resultado en localStorage
+                this.actualizarEnfrentamientoEnStorage(enfrentamiento);
+                
+                // Verificar si se hizo predicción y actualizar contador
+                this.verificarPrediccion(enfrentamiento);
             }
             
             return {
@@ -193,6 +218,109 @@ class EnfrentamientosFutbol {
     }
     
     /**
+     * Actualiza un enfrentamiento en el almacenamiento local
+     * @param {Object} enfrentamiento - Enfrentamiento a actualizar
+     */
+    actualizarEnfrentamientoEnStorage(enfrentamiento) {
+        const datosGuardados = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        
+        if (datosGuardados.enfrentamientos) {
+            // Buscar y actualizar el enfrentamiento específico
+            datosGuardados.enfrentamientos = datosGuardados.enfrentamientos.map(e => {
+                if (e.id === enfrentamiento.id) {
+                    return {...e, resultado: enfrentamiento.resultado};
+                }
+                return e;
+            });
+            
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(datosGuardados));
+        }
+    }
+    
+    /**
+     * Obtiene las predicciones guardadas
+     * @returns {Object} - Predicciones guardadas
+     */
+    obtenerPredicciones() {
+        const prediccionesGuardadas = localStorage.getItem(this.PREDICCIONES_KEY);
+        return prediccionesGuardadas ? JSON.parse(prediccionesGuardadas) : {};
+    }
+    
+    /**
+     * Obtiene el contador de aciertos
+     * @returns {Object} - Contador de aciertos
+     */
+    obtenerContadorAciertos() {
+        const contadorGuardado = localStorage.getItem('contador-aciertos');
+        return contadorGuardado ? JSON.parse(contadorGuardado) : { total: 0, aciertos: 0 };
+    }
+    
+    /**
+     * Guarda una predicción
+     * @param {string} partidoId - ID del partido
+     * @param {string} prediccion - Predicción (local, empate, visitante)
+     */
+    guardarPrediccion(partidoId, prediccion) {
+        // Guardar la predicción
+        this.predicciones[partidoId] = prediccion;
+        localStorage.setItem(this.PREDICCIONES_KEY, JSON.stringify(this.predicciones));
+        
+        // Marcar el partido como que ya se ha hecho predicción
+        this.enfrentamientos = this.enfrentamientos.map(e => {
+            if (e.id === partidoId) {
+                return {...e, resultadoPredicho: true};
+            }
+            return e;
+        });
+        
+        // Actualizar en storage
+        const datosGuardados = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        if (datosGuardados.enfrentamientos) {
+            datosGuardados.enfrentamientos = this.enfrentamientos;
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(datosGuardados));
+        }
+        
+        // Volver a renderizar
+        this.renderizarEnfrentamientos();
+    }
+    
+    /**
+     * Verifica si la predicción fue correcta y actualiza el contador
+     * @param {Object} enfrentamiento - Enfrentamiento finalizado
+     */
+    verificarPrediccion(enfrentamiento) {
+        const prediccion = this.predicciones[enfrentamiento.id];
+        
+        // Si no hay predicción para este partido, salir
+        if (!prediccion) return;
+        
+        const golesLocal = enfrentamiento.resultado.golesLocal;
+        const golesVisitante = enfrentamiento.resultado.golesVisitante;
+        let resultadoReal;
+        
+        // Determinar resultado real
+        if (golesLocal > golesVisitante) {
+            resultadoReal = 'local';
+        } else if (golesLocal < golesVisitante) {
+            resultadoReal = 'visitante';
+        } else {
+            resultadoReal = 'empate';
+        }
+        
+        // Verificar si la predicción fue acertada
+        const acierto = prediccion === resultadoReal;
+        
+        // Actualizar contador
+        this.contadorAciertos.total++;
+        if (acierto) {
+            this.contadorAciertos.aciertos++;
+        }
+        
+        // Guardar contador actualizado
+        localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+    }
+    
+    /**
      * Renderiza los enfrentamientos en el contenedor
      */
     renderizarEnfrentamientos() {
@@ -215,9 +343,10 @@ class EnfrentamientosFutbol {
             
             const enfrentamientoHTML = document.createElement('div');
             enfrentamientoHTML.className = 'enfrentamiento';
+            enfrentamientoHTML.dataset.id = enfrentamiento.id;
             
-            // Contenido del enfrentamiento
-            enfrentamientoHTML.innerHTML = `
+            // Contenido básico del enfrentamiento
+            let contenidoHTML = `
                 <div class="horario">${enfrentamiento.hora}:${enfrentamiento.minuto}</div>
                 <div class="equipos">
                     <div class="equipo">
@@ -238,87 +367,113 @@ class EnfrentamientosFutbol {
                 </div>
             `;
             
+            // Si el partido no ha comenzado y no se ha predicho, añadir botones de predicción
+            if (estado.clase === 'no-comenzado' && !enfrentamiento.resultadoPredicho) {
+                contenidoHTML += `
+                    <div class="prediccion-botones">
+                        <button class="btn-prediccion btn-pierde" data-prediccion="visitante">Pierde</button>
+                        <button class="btn-prediccion btn-empate" data-prediccion="empate">Empate</button>
+                        <button class="btn-prediccion btn-gana" data-prediccion="local">Gana</button>
+                    </div>
+                `;
+            }
+            
+            // Si se ha hecho una predicción para este partido, mostrarla
+            const prediccion = this.predicciones[enfrentamiento.id];
+            if (prediccion) {
+                let textoPred = '';
+                switch (prediccion) {
+                    case 'local': textoPred = 'Gana Local'; break;
+                    case 'visitante': textoPred = 'Gana Visitante'; break;
+                    case 'empate': textoPred = 'Empate'; break;
+                }
+                
+                contenidoHTML += `<div class="prediccion-hecha">Tu predicción: ${textoPred}</div>`;
+                
+                // Si el partido ha finalizado, verificar si acertó
+                if (estado.clase === 'finalizado') {
+                    const golesLocal = enfrentamiento.resultado.golesLocal;
+                    const golesVisitante = enfrentamiento.resultado.golesVisitante;
+                    let resultadoReal;
+                    
+                    if (golesLocal > golesVisitante) {
+                        resultadoReal = 'local';
+                    } else if (golesLocal < golesVisitante) {
+                        resultadoReal = 'visitante';
+                    } else {
+                        resultadoReal = 'empate';
+                    }
+                    
+                    const acertado = prediccion === resultadoReal;
+                    
+                    contenidoHTML += `
+                        <div class="prediccion-resultado ${acertado ? 'prediccion-correcta' : 'prediccion-incorrecta'}">
+                            ${acertado ? '¡Acertaste!' : 'No acertaste'}
+                        </div>
+                    `;
+                }
+            }
+            
+            enfrentamientoHTML.innerHTML = contenidoHTML;
             container.appendChild(enfrentamientoHTML);
         });
+        
+        // Agregar evento a los botones de predicción
+        const botonesPrediccion = document.querySelectorAll('.btn-prediccion');
+        botonesPrediccion.forEach(boton => {
+            boton.addEventListener('click', (e) => {
+                const prediccion = e.target.dataset.prediccion;
+                const partidoId = e.target.closest('.enfrentamiento').dataset.id;
+                this.guardarPrediccion(partidoId, prediccion);
+            });
+        });
+        
+        // Mostrar resumen de predicciones
+        this.mostrarResumenPredicciones();
+    }
+    
+    /**
+     * Muestra el resumen de predicciones acertadas
+     */
+    mostrarResumenPredicciones() {
+        // Buscar si ya existe el resumen, si no, crearlo
+        let resumenElement = document.querySelector('.resumen-predicciones');
+        
+        if (!resumenElement) {
+            resumenElement = document.createElement('div');
+            resumenElement.className = 'resumen-predicciones';
+            document.querySelector('.futbol-container').appendChild(resumenElement);
+        }
+        
+        // Actualizar contenido del resumen
+        const porcentaje = this.contadorAciertos.total > 0 
+            ? Math.round((this.contadorAciertos.aciertos / this.contadorAciertos.total) * 100) 
+            : 0;
+            
+        resumenElement.innerHTML = `
+            <h3>Resumen de Predicciones</h3>
+            <div class="contador-predicciones">
+                Has acertado <span>${this.contadorAciertos.aciertos}</span> de 
+                <span>${this.contadorAciertos.total}</span> predicciones (${porcentaje}%)
+            </div>
+        `;
     }
     
     /**
      * Inicia la actualización automática de enfrentamientos
      */
     iniciarActualizacionAutomatica() {
-        // Actualizar cada minuto para reflejar cambios de estado
+        // Actualizar cada minuto
         setInterval(() => {
             this.renderizarEnfrentamientos();
-        }, 60000);
+        }, 60000); // 60 segundos
         
-        // Verificar cambio de día a medianoche
-        setInterval(() => {
-            const hoy = this.obtenerFechaActual();
-            const datosGuardados = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{"fecha": ""}');
-            
-            if (datosGuardados.fecha !== hoy) {
-                // Nuevo día, generar nuevos enfrentamientos
-                this.enfrentamientos = this.generarEnfrentamientosAleatorios();
-                localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
-                    fecha: hoy,
-                    enfrentamientos: this.enfrentamientos
-                }));
-                this.renderizarEnfrentamientos();
-            }
-        }, 60000);
+        // Primera renderización inmediata
+        this.renderizarEnfrentamientos();
     }
 }
 
-/**
- * Inicialización al cargar la página
- */
+// Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    let manager = null;
-    
-    // Función para cargar la sección de fútbol
-    const cargarSeccionFutbol = () => {
-        // Si no existe, crear instancia del gestor de enfrentamientos
-        if (!manager) {
-            manager = new EnfrentamientosFutbol();
-        }
-        
-        // Renderizar enfrentamientos
-        manager.renderizarEnfrentamientos();
-    };
-    
-    // Si estamos en la página de fútbol, inicializar directamente
-    if (document.querySelector('.futbol-container')) {
-        cargarSeccionFutbol();
-    }
-    
-    // Agregar manejador de eventos para botón fútbol en menú principal
-    const setupButtonListeners = () => {
-        const botonesFutbol = document.querySelectorAll('.sport-button');
-        
-        botonesFutbol.forEach(boton => {
-            if (boton.querySelector('.sport-name')?.textContent === 'FÚTBOL') {
-                boton.addEventListener('click', () => {
-                    const contenidoPrincipal = document.getElementById('contenido-principal');
-                    if (contenidoPrincipal) {
-                        // Cargar HTML de fútbol mediante fetch
-                        fetch('../Html/futbol.html')
-                            .then(response => response.text())
-                            .then(html => {
-                                contenidoPrincipal.innerHTML = html;
-                                cargarSeccionFutbol();
-                            })
-                            .catch(error => {
-                                console.error('Error al cargar la sección de fútbol:', error);
-                                contenidoPrincipal.innerHTML = '<div class="error-message">Error al cargar los enfrentamientos</div>';
-                            });
-                    }
-                });
-            }
-        });
-    };
-    
-    // Configurar botones si estamos en la página principal
-    if (document.querySelector('.sport-button')) {
-        setupButtonListeners();
-    }
+    const app = new EnfrentamientosFutbol();
 });
