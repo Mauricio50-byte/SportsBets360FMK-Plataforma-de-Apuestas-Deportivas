@@ -113,8 +113,8 @@ class EnfrentamientosFutbol {
             const equipoLocal = equiposMezclados[i * 2];
             const equipoVisitante = equiposMezclados[i * 2 + 1];
             
-            // Generar horario aleatorio entre 9:00 y 21:00
-            const hora = Math.floor(Math.random() * 13) + 9; // 9 a 21
+            // Generar horario aleatorio entre 7:00 y 21:00
+            const hora = Math.floor(Math.random() * 13) + 7 // 7 a 21
             const minuto = Math.random() < 0.5 ? 0 : 30; // 00 o 30
             
             enfrentamientos.push({

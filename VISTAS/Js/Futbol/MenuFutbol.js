@@ -57,9 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar dinámicamente el script de Fútbol.js
     function cargarScriptFutbol() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src="../Js/Futbol.js"]')) {
+        if (!document.querySelector('script[src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Futbol/Futbol.js"]')) {
             const script = document.createElement('script');
-            script.src = '../Js/Futbol.js';
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Futbol/Futbol.js';
             document.body.appendChild(script);
         } else {
             // Si el script ya está cargado, podemos intentar inicializarlo de nuevo
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!document.querySelector('link[href="../Css/Futbol.css"]')) {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = '../Css/Futbol.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css';
             document.head.appendChild(link);
         }
     }
