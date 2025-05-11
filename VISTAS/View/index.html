@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/StyleIndex.css">
+    <link rel="stylesheet" href="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Mensajes/StyleMensajesLogin.css">
 </head>
 <body>
     
@@ -75,6 +76,7 @@
                             <!-- Login Tab -->
                             <div class="tab-pane fade show active grupo-entrada-login" id="login" role="tabpanel" aria-labelledby="login-tab">
                                 <form method="post" action="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/login.php">
+                                    <!-- Aquí se insertará dinámicamente el mensaje de error o éxito -->
                                     <div class="mb-3">
                                         <input type="email" class="campo-entrada" name="correo" placeholder="Correo Electrónico" required>
                                     </div>
@@ -272,7 +274,7 @@
                         alert('El enlace a esta red social aún no está configurado.');
                     }
                     
-                    // La redirección ocurre automáticamente gracias al atributo href
+                
                 });
             });
         });

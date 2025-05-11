@@ -1,0 +1,34 @@
+/* Estilos para los mensajes de alerta */
+#mensaje-login {
+    padding: 12px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+#mensaje-login.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+#mensaje-login.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+/* Animación de aparición */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Asegurarse de que los mensajes sean responsivos */
+@media (max-width: 768px) {
+    #mensaje-login {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
