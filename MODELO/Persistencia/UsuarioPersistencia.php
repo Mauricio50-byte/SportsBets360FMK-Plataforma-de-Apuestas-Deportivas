@@ -233,7 +233,7 @@ class UsuarioPersistencia {
             
             if (!empty($filtro)) {
                 $sql .= " WHERE nombre LIKE :filtro OR apellido LIKE :filtro OR 
-                          correo LIKE :filtro OR numero_documento LIKE :filtro";
+                        correo LIKE :filtro OR numero_documento LIKE :filtro";
                 $stmt = $this->conexion->prepare($sql);
                 $filtroParam = "%$filtro%";
                 $stmt->bindParam(':filtro', $filtroParam, PDO::PARAM_STR);

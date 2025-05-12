@@ -186,10 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Los event listeners para recargas y retiros ahora son manejados por RecargaRetiroService.js
-    
-    // Cerrar modales al hacer clic en el botón de cierre
-    // Esta funcionalidad ahora está en RecargaRetiroService.js
     
     // Añadir un poco de CSS para el mensaje de desarrollo
     const style = document.createElement('style');

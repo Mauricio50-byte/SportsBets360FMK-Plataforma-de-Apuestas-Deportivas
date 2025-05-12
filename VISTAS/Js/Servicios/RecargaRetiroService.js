@@ -73,6 +73,9 @@ class RecargaRetiroService {
         // Pre-llenar datos del usuario si está disponible en sesión
         this.precargarDatosUsuario('recargar-form');
         
+        // Hacer los campos de usuario no editables
+        this.hacerCamposNoEditables('recargar-form');
+        
         // Mostrar el modal
         this.recargasModal.style.display = 'block';
     }
@@ -90,8 +93,27 @@ class RecargaRetiroService {
         // Pre-llenar datos del usuario si está disponible en sesión
         this.precargarDatosUsuario('retiro-form');
         
+        // Hacer los campos de usuario no editables
+        this.hacerCamposNoEditables('retiro-form');
+        
         // Mostrar el modal
         this.retirosModal.style.display = 'block';
+    }
+    
+    /**
+     * Hace que los campos de usuario no sean editables
+     * @param {string} formId - ID del formulario
+     */
+    hacerCamposNoEditables(formId) {
+        if (formId === 'recargar-form') {
+            document.getElementById('nombre-usuario').readOnly = true;
+            document.getElementById('documento-usuario').readOnly = true;
+            document.getElementById('correo-usuario').readOnly = true;
+        } else if (formId === 'retiro-form') {
+            document.getElementById('nombre-usuario-retiro').readOnly = true;
+            document.getElementById('documento-usuario-retiro').readOnly = true;
+            document.getElementById('correo-usuario-retiro').readOnly = true;
+        }
     }
     
     /**
@@ -110,7 +132,12 @@ class RecargaRetiroService {
         e.preventDefault();
         
         // Obtener datos del formulario
+        const idRecarga = document.getElementById('id-recarga').value;
+        const fechaRecarga = document.getElementById('fecha-recarga').value;
+        
         const datosRecarga = {
+            id_transaccion: idRecarga,
+            fecha: fechaRecarga,
             usuario: document.getElementById('nombre-usuario').value,
             documento: document.getElementById('documento-usuario').value,
             correo: document.getElementById('correo-usuario').value,
@@ -122,24 +149,29 @@ class RecargaRetiroService {
             return;
         }
         
+        console.log('Enviando datos de recarga:', datosRecarga);
+        
         // Realizar petición al servidor
-        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/MODELO/Entidades/procesar_recarga.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: this.objetoAFormData(datosRecarga),
-        credentials: 'include' 
+        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecargasRetiros/procesar_recarga.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: this.objetoAFormData(datosRecarga),
+            credentials: 'include' // Importante: envía cookies con la solicitud
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Respuesta del servidor:', response);
+            return response.json();
+        })
         .then(data => {
+            console.log('Datos recibidos:', data);
             this.manejarRespuestaServidor(data, 'recarga');
         })
         .catch(error => {
             console.error('Error al procesar recarga:', error);
             alert('Error al procesar la recarga. Por favor, intente nuevamente.');
         });
-
     }
     
     /**
@@ -150,7 +182,12 @@ class RecargaRetiroService {
         e.preventDefault();
         
         // Obtener datos del formulario
+        const idRetiro = document.getElementById('id-retiro').value;
+        const fechaRetiro = document.getElementById('fecha-retiro').value;
+        
         const datosRetiro = {
+            id_transaccion: idRetiro,
+            fecha: fechaRetiro,
             usuario: document.getElementById('nombre-usuario-retiro').value,
             documento: document.getElementById('documento-usuario-retiro').value,
             correo: document.getElementById('correo-usuario-retiro').value,
@@ -169,16 +206,23 @@ class RecargaRetiroService {
             return;
         }
         
+        console.log('Enviando datos de retiro:', datosRetiro);
+        
         // Realizar petición al servidor
-        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/MODELO/Entidades/procesar_retiro.php', {
+        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecargasRetiros/procesar_retiro.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: this.objetoAFormData(datosRetiro)
+            body: this.objetoAFormData(datosRetiro),
+            credentials: 'include' // Importante: envía cookies con la solicitud
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Respuesta del servidor:', response);
+            return response.json();
+        })
         .then(data => {
+            console.log('Datos recibidos:', data);
             this.manejarRespuestaServidor(data, 'retiro');
         })
         .catch(error => {
@@ -319,6 +363,20 @@ class RecargaRetiroService {
                     if (usuario.nombre) document.getElementById('nombre-usuario-retiro').value = usuario.nombre;
                     if (usuario.documento) document.getElementById('documento-usuario-retiro').value = usuario.documento;
                     if (usuario.correo) document.getElementById('correo-usuario-retiro').value = usuario.correo;
+                }
+            } else {
+                // Si no hay datos en session storage, intentamos obtener del DOM
+                const nombreUsuario = document.getElementById('current-user').textContent;
+                if (nombreUsuario && nombreUsuario !== 'Invitado') {
+                    // Aquí podrías hacer una petición AJAX para obtener los datos del usuario
+                    console.log('Usuario actual:', nombreUsuario);
+                    
+                    // Por ahora, llenar con datos del DOM
+                    if (formId === 'recargar-form') {
+                        document.getElementById('nombre-usuario').value = nombreUsuario;
+                    } else if (formId === 'retiro-form') {
+                        document.getElementById('nombre-usuario-retiro').value = nombreUsuario;
+                    }
                 }
             }
         }
