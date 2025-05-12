@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sportButtons = document.querySelectorAll('.sport-button');
     
     // Seleccionar elementos del sidebar
-    const sidebarItems = document.querySelectorAll('.sport-display');    
+    const sidebarItems = document.querySelectorAll('.sport-display');
+    
     // Función para cargar contenido de Fútbol
     function cargarContenidoFutbol() {
         console.log('Intentando cargar contenido de fútbol');
@@ -185,46 +186,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    if (recargasLink) {
-        recargasLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const recargasModal = document.getElementById('recargas-modal');
-            if (recargasModal) {
-                recargasModal.style.display = 'flex';
-            }
-        });
-    }
-    
-    if (retirosLink) {
-        retirosLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const retirosModal = document.getElementById('retiros-modal');
-            if (retirosModal) {
-                retirosModal.style.display = 'flex';
-            }
-        });
-    }
-    
-    if (reportesLink) {
-        reportesLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const reportesModal = document.getElementById('reportes-modal');
-            if (reportesModal) {
-                reportesModal.style.display = 'flex';
-            }
-        });
-    }
+    // Los event listeners para recargas y retiros ahora son manejados por RecargaRetiroService.js
     
     // Cerrar modales al hacer clic en el botón de cierre
-    const closeButtons = document.querySelectorAll('.close-modal');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        });
-    });
+    // Esta funcionalidad ahora está en RecargaRetiroService.js
     
     // Añadir un poco de CSS para el mensaje de desarrollo
     const style = document.createElement('style');
@@ -241,4 +206,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
+    
+    // Verificar si RecargaRetiroService está disponible
+    // Si no está cargado, intentamos cargarlo dinámicamente
+    if (typeof RecargaRetiroService === 'undefined') {
+        console.log('RecargaRetiroService no encontrado, intentando cargar el script...');
+        const recargaScript = document.createElement('script');
+        recargaScript.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/RecargaRetiroService.js';
+        recargaScript.onload = function() {
+            console.log('RecargaRetiroService cargado correctamente');
+        };
+        recargaScript.onerror = function() {
+            console.error('Error al cargar RecargaRetiroService.js');
+        };
+        document.body.appendChild(recargaScript);
+    }
 });

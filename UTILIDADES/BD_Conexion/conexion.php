@@ -17,7 +17,7 @@ class Conexion {
      */
     private function __construct() {
         try {
-            $dsn = "mysql:host={$this->host};port=3333;dbname={$this->db};charset={$this->charset}";
+            $dsn = "mysql:host={$this->host};port=3306;dbname={$this->db};charset={$this->charset}";
             $opciones = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
