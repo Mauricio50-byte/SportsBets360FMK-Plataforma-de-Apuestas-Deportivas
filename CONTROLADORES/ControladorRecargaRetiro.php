@@ -2,9 +2,11 @@
 /**
  * Controlador para gestionar las operaciones de recarga y retiro
  * Implementa la lógica de negocio para las transacciones de saldo
+ * Adaptado para trabajar con la estructura de BD existente
  */
 class ControladorRecargaRetiro {
     private $recargaRetiroPersistencia;
+    private $usuarioPersistencia;
     
     /**
      * Constructor del controlador de recarga y retiro
@@ -13,6 +15,19 @@ class ControladorRecargaRetiro {
         // Inicializar la capa de persistencia
         require_once(__DIR__ . '/../MODELO/Persistencia/RecargaRetiroPersistencia.php');
         $this->recargaRetiroPersistencia = new RecargaRetiroPersistencia();
+        
+        // Inicializar la persistencia de usuarios
+        require_once(__DIR__ . '/../MODELO/Persistencia/UsuarioPersistencia.php');
+        $this->usuarioPersistencia = new UsuarioPersistencia();
+    }
+    
+    /**
+     * Método para buscar un usuario por su nombre de usuario
+     * @param string $nombreUsuario Nombre del usuario a buscar
+     * @return array|null Datos del usuario o null si no se encuentra
+     */
+    public function buscarUsuarioPorNombre($nombreUsuario) {
+        return $this->usuarioPersistencia->buscarUsuarioPorNombre($nombreUsuario);
     }
     
     /**

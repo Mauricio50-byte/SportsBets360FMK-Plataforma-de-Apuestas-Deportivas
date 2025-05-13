@@ -151,17 +151,23 @@ class RecargaRetiroService {
         
         console.log('Enviando datos de recarga:', datosRecarga);
         
+        // Convertir a FormData para enviar como application/x-www-form-urlencoded
+        const formData = new FormData();
+        for (const key in datosRecarga) {
+            formData.append(key, datosRecarga[key]);
+        }
+        
         // Realizar petición al servidor
-        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecargasRetiros/procesar_recarga.php', {
+        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecrgasRetiros/procesar_recarga.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: this.objetoAFormData(datosRecarga),
+            body: formData,
             credentials: 'include' // Importante: envía cookies con la solicitud
         })
         .then(response => {
             console.log('Respuesta del servidor:', response);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
             return response.json();
         })
         .then(data => {
@@ -208,17 +214,23 @@ class RecargaRetiroService {
         
         console.log('Enviando datos de retiro:', datosRetiro);
         
+        // Convertir a FormData para enviar como application/x-www-form-urlencoded
+        const formData = new FormData();
+        for (const key in datosRetiro) {
+            formData.append(key, datosRetiro[key]);
+        }
+        
         // Realizar petición al servidor
-        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecargasRetiros/procesar_retiro.php', {
+        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecrgasRetiros/procesar_retiro.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: this.objetoAFormData(datosRetiro),
+            body: formData,
             credentials: 'include' // Importante: envía cookies con la solicitud
         })
         .then(response => {
             console.log('Respuesta del servidor:', response);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
             return response.json();
         })
         .then(data => {
@@ -380,17 +392,6 @@ class RecargaRetiroService {
                 }
             }
         }
-    }
-    
-    /**
-     * Convierte un objeto a FormData para envío en formularios
-     * @param {Object} objeto - Objeto a convertir
-     * @returns {string} Cadena formateada para envío en formulario
-     */
-    objetoAFormData(objeto) {
-        return Object.keys(objeto)
-            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(objeto[key])}`)
-            .join('&');
     }
     
     /**

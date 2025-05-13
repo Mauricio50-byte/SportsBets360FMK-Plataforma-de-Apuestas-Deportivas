@@ -1,259 +1,257 @@
 <?php
 /**
- * Clase de persistencia para las operaciones de recarga y retiro
- * Gestiona todas las operaciones de base de datos relacionadas con transacciones de saldo
+ * Clase RecargaRetiroPersistencia - Gestiona las operaciones de base de datos para recargas y retiros
+ * Adaptada para trabajar con la estructura de la base de datos existente
  */
 class RecargaRetiroPersistencia {
     private $conexion;
     
     /**
-     * Constructor de la clase de persistencia
+     * Constructor de la clase RecargaRetiroPersistencia
      */
     public function __construct() {
-        // Incluir la clase de conexión
-        require_once(__DIR__ . '/../UTILIDADES/BD_Conexion/conexion.php');
-        
-        // Obtener la instancia de conexión
+        // Incluir el archivo de conexión a la base de datos
+        require_once(__DIR__ . '/../../UTILIDADES/BD_Conexion/conexion.php');
+        // Obtenemos la instancia de Conexion y luego la conexión PDO
         $this->conexion = Conexion::obtenerInstancia()->obtenerConexion();
     }
     
     /**
-     * Método para registrar una nueva recarga en la base de datos
-     * @param RecargaRetiro $recarga Objeto RecargaRetiro con los datos de la recarga
-     * @return bool|string True si el registro es exitoso, mensaje de error en caso contrario
+     * Registra una recarga en la base de datos
+     * @param RecargaRetiro $recarga Objeto de recarga
+     * @return mixed true si la operación fue exitosa, mensaje de error en caso contrario
      */
     public function registrarRecarga($recarga) {
         try {
             // Iniciar transacción
             $this->conexion->beginTransaction();
             
-            // Primero obtener el usuario por el documento para verificar existencia
-            $sql = "SELECT ID, saldo FROM usuarios WHERE numero_documento = :documento AND correo = :correo";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindValue(':documento', $recarga->getDocumento(), PDO::PARAM_STR);
-            $stmt->bindValue(':correo', $recarga->getCorreo(), PDO::PARAM_STR);
-            $stmt->execute();
+            // Obtener el saldo actual del usuario
+            $stmtSaldo = $this->conexion->prepare("SELECT saldo FROM usuarios WHERE ID = ? AND numero_documento = ? AND correo = ?");
+            $stmtSaldo->execute([
+                $recarga->getIdUsuario(),
+                $recarga->getDocumentoUsuario(),
+                $recarga->getCorreoUsuario()
+            ]);
             
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            $usuario = $stmtSaldo->fetch(PDO::FETCH_ASSOC);
             
             if (!$usuario) {
                 $this->conexion->rollBack();
-                return "No se encontró un usuario con el documento y correo proporcionados";
+                return "No se encontró el usuario con los datos proporcionados";
             }
             
             // Calcular nuevo saldo
-            $nuevoSaldo = $usuario['saldo'] + $recarga->getMonto();
+            $saldoActual = floatval($usuario['saldo']);
+            $nuevoSaldo = $saldoActual + $recarga->getMonto();
             
-            // Actualizar saldo del usuario
-            $sqlUpdate = "UPDATE usuarios SET saldo = :saldo WHERE ID = :id";
-            $stmtUpdate = $this->conexion->prepare($sqlUpdate);
-            $stmtUpdate->bindValue(':saldo', $nuevoSaldo, PDO::PARAM_STR);
-            $stmtUpdate->bindValue(':id', $usuario['ID'], PDO::PARAM_INT);
-            $resultadoUpdate = $stmtUpdate->execute();
+            // Actualizar saldo en la tabla de usuarios
+            $stmtUsuario = $this->conexion->prepare("UPDATE usuarios SET saldo = ? WHERE ID = ?");
+            $stmtUsuario->execute([$nuevoSaldo, $recarga->getIdUsuario()]);
             
-            if (!$resultadoUpdate) {
-                $this->conexion->rollBack();
-                return "Error al actualizar el saldo del usuario";
-            }
+            // Establecer el nuevo saldo en el objeto recarga
+            $recarga->setSaldo($nuevoSaldo);
             
-            // Registrar la transacción de recarga
-            $sqlInsert = "INSERT INTO recargas (id_usuario, usuario, documento, correo, monto, fecha) 
-                        VALUES (:id_usuario, :usuario, :documento, :correo, :monto, :fecha)";
+            // Registrar la recarga en la tabla de recargas
+            $stmtRecarga = $this->conexion->prepare("
+                INSERT INTO recargas (ID_usuario, Documento_usuario, Correo_usuario, Fecha_recarga, Monto_recarga, Saldo) 
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
             
-            $stmtInsert = $this->conexion->prepare($sqlInsert);
-            $stmtInsert->bindValue(':id_usuario', $usuario['ID'], PDO::PARAM_INT);
-            $stmtInsert->bindValue(':usuario', $recarga->getUsuario(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':documento', $recarga->getDocumento(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':correo', $recarga->getCorreo(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':monto', $recarga->getMonto(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':fecha', $recarga->getFecha(), PDO::PARAM_STR);
+            $stmtRecarga->execute([
+                $recarga->getIdUsuario(),
+                $recarga->getDocumentoUsuario(),
+                $recarga->getCorreoUsuario(),
+                $recarga->getFecha(),
+                $recarga->getMonto(),
+                $recarga->getSaldo()
+            ]);
             
-            $resultadoInsert = $stmtInsert->execute();
-            
-            if (!$resultadoInsert) {
-                $this->conexion->rollBack();
-                return "Error al registrar la recarga";
-            }
-            
-            // Confirmar transacción
+            // Confirmar la transacción
             $this->conexion->commit();
-            
             return true;
+            
         } catch (PDOException $e) {
-            // Revertir transacción en caso de error
-            if ($this->conexion->inTransaction()) {
-                $this->conexion->rollBack();
-            }
-            error_log("Error al registrar recarga: " . $e->getMessage());
-            return "Error al procesar la recarga: " . $e->getMessage();
+            // Revertir la transacción en caso de error
+            $this->conexion->rollBack();
+            error_log("Error en registrarRecarga: " . $e->getMessage());
+            return $e->getMessage();
         }
     }
     
     /**
-     * Método para registrar un nuevo retiro en la base de datos
-     * @param RecargaRetiro $retiro Objeto RecargaRetiro con los datos del retiro
-     * @return bool|string True si el registro es exitoso, mensaje de error en caso contrario
+     * Registra un retiro en la base de datos
+     * @param RecargaRetiro $retiro Objeto de retiro
+     * @return mixed true si la operación fue exitosa, mensaje de error en caso contrario
      */
     public function registrarRetiro($retiro) {
         try {
             // Iniciar transacción
             $this->conexion->beginTransaction();
             
-            // Primero obtener el usuario por el documento para verificar existencia
-            $sql = "SELECT ID, saldo FROM usuarios WHERE numero_documento = :documento AND correo = :correo";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindValue(':documento', $retiro->getDocumento(), PDO::PARAM_STR);
-            $stmt->bindValue(':correo', $retiro->getCorreo(), PDO::PARAM_STR);
-            $stmt->execute();
+            // Obtener el saldo actual del usuario
+            $stmtSaldo = $this->conexion->prepare("SELECT saldo FROM usuarios WHERE ID = ? AND numero_documento = ? AND correo = ?");
+            $stmtSaldo->execute([
+                $retiro->getIdUsuario(),
+                $retiro->getDocumentoUsuario(),
+                $retiro->getCorreoUsuario()
+            ]);
             
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            $usuario = $stmtSaldo->fetch(PDO::FETCH_ASSOC);
             
             if (!$usuario) {
                 $this->conexion->rollBack();
-                return "No se encontró un usuario con el documento y correo proporcionados";
+                return "No se encontró el usuario con los datos proporcionados";
             }
             
-            // Verificar que tenga saldo suficiente
-            if ($usuario['saldo'] < $retiro->getMonto()) {
+            // Validar que el saldo sea suficiente
+            $saldoActual = floatval($usuario['saldo']);
+            if ($saldoActual < $retiro->getMonto()) {
                 $this->conexion->rollBack();
                 return "Saldo insuficiente para realizar el retiro";
             }
             
             // Calcular nuevo saldo
-            $nuevoSaldo = $usuario['saldo'] - $retiro->getMonto();
+            $nuevoSaldo = $saldoActual - $retiro->getMonto();
             
-            // Actualizar saldo del usuario
-            $sqlUpdate = "UPDATE usuarios SET saldo = :saldo WHERE ID = :id";
-            $stmtUpdate = $this->conexion->prepare($sqlUpdate);
-            $stmtUpdate->bindValue(':saldo', $nuevoSaldo, PDO::PARAM_STR);
-            $stmtUpdate->bindValue(':id', $usuario['ID'], PDO::PARAM_INT);
-            $resultadoUpdate = $stmtUpdate->execute();
+            // Actualizar saldo en la tabla de usuarios
+            $stmtUsuario = $this->conexion->prepare("UPDATE usuarios SET saldo = ? WHERE ID = ?");
+            $stmtUsuario->execute([$nuevoSaldo, $retiro->getIdUsuario()]);
             
-            if (!$resultadoUpdate) {
-                $this->conexion->rollBack();
-                return "Error al actualizar el saldo del usuario";
-            }
+            // Establecer el nuevo saldo en el objeto retiro
+            $retiro->setSaldo($nuevoSaldo);
             
-            // Registrar la transacción de retiro
-            $sqlInsert = "INSERT INTO retiros (id_usuario, usuario, documento, correo, monto, fecha) 
-                        VALUES (:id_usuario, :usuario, :documento, :correo, :monto, :fecha)";
+            // Registrar el retiro en la tabla de retiros
+            $stmtRetiro = $this->conexion->prepare("
+                INSERT INTO retiros (ID_usuario, Documento_usuario, Correo_usuario, Fecha_retiro, Monto_retiro, Saldo) 
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
             
-            $stmtInsert = $this->conexion->prepare($sqlInsert);
-            $stmtInsert->bindValue(':id_usuario', $usuario['ID'], PDO::PARAM_INT);
-            $stmtInsert->bindValue(':usuario', $retiro->getUsuario(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':documento', $retiro->getDocumento(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':correo', $retiro->getCorreo(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':monto', $retiro->getMonto(), PDO::PARAM_STR);
-            $stmtInsert->bindValue(':fecha', $retiro->getFecha(), PDO::PARAM_STR);
+            $stmtRetiro->execute([
+                $retiro->getIdUsuario(),
+                $retiro->getDocumentoUsuario(),
+                $retiro->getCorreoUsuario(),
+                $retiro->getFecha(),
+                $retiro->getMonto(),
+                $retiro->getSaldo()
+            ]);
             
-            $resultadoInsert = $stmtInsert->execute();
-            
-            if (!$resultadoInsert) {
-                $this->conexion->rollBack();
-                return "Error al registrar el retiro";
-            }
-            
-            // Confirmar transacción
+            // Confirmar la transacción
             $this->conexion->commit();
-            
             return true;
+            
         } catch (PDOException $e) {
-            // Revertir transacción en caso de error
-            if ($this->conexion->inTransaction()) {
-                $this->conexion->rollBack();
-            }
-            error_log("Error al registrar retiro: " . $e->getMessage());
-            return "Error al procesar el retiro: " . $e->getMessage();
+            // Revertir la transacción en caso de error
+            $this->conexion->rollBack();
+            error_log("Error en registrarRetiro: " . $e->getMessage());
+            return $e->getMessage();
         }
     }
     
     /**
-     * Método para listar todas las recargas de un usuario
+     * Lista las recargas de un usuario específico
      * @param int $idUsuario ID del usuario
-     * @return array Lista de recargas o array vacío si hay error
+     * @return array Lista de recargas
      */
     public function listarRecargasPorUsuario($idUsuario) {
         try {
-            $sql = "SELECT * FROM recargas WHERE id_usuario = :id_usuario ORDER BY fecha DESC";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':id_usuario', $idUsuario, PDO::PARAM_INT);
-            $stmt->execute();
-            
+            $stmt = $this->conexion->prepare("
+                SELECT * FROM recargas 
+                WHERE ID_usuario = ? 
+                ORDER BY Fecha_recarga DESC
+            ");
+            $stmt->execute([$idUsuario]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al listar recargas por usuario: " . $e->getMessage());
+            error_log("Error en listarRecargasPorUsuario: " . $e->getMessage());
             return [];
         }
     }
     
     /**
-     * Método para listar todos los retiros de un usuario
+     * Lista los retiros de un usuario específico
      * @param int $idUsuario ID del usuario
-     * @return array Lista de retiros o array vacío si hay error
+     * @return array Lista de retiros
      */
     public function listarRetirosPorUsuario($idUsuario) {
         try {
-            $sql = "SELECT * FROM retiros WHERE id_usuario = :id_usuario ORDER BY fecha DESC";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':id_usuario', $idUsuario, PDO::PARAM_INT);
-            $stmt->execute();
-            
+            $stmt = $this->conexion->prepare("
+                SELECT * FROM retiros 
+                WHERE ID_usuario = ? 
+                ORDER BY Fecha_retiro DESC
+            ");
+            $stmt->execute([$idUsuario]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al listar retiros por usuario: " . $e->getMessage());
+            error_log("Error en listarRetirosPorUsuario: " . $e->getMessage());
             return [];
         }
     }
     
     /**
-     * Método para obtener todas las recargas en un rango de fechas
+     * Lista las recargas en un rango de fechas
      * @param string $fechaInicio Fecha de inicio formato Y-m-d
      * @param string $fechaFin Fecha de fin formato Y-m-d
-     * @return array Lista de recargas o array vacío si hay error
+     * @return array Lista de recargas
      */
     public function listarRecargasPorFecha($fechaInicio, $fechaFin) {
         try {
-            $sql = "SELECT r.*, u.nombre, u.apellido 
-                    FROM recargas r 
-                    INNER JOIN usuarios u ON r.id_usuario = u.ID 
-                    WHERE DATE(r.fecha) BETWEEN :fecha_inicio AND :fecha_fin 
-                    ORDER BY r.fecha DESC";
-            
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':fecha_inicio', $fechaInicio, PDO::PARAM_STR);
-            $stmt->bindParam(':fecha_fin', $fechaFin, PDO::PARAM_STR);
-            $stmt->execute();
-            
+            $stmt = $this->conexion->prepare("
+                SELECT r.*, u.nombre, u.apellido
+                FROM recargas r
+                JOIN usuarios u ON r.ID_usuario = u.ID
+                WHERE r.Fecha_recarga BETWEEN ? AND ?
+                ORDER BY r.Fecha_recarga DESC
+            ");
+            $stmt->execute([$fechaInicio, $fechaFin]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al listar recargas por fecha: " . $e->getMessage());
+            error_log("Error en listarRecargasPorFecha: " . $e->getMessage());
             return [];
         }
     }
     
     /**
-     * Método para obtener todos los retiros en un rango de fechas
+     * Lista los retiros en un rango de fechas
      * @param string $fechaInicio Fecha de inicio formato Y-m-d
      * @param string $fechaFin Fecha de fin formato Y-m-d
-     * @return array Lista de retiros o array vacío si hay error
+     * @return array Lista de retiros
      */
     public function listarRetirosPorFecha($fechaInicio, $fechaFin) {
         try {
-            $sql = "SELECT r.*, u.nombre, u.apellido 
-                    FROM retiros r 
-                    INNER JOIN usuarios u ON r.id_usuario = u.ID 
-                    WHERE DATE(r.fecha) BETWEEN :fecha_inicio AND :fecha_fin 
-                    ORDER BY r.fecha DESC";
-            
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':fecha_inicio', $fechaInicio, PDO::PARAM_STR);
-            $stmt->bindParam(':fecha_fin', $fechaFin, PDO::PARAM_STR);
-            $stmt->execute();
-            
+            $stmt = $this->conexion->prepare("
+                SELECT r.*, u.nombre, u.apellido
+                FROM retiros r
+                JOIN usuarios u ON r.ID_usuario = u.ID
+                WHERE r.Fecha_retiro BETWEEN ? AND ?
+                ORDER BY r.Fecha_retiro DESC
+            ");
+            $stmt->execute([$fechaInicio, $fechaFin]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al listar retiros por fecha: " . $e->getMessage());
+            error_log("Error en listarRetirosPorFecha: " . $e->getMessage());
             return [];
+        }
+    }
+    
+    /**
+     * Busca un usuario por su nombre o nombre de usuario
+     * @param string $nombreUsuario El nombre o nombre de usuario a buscar
+     * @return array|false Datos del usuario o false si no se encuentra
+     */
+    public function buscarUsuarioPorNombre($nombreUsuario) {
+        try {
+            $stmt = $this->conexion->prepare("
+                SELECT ID, nombre, apellido, numero_documento, correo 
+                FROM usuarios 
+                WHERE nombre = ? OR nombre_usuario = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$nombreUsuario, $nombreUsuario]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en buscarUsuarioPorNombre: " . $e->getMessage());
+            return false;
         }
     }
 }
