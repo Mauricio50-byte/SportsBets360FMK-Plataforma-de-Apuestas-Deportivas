@@ -1,4 +1,7 @@
 <?php
+// Iniciar buffer de salida para evitar "headers already sent"
+ob_start();
+
 // Iniciar sesión
 session_start();
 
@@ -35,7 +38,8 @@ $datosRetiro = [
     'usuario' => isset($_POST['usuario']) ? trim($_POST['usuario']) : '',
     'documento' => isset($_POST['documento']) ? trim($_POST['documento']) : '',
     'correo' => isset($_POST['correo']) ? trim($_POST['correo']) : '',
-    'monto' => isset($_POST['monto']) ? trim($_POST['monto']) : 0
+    'monto' => isset($_POST['monto']) ? trim($_POST['monto']) : 0,
+    'cuenta_destino' => isset($_POST['cuenta_destino']) ? trim($_POST['cuenta_destino']) : '' // Cuenta destino para el retiro
 ];
 
 // Si el usuario no está en los datos POST pero sí en la sesión, usarlo desde la sesión
@@ -81,29 +85,28 @@ try {
     // Crear instancia del controlador
     $controlador = new ControladorRecargaRetiro();
     
+    // Depuración - Mostrar datos iniciales
+    error_log("Usuario original: " . $datosRetiro['usuario']);
+    
     // Convertir nombre de usuario a ID si no es numérico
     if (!is_numeric($datosRetiro['usuario'])) {
-        $usuarioInfo = $controlador->buscarUsuarioPorNombre($datosRetiro['usuario']);
-        if ($usuarioInfo && isset($usuarioInfo['ID'])) {
-            $datosRetiro['nombre_usuario'] = $datosRetiro['usuario']; // Guardar el nombre para referencia
-            $datosRetiro['usuario'] = $usuarioInfo['ID']; // Reemplazar con el ID numérico
-        } else {
-            // Si no se encuentra el usuario, informar del error
-            manejarError('No se encontró un usuario con ese nombre');
-        }
-    }
-    
-    // Verificar si el usuario está autenticado y tiene saldo suficiente
-    if (isset($_SESSION['usuario']) && isset($_SESSION['usuario']['saldo'])) {
-        $saldoActual = (float)$_SESSION['usuario']['saldo'];
-        $montoRetiro = (float)$datosRetiro['monto'];
+        // En lugar de usar buscarUsuarioPorNombre, intentaremos pasar el nombre directamente
+        // al controlador de procesarRetiro para que maneje la lógica de búsqueda
         
-        if ($saldoActual < $montoRetiro) {
-            manejarError('Saldo insuficiente para realizar el retiro. Saldo actual: ' . number_format($saldoActual, 2));
+        // Asegurarnos de que tenemos al menos documento y correo si están en sesión
+        if (empty($datosRetiro['documento']) && isset($_SESSION['usuario']) && isset($_SESSION['usuario']['numero_documento'])) {
+            $datosRetiro['documento'] = $_SESSION['usuario']['numero_documento'];
         }
-    } else {
-        error_log("Advertencia: No se pudo verificar el saldo en la sesión antes del retiro");
-        // No se bloquea la operación, ya que la validación de saldo también se realiza en la capa de persistencia
+        
+        if (empty($datosRetiro['correo']) && isset($_SESSION['usuario']) && isset($_SESSION['usuario']['correo'])) {
+            $datosRetiro['correo'] = $_SESSION['usuario']['correo'];
+        }
+        
+        // Reemplazar comillas y realizar otras sanitizaciones simples
+        $datosRetiro['usuario'] = str_replace(["'", "\"", "\\", ";"], "", $datosRetiro['usuario']);
+        
+        // Solo depuración
+        error_log("Usando nombre de usuario: " . $datosRetiro['usuario']);
     }
     
     // Procesar el retiro
@@ -116,6 +119,10 @@ try {
         }
         $_SESSION['usuario']['saldo'] -= (float)$datosRetiro['monto'];
         error_log("Saldo actualizado en sesión: " . $_SESSION['usuario']['saldo']);
+        
+        // Agregar información adicional para mostrar al usuario
+        $resultado['saldo_actualizado'] = $_SESSION['usuario']['saldo'];
+        $resultado['fecha_procesamiento'] = date('Y-m-d H:i:s');
     }
     
     // Devolver respuesta como JSON
@@ -124,5 +131,8 @@ try {
     
 } catch (Exception $e) {
     manejarError('Error al procesar el retiro', $e->getMessage());
+} finally {
+    // Liberar el buffer de salida
+    ob_end_flush();
 }
 ?>

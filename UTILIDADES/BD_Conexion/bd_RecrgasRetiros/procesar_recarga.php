@@ -1,4 +1,7 @@
 <?php
+// Iniciar buffer de salida para evitar "headers already sent"
+ob_start();
+
 // Iniciar sesión
 session_start();
 
@@ -111,4 +114,7 @@ try {
 } catch (Exception $e) {
     manejarError('Error al procesar la recarga', $e->getMessage());
 }
+
+// Liberar el buffer de salida
+ob_end_flush();
 ?>

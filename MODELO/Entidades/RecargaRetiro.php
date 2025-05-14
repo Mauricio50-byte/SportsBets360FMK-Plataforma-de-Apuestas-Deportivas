@@ -59,6 +59,14 @@ class RecargaRetiro {
     }
     
     /**
+     * Alias para getIdUsuario() para mantener compatibilidad
+     * @return int ID o nombre del usuario
+     */
+    public function getUsuario() {
+        return $this->idUsuario;
+    }
+    
+    /**
      * Obtiene el documento del usuario
      * @return string Documento del usuario
      */
@@ -71,6 +79,14 @@ class RecargaRetiro {
      * @return string Correo del usuario
      */
     public function getCorreoUsuario() {
+        return $this->correoUsuario;
+    }
+    
+    /**
+     * Alias para getCorreoUsuario() para mantener compatibilidad
+     * @return string Correo del usuario
+     */
+    public function getCorreo() {
         return $this->correoUsuario;
     }
     
