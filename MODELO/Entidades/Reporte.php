@@ -5,27 +5,24 @@
  */
 class Reporte {
     private $id;
-    private $tipo; // recargas, retiros, usuario, global
+    private $tipo; // Solo "recargas" o "retiros"
     private $fechaInicio;
     private $fechaFin;
-    private $idUsuario;
     private $fechaGeneracion;
     private $datos; // Contendrá un array con los datos del reporte
 
     /**
      * Constructor de la clase Reporte
      * 
-     * @param string $tipo Tipo de reporte (recargas, retiros, usuario, global)
+     * @param string $tipo Tipo de reporte (recargas, retiros)
      * @param string $fechaInicio Fecha de inicio del reporte (formato Y-m-d)
      * @param string $fechaFin Fecha de fin del reporte (formato Y-m-d)
-     * @param int|null $idUsuario ID del usuario para reportes de usuario específico
      */
-    public function __construct($tipo, $fechaInicio = null, $fechaFin = null, $idUsuario = null) {
+    public function __construct($tipo, $fechaInicio = null, $fechaFin = null) {
         $this->id = uniqid('REP_', true);
         $this->tipo = $tipo;
         $this->fechaInicio = $fechaInicio ?: date('Y-m-d', strtotime('-30 days'));
         $this->fechaFin = $fechaFin ?: date('Y-m-d');
-        $this->idUsuario = $idUsuario;
         $this->fechaGeneracion = date('Y-m-d H:i:s');
         $this->datos = array();
     }
@@ -103,24 +100,6 @@ class Reporte {
     }
 
     /**
-     * Obtiene el ID del usuario del reporte
-     * 
-     * @return int|null ID del usuario
-     */
-    public function getIdUsuario() {
-        return $this->idUsuario;
-    }
-
-    /**
-     * Establece el ID del usuario del reporte
-     * 
-     * @param int $idUsuario ID del usuario
-     */
-    public function setIdUsuario($idUsuario) {
-        $this->idUsuario = $idUsuario;
-    }
-
-    /**
      * Obtiene la fecha de generación del reporte
      * 
      * @return string Fecha de generación
@@ -167,7 +146,6 @@ class Reporte {
             'tipo' => $this->tipo,
             'fechaInicio' => $this->fechaInicio,
             'fechaFin' => $this->fechaFin,
-            'idUsuario' => $this->idUsuario,
             'fechaGeneracion' => $this->fechaGeneracion,
             'datos' => $this->datos
         ];
@@ -183,8 +161,7 @@ class Reporte {
         $reporte = new Reporte(
             $datos['tipo'],
             $datos['fechaInicio'] ?? null,
-            $datos['fechaFin'] ?? null,
-            $datos['idUsuario'] ?? null
+            $datos['fechaFin'] ?? null
         );
         
         if (isset($datos['id'])) {

@@ -34,6 +34,11 @@ if (empty($tipoReporte)) {
     manejarError('Tipo de reporte no especificado');
 }
 
+// Verificar que el tipo de reporte sea válido (solo recargas o retiros)
+if ($tipoReporte !== 'recargas' && $tipoReporte !== 'retiros' && $tipoReporte !== 'exportar_csv') {
+    manejarError('Tipo de reporte no válido. Solo se permiten reportes de recargas o retiros');
+}
+
 try {
     // Incluir el controlador
     $controladorPath = $_SERVER['DOCUMENT_ROOT'] . '/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/ControladorReporte.php';
@@ -66,22 +71,6 @@ try {
             $fechaInicio = isset($_POST['fecha_inicio']) ? trim($_POST['fecha_inicio']) : date('Y-m-d', strtotime('-30 days'));
             $fechaFin = isset($_POST['fecha_fin']) ? trim($_POST['fecha_fin']) : date('Y-m-d');
             $resultado = $controlador->generarReporteRetiros($fechaInicio, $fechaFin);
-            break;
-            
-        case 'usuario':
-            $idUsuario = isset($_POST['id_usuario']) ? trim($_POST['id_usuario']) : '';
-            
-            if (empty($idUsuario)) {
-                manejarError('ID de usuario no especificado');
-            }
-            
-            $resultado = $controlador->generarReporteUsuario($idUsuario);
-            break;
-            
-        case 'global':
-            $fechaInicio = isset($_POST['fecha_inicio']) ? trim($_POST['fecha_inicio']) : date('Y-m-d', strtotime('-30 days'));
-            $fechaFin = isset($_POST['fecha_fin']) ? trim($_POST['fecha_fin']) : date('Y-m-d');
-            $resultado = $controlador->generarReporteGlobal($fechaInicio, $fechaFin);
             break;
             
         case 'exportar_csv':

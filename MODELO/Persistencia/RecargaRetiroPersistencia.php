@@ -1,251 +1,261 @@
 <?php
 /**
- * Clase de persistencia para manejar operaciones de recarga y retiro en la base de datos
- * Implementa métodos para registrar y consultar transacciones financieras
+ * Clase ReportePersistencia
+ * Maneja las operaciones de base de datos para los reportes
  */
-class RecargaRetiroPersistencia {
+class ReportePersistencia {
     private $conexion;
     
     /**
-     * Constructor de la clase RecargaRetiroPersistencia
+     * Constructor de la clase ReportePersistencia
      */
     public function __construct() {
-        // Incluir el archivo de conexión a la base de datos
+        // Incluir el archivo de conexión
         require_once(__DIR__ . '/../../UTILIDADES/BD_Conexion/conexion.php');
+        
+        // Obtener la conexión a la base de datos
         $this->conexion = Conexion::obtenerInstancia()->obtenerConexion();
     }
     
     /**
-     * Registra una nueva recarga en la base de datos
+     * Guarda un reporte en la base de datos
      * 
-     * @param RecargaRetiro $recarga Objeto con los datos de la recarga
-     * @return boolean|string true si fue exitoso, mensaje de error en caso contrario
+     * @param Reporte $reporte Reporte a guardar
+     * @return bool True si se guardó correctamente
      */
-    public function registrarRecarga($recarga) {
+    public function guardarReporte($reporte) {
         try {
-            // Obtener los valores como variables antes de pasarlos por referencia
-            $usuario = $recarga->getUsuario();
-            $correo = $recarga->getCorreo();
+            // Preparar la consulta SQL
+            $sql = "INSERT INTO reportes (id, tipo, fecha_inicio, fecha_fin, fecha_generacion, datos) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
             
-            // Obtener el ID del usuario
-            $sqlUsuario = "SELECT ID FROM usuarios WHERE nombre = :usuario OR correo = :correo";
-            $stmtUsuario = $this->conexion->prepare($sqlUsuario);
-            $stmtUsuario->bindParam(':usuario', $usuario);
-            $stmtUsuario->bindParam(':correo', $correo);
-            $stmtUsuario->execute();
-            $usuario = $stmtUsuario->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$usuario) {
-                return "Usuario no encontrado";
-            }
-            
-            $idUsuario = $usuario['ID'];
-            $monto = $recarga->getMonto();
-            
-            // Iniciar transacción
-            $this->conexion->beginTransaction();
-            
-            // Registrar la recarga en la tabla de transacciones
-            $sql = "INSERT INTO transacciones (id_usuario, tipo, monto, fecha) 
-                    VALUES (:id_usuario, 'recarga', :monto, NOW())";
+            // Preparar la sentencia
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':id_usuario', $idUsuario);
-            $stmt->bindParam(':monto', $monto);
-            $stmt->execute();
             
-            // Actualizar el saldo del usuario
-            $sqlUpdate = "UPDATE usuarios SET saldo = saldo + :monto WHERE ID = :id_usuario";
-            $stmtUpdate = $this->conexion->prepare($sqlUpdate);
-            $stmtUpdate->bindParam(':monto', $monto);
-            $stmtUpdate->bindParam(':id_usuario', $idUsuario);
-            $stmtUpdate->execute();
+            // Convertir datos a JSON para almacenar
+            $datosJSON = json_encode($reporte->getDatos(), JSON_UNESCAPED_UNICODE);
             
-            // Confirmar transacción
-            $this->conexion->commit();
+            // Vincular parámetros
+            $stmt->bind_param(
+                "ssssss",
+                $reporte->getId(),
+                $reporte->getTipo(),
+                $reporte->getFechaInicio(),
+                $reporte->getFechaFin(),
+                $reporte->getFechaGeneracion(),
+                $datosJSON
+            );
             
-            return true;
+            // Ejecutar la consulta
+            $resultado = $stmt->execute();
             
-        } catch (PDOException $e) {
-            // Revertir cambios en caso de error
-            if ($this->conexion->inTransaction()) {
-                $this->conexion->rollBack();
-            }
-            error_log("Error en registrarRecarga: " . $e->getMessage());
-            return "Error al procesar la recarga: " . $e->getMessage();
+            // Cerrar la sentencia
+            $stmt->close();
+            
+            return $resultado;
+        } catch (Exception $e) {
+            // Registrar el error
+            error_log("Error al guardar reporte: " . $e->getMessage());
+            return false;
         }
     }
     
     /**
-     * Registra un nuevo retiro en la base de datos
+     * Busca un reporte por su ID
      * 
-     * @param RecargaRetiro $retiro Objeto con los datos del retiro
-     * @return boolean|string true si fue exitoso, mensaje de error en caso contrario
+     * @param string $id ID del reporte a buscar
+     * @return Reporte|null Reporte encontrado o null si no existe
      */
-    public function registrarRetiro($retiro) {
+    public function buscarReportePorId($id) {
         try {
-            // Obtener los valores como variables antes de pasarlos por referencia
-            $usuario = $retiro->getUsuario();
-            $correo = $retiro->getCorreo();
+            // Preparar la consulta SQL
+            $sql = "SELECT * FROM reportes WHERE id = ?";
             
-            // Obtener el ID y saldo del usuario
-            $sqlUsuario = "SELECT ID, saldo FROM usuarios WHERE nombre = :usuario OR correo = :correo";
-            $stmtUsuario = $this->conexion->prepare($sqlUsuario);
-            $stmtUsuario->bindParam(':usuario', $usuario);
-            $stmtUsuario->bindParam(':correo', $correo);
-            $stmtUsuario->execute();
-            $usuario = $stmtUsuario->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$usuario) {
-                return "Usuario no encontrado";
-            }
-            
-            $idUsuario = $usuario['ID'];
-            $saldoActual = $usuario['saldo'];
-            $monto = $retiro->getMonto();
-            
-            // Verificar que tenga saldo suficiente
-            if ($saldoActual < $monto) {
-                return "Saldo insuficiente para realizar el retiro";
-            }
-            
-            // Iniciar transacción
-            $this->conexion->beginTransaction();
-            
-            // Registrar el retiro en la tabla de transacciones
-            $sql = "INSERT INTO transacciones (id_usuario, tipo, monto, fecha) 
-                    VALUES (:id_usuario, 'retiro', :monto, NOW())";
+            // Preparar la sentencia
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':id_usuario', $idUsuario);
-            $stmt->bindParam(':monto', $monto);
+            
+            // Vincular parámetros
+            $stmt->bind_param("s", $id);
+            
+            // Ejecutar la consulta
             $stmt->execute();
             
-            // Actualizar el saldo del usuario
-            $sqlUpdate = "UPDATE usuarios SET saldo = saldo - :monto WHERE ID = :id_usuario";
-            $stmtUpdate = $this->conexion->prepare($sqlUpdate);
-            $stmtUpdate->bindParam(':monto', $monto);
-            $stmtUpdate->bindParam(':id_usuario', $idUsuario);
-            $stmtUpdate->execute();
+            // Obtener el resultado
+            $resultado = $stmt->get_result();
             
-            // Confirmar transacción
-            $this->conexion->commit();
-            
-            return true;
-            
-        } catch (PDOException $e) {
-            // Revertir cambios en caso de error
-            if ($this->conexion->inTransaction()) {
-                $this->conexion->rollBack();
+            // Verificar si hay resultados
+            if ($resultado->num_rows > 0) {
+                // Obtener los datos
+                $datos = $resultado->fetch_assoc();
+                
+                // Convertir datos JSON a array
+                $datos['datos'] = json_decode($datos['datos'], true);
+                
+                // Cerrar la sentencia
+                $stmt->close();
+                
+                // Crear y devolver el reporte
+                return Reporte::fromArray([
+                    'id' => $datos['id'],
+                    'tipo' => $datos['tipo'],
+                    'fechaInicio' => $datos['fecha_inicio'],
+                    'fechaFin' => $datos['fecha_fin'],
+                    'fechaGeneracion' => $datos['fecha_generacion'],
+                    'datos' => $datos['datos']
+                ]);
+            } else {
+                // Cerrar la sentencia
+                $stmt->close();
+                
+                // No se encontró el reporte
+                return null;
             }
-            error_log("Error en registrarRetiro: " . $e->getMessage());
-            return "Error al procesar el retiro: " . $e->getMessage();
+        } catch (Exception $e) {
+            // Registrar el error
+            error_log("Error al buscar reporte por ID: " . $e->getMessage());
+            return null;
         }
     }
     
     /**
-     * Lista las recargas realizadas por un usuario
+     * Lista los reportes por tipo
      * 
-     * @param int $idUsuario ID del usuario
-     * @return array Lista de recargas
+     * @param string $tipo Tipo de reporte (recargas o retiros)
+     * @return array Array de reportes
      */
-    public function listarRecargasPorUsuario($idUsuario) {
+    public function listarReportesPorTipo($tipo) {
         try {
-            $sql = "SELECT * FROM transacciones 
-                    WHERE id_usuario = :id_usuario AND tipo = 'recarga' 
-                    ORDER BY fecha DESC";
+            // Preparar la consulta SQL
+            $sql = "SELECT * FROM reportes WHERE tipo = ? ORDER BY fecha_generacion DESC";
+            
+            // Preparar la sentencia
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':id_usuario', $idUsuario);
+            
+            // Vincular parámetros
+            $stmt->bind_param("s", $tipo);
+            
+            // Ejecutar la consulta
             $stmt->execute();
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Obtener el resultado
+            $resultado = $stmt->get_result();
             
-        } catch (PDOException $e) {
-            error_log("Error en listarRecargasPorUsuario: " . $e->getMessage());
+            // Array para almacenar los reportes
+            $reportes = [];
+            
+            // Recorrer los resultados
+            while ($datos = $resultado->fetch_assoc()) {
+                // Convertir datos JSON a array
+                $datos['datos'] = json_decode($datos['datos'], true);
+                
+                // Crear el reporte y agregarlo al array
+                $reportes[] = Reporte::fromArray([
+                    'id' => $datos['id'],
+                    'tipo' => $datos['tipo'],
+                    'fechaInicio' => $datos['fecha_inicio'],
+                    'fechaFin' => $datos['fecha_fin'],
+                    'fechaGeneracion' => $datos['fecha_generacion'],
+                    'datos' => $datos['datos']
+                ]);
+            }
+            
+            // Cerrar la sentencia
+            $stmt->close();
+            
+            return $reportes;
+        } catch (Exception $e) {
+            // Registrar el error
+            error_log("Error al listar reportes por tipo: " . $e->getMessage());
             return [];
         }
     }
     
     /**
-     * Lista los retiros realizados por un usuario
+     * Lista reportes por rango de fechas
      * 
-     * @param int $idUsuario ID del usuario
-     * @return array Lista de retiros
+     * @param string $fechaInicio Fecha inicial en formato Y-m-d
+     * @param string $fechaFin Fecha final en formato Y-m-d
+     * @return array Array de reportes
      */
-    public function listarRetirosPorUsuario($idUsuario) {
+    public function listarReportesPorFecha($fechaInicio, $fechaFin) {
         try {
-            $sql = "SELECT * FROM transacciones 
-                    WHERE id_usuario = :id_usuario AND tipo = 'retiro' 
-                    ORDER BY fecha DESC";
+            // Preparar la consulta SQL
+            $sql = "SELECT * FROM reportes WHERE fecha_generacion BETWEEN ? AND ? ORDER BY fecha_generacion DESC";
+            
+            // Preparar la sentencia
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':id_usuario', $idUsuario);
-            $stmt->execute();
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-        } catch (PDOException $e) {
-            error_log("Error en listarRetirosPorUsuario: " . $e->getMessage());
-            return [];
-        }
-    }
-    
-    /**
-     * Lista las recargas realizadas en un rango de fechas
-     * 
-     * @param string $fechaInicio Fecha de inicio formato Y-m-d
-     * @param string $fechaFin Fecha de fin formato Y-m-d
-     * @return array Lista de recargas en el rango
-     */
-    public function listarRecargasPorFecha($fechaInicio, $fechaFin) {
-        try {
-            // Ajustar fecha fin para incluir todo el día
+            // Ajustar fechas para incluir todo el día
             $fechaFinAjustada = $fechaFin . ' 23:59:59';
             
-            $sql = "SELECT t.*, u.nombre, u.correo, u.numero_documento 
-                    FROM transacciones t
-                    JOIN usuarios u ON t.id_usuario = u.ID
-                    WHERE t.tipo = 'recarga' 
-                    AND t.fecha BETWEEN :fecha_inicio AND :fecha_fin
-                    ORDER BY t.fecha DESC";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':fecha_inicio', $fechaInicio);
-            $stmt->bindParam(':fecha_fin', $fechaFinAjustada);
+            // Vincular parámetros
+            $stmt->bind_param("ss", $fechaInicio, $fechaFinAjustada);
+            
+            // Ejecutar la consulta
             $stmt->execute();
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Obtener el resultado
+            $resultado = $stmt->get_result();
             
-        } catch (PDOException $e) {
-            error_log("Error en listarRecargasPorFecha: " . $e->getMessage());
+            // Array para almacenar los reportes
+            $reportes = [];
+            
+            // Recorrer los resultados
+            while ($datos = $resultado->fetch_assoc()) {
+                // Convertir datos JSON a array
+                $datos['datos'] = json_decode($datos['datos'], true);
+                
+                // Crear el reporte y agregarlo al array
+                $reportes[] = Reporte::fromArray([
+                    'id' => $datos['id'],
+                    'tipo' => $datos['tipo'],
+                    'fechaInicio' => $datos['fecha_inicio'],
+                    'fechaFin' => $datos['fecha_fin'],
+                    'fechaGeneracion' => $datos['fecha_generacion'],
+                    'datos' => $datos['datos']
+                ]);
+            }
+            
+            // Cerrar la sentencia
+            $stmt->close();
+            
+            return $reportes;
+        } catch (Exception $e) {
+            // Registrar el error
+            error_log("Error al listar reportes por fecha: " . $e->getMessage());
             return [];
         }
     }
     
     /**
-     * Lista los retiros realizados en un rango de fechas
+     * Elimina un reporte por su ID
      * 
-     * @param string $fechaInicio Fecha de inicio formato Y-m-d
-     * @param string $fechaFin Fecha de fin formato Y-m-d
-     * @return array Lista de retiros en el rango
+     * @param string $id ID del reporte a eliminar
+     * @return bool True si se eliminó correctamente
      */
-    public function listarRetirosPorFecha($fechaInicio, $fechaFin) {
+    public function eliminarReporte($id) {
         try {
-            // Ajustar fecha fin para incluir todo el día
-            $fechaFinAjustada = $fechaFin . ' 23:59:59';
+            // Preparar la consulta SQL
+            $sql = "DELETE FROM reportes WHERE id = ?";
             
-            $sql = "SELECT t.*, u.nombre, u.correo, u.numero_documento 
-                    FROM transacciones t
-                    JOIN usuarios u ON t.id_usuario = u.ID
-                    WHERE t.tipo = 'retiro' 
-                    AND t.fecha BETWEEN :fecha_inicio AND :fecha_fin
-                    ORDER BY t.fecha DESC";
+            // Preparar la sentencia
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bindParam(':fecha_inicio', $fechaInicio);
-            $stmt->bindParam(':fecha_fin', $fechaFinAjustada);
-            $stmt->execute();
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Vincular parámetros
+            $stmt->bind_param("s", $id);
             
-        } catch (PDOException $e) {
-            error_log("Error en listarRetirosPorFecha: " . $e->getMessage());
-            return [];
+            // Ejecutar la consulta
+            $resultado = $stmt->execute();
+            
+            // Cerrar la sentencia
+            $stmt->close();
+            
+            return $resultado;
+        } catch (Exception $e) {
+            // Registrar el error
+            error_log("Error al eliminar reporte: " . $e->getMessage());
+            return false;
         }
     }
 }
+?>
