@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Seleccionar elementos del menú
     const inicioLink = document.getElementById('inicio-link');
-    const resultadosLink = document.getElementById('resultados-link');
     const recargasLink = document.getElementById('recargas-link');
     const retirosLink = document.getElementById('retiros-link');
     const reportesLink = document.getElementById('reportes-link');
@@ -170,23 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Añadir eventos para los links del menú principal
-    if (resultadosLink) {
-        resultadosLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const contenidoPrincipal = document.getElementById('contenido-principal');
-            if (contenidoPrincipal) {
-                contenidoPrincipal.innerHTML = `
-                    <div class="mensaje-desarrollo">
-                        <h3>Próximamente</h3>
-                        <p>La sección de Resultados estará disponible pronto.</p>
-                    </div>
-                `;
-            }
-        });
-    }
-    
-    
     // Añadir un poco de CSS para el mensaje de desarrollo
     const style = document.createElement('style');
     style.textContent = `
@@ -203,18 +185,4 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
     
-    // Verificar si RecargaRetiroService está disponible
-    // Si no está cargado, intentamos cargarlo dinámicamente
-    if (typeof RecargaRetiroService === 'undefined') {
-        console.log('RecargaRetiroService no encontrado, intentando cargar el script...');
-        const recargaScript = document.createElement('script');
-        recargaScript.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/RecargaRetiroService.js';
-        recargaScript.onload = function() {
-            console.log('RecargaRetiroService cargado correctamente');
-        };
-        recargaScript.onerror = function() {
-            console.error('Error al cargar RecargaRetiroService.js');
-        };
-        document.body.appendChild(recargaScript);
-    }
 });

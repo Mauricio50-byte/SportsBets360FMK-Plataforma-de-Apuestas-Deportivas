@@ -15,18 +15,29 @@
     <div class="top-navigation">
         <div class="logo">
             <img src="../img/logo1.png" alt="SportsBets360FMK">
-            <h1>BIENVENIDO AL MANICOMIO DE LOS APOSTADORES</h1>
+            <h1>Bienvenido</h1>
+            <!-- Movemos el nombre de usuario aquí junto al logo -->
+            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span>
         </div>
         
-        <!-- Barra de usuario con saldo -->
+        <!-- Barra de usuario con solo saldo, temporizador y botón de cerrar sesión -->
         <div class="user-bar">
             <div class="balance-container">
                 <span class="balance-label">Saldo:</span>
                 <span class="balance-amount" id="user-balance">$ 0</span>
             </div>
             
-            <span class="user-name">Nombre: <span class="current-user" id="current-user">Invitado</span></span>
-            <button class="logout-btn" id="logout-btn">SALIR</button>
+            <!-- Temporizador de sesión -->
+            <div class="session-timer">
+                <i class="bi bi-clock-history"></i>
+                <span id="session-time">00:00:00</span>
+            </div>
+            
+            <!-- Botón de cerrar sesión -->
+            <button class="logout-btn" id="logout-btn">
+                <i class="bi bi-box-arrow-right"></i>
+                CERRAR SESIÓN
+            </button>
         </div>
     </div>
 
@@ -35,9 +46,9 @@
             <i class="bi bi-house-door nav-icon"></i>
             Inicio
         </a>
-        <a href="#" id="resultados-link">
-            <i class="bi bi-list-ol nav-icon"></i>
-            Resultados
+        <a href="#" id="mi-cuenta-link">
+            <i class="bi bi-person nav-icon"></i>
+            Mi Cuenta
         </a>
         <a href="#" id="recargas-link">
             <i class="bi bi-cash-coin nav-icon"></i>
@@ -281,8 +292,91 @@
     <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/NavigationService.js"></script>
     <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Mensajes/UserService.js"></script>
     <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/RecargaRetiroService.js"></script>
-    <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/ReportesRecargasRetiros.js"></script>
+    <script src="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Servicios/MiCuentaService.js"></script>
 
+
+    <!-- Script para el temporizador de sesión -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Iniciar el temporizador cuando se carga la página
+            let seconds = 0;
+            let minutes = 0;
+            let hours = 0;
+            
+            // Función para actualizar el temporizador
+            function updateSessionTimer() {
+                seconds++;
+                
+                if (seconds >= 60) {
+                    seconds = 0;
+                    minutes++;
+                    
+                    if (minutes >= 60) {
+                        minutes = 0;
+                        hours++;
+                    }
+                }
+                
+                // Formatear el tiempo (añadir ceros a la izquierda)
+                const formattedHours = String(hours).padStart(2, '0');
+                const formattedMinutes = String(minutes).padStart(2, '0');
+                const formattedSeconds = String(seconds).padStart(2, '0');
+                
+                // Actualizar el elemento HTML
+                document.getElementById('session-time').textContent = 
+                    `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+            }
+            
+            // Actualizar el temporizador cada segundo
+            const timerInterval = setInterval(updateSessionTimer, 1000);
+            
+            // Acción para el botón de cerrar sesión
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                    // Detener el temporizador
+                    clearInterval(timerInterval);
+                    
+                    // Aquí puedes añadir la lógica para cerrar sesión
+                    // Por ejemplo, redirigir a la página de inicio de sesión
+                    alert('Cerrando sesión...');
+                    // window.location.href = 'login.html'; // Descomenta esto para redirigir
+                    
+                    // Por ahora, simplemente recargamos la página
+                    location.reload();
+                }
+            });
+            
+            // Código existente para el inicio...
+            // Asegurar que el modal de bienvenida aparezca inmediatamente
+            const welcomeContainer = document.getElementById('welcomeModal');
+            if (welcomeContainer) {
+                welcomeContainer.style.display = 'flex';
+                
+                // Inicializar el carrusel de Bootstrap
+                var myCarousel = new bootstrap.Carousel(document.getElementById('welcomeCarousel'), {
+                    interval: 1000, // Cambiar imagen cada 1 segundos
+                    ride: 'carousel',
+                    wrap: true
+                });
+                
+                // Cerrar el contenedor al hacer clic en el botón de cerrar
+                document.getElementById('closeWelcomeModal').addEventListener('click', function() {
+                    welcomeContainer.style.display = 'none';
+                });
+                
+                // Cerrar el contenedor al hacer clic en "Comenzar Ahora"
+                document.getElementById('startNowBtn').addEventListener('click', function() {
+                    welcomeContainer.style.display = 'none';
+                });
+            }
+            
+            // Acción para recargar la página cuando se presione "Inicio"
+            document.getElementById('inicio-link').addEventListener('click', function(e) {
+                e.preventDefault(); // Evitar que el enlace haga un salto # 
+                location.reload();  // Recargar la página
+            });
+        });
+    </script>
 
     <!-- Script para el modal de bienvenida -->
     <script>
