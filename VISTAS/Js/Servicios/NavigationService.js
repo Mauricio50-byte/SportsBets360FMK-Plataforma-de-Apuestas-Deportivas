@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Seleccionar elementos del menú
     const inicioLink = document.getElementById('inicio-link');
+    const recargasLink = document.getElementById('recargas-link');
+    const retirosLink = document.getElementById('retiros-link');
     const reportesLink = document.getElementById('reportes-link');
     
     // Seleccionar botones deportes
