@@ -45,8 +45,7 @@ class ControladorUsuario {
     public function registrarUsuario($datosUsuario) {
         // Validar datos requeridos
         $camposRequeridos = ['nombre', 'apellido', 'sexo', 'tipo_documento', 
-                           'numero_documento', 'telefono', 'email', 'contrasena'];
-                           
+                            'numero_documento', 'telefono', 'email', 'contrasena'];
         foreach ($camposRequeridos as $campo) {
             if (!isset($datosUsuario[$campo]) || empty($datosUsuario[$campo])) {
                 return "El campo $campo es obligatorio";

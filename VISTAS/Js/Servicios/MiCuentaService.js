@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="numero-documento">Número de Documento</label>
-                                    <input type="text" id="numero-documento" name="numero_documento" placeholder="Número de documento" readonly>
+                                    <input type="text" id="numero-documento" name="documento" placeholder="Número de documento">
                                 </div>
                                 <div class="form-group">
                                     <label for="telefono">Teléfono</label>
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="correo">Correo Electrónico</label>
-                                    <input type="email" id="correo" name="correo" placeholder="Tu correo electrónico" readonly>
+                                    <input type="email" id="correo" name="correo" placeholder="Tu correo electrónico" >
                                 </div>
                             </div>
                             
@@ -140,20 +140,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para inicializar la sección Mi Cuenta
     function inicializarMiCuenta() {
         // Cargar datos del usuario actual desde el almacenamiento de sesión
-        const usuarioActual = JSON.parse(sessionStorage.getItem('usuario'));
+        // CORREGIDO: Unificar la nomenclatura a 'usuario'
+        const usuario = JSON.parse(sessionStorage.getItem('usuario'));
         
-        if (usuarioActual) {
+        if (usuario) {
             // Rellenar el formulario con los datos del usuario
-            document.getElementById('nombre').value = usuarioActual.nombre || '';
-            document.getElementById('apellido').value = usuarioActual.apellido || '';
-            document.getElementById('sexo').value = usuarioActual.sexo || 'M';
-            document.getElementById('tipo-documento').value = usuarioActual.tipo_documento || 'CC';
-            document.getElementById('numero-documento').value = usuarioActual.numero_documento || '';
-            document.getElementById('telefono').value = usuarioActual.telefono || '';
-            document.getElementById('correo').value = usuarioActual.correo || '';
+            document.getElementById('nombre').value = usuario.nombre || '';
+            document.getElementById('apellido').value = usuario.apellido || '';
+            document.getElementById('sexo').value = usuario.sexo || 'M';
+            document.getElementById('tipo-documento').value = usuario.tipo_documento || 'CC';
+            document.getElementById('numero-documento').value = usuario.documento || '';
+            document.getElementById('telefono').value = usuario.celular || '';
+            document.getElementById('correo').value = usuario.correo || '';
         } else {
             // Si no hay usuario en sesión, mostrar mensaje
-            const datosUsuarioSection = document.querySelector('.datos-usuario-section');
+            const datosUsuarioSection = document.querySelector('usuario');
             const cambiarContrasenaSection = document.querySelector('.cambiar-contrasena-section');
             
             if (datosUsuarioSection) {
@@ -197,23 +198,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarDatosUsuario() {
         const mensajeElement = document.getElementById('datos-actualizacion-mensaje');
         
-        // Obtener el usuario actual
-        const usuarioActual = JSON.parse(sessionStorage.getItem('usuarioActual'));
-        if (!usuarioActual || !usuarioActual.ID) {
+        // CORREGIDO: Unificar la nomenclatura a 'usuario'
+        const usuario = JSON.parse(sessionStorage.getItem('usuario'));
+        if (!usuario || !usuario.ID) {
             mostrarMensaje(mensajeElement, 'Debe iniciar sesión para actualizar sus datos', 'error');
             return;
         }
         
         // Obtener los datos del formulario
+        // CORREGIDO: Asegurarse de que los IDs coinciden con los del HTML
         const formData = {
             nombre: document.getElementById('nombre').value,
             apellido: document.getElementById('apellido').value,
             sexo: document.getElementById('sexo').value,
-            tipo_documento: document.getElementById('tipo_documento').value,
-            numero_documento: document.getElementById('numero_documento').value,
+            tipo_documento: document.getElementById('tipo-documento').value,  // CORREGIDO: Guion en id
+            numero_documento: document.getElementById('numero-documento').value,  // CORREGIDO: Guion en id
             telefono: document.getElementById('telefono').value,
             correo: document.getElementById('correo').value,
-            id: usuarioActual.ID
+            id: usuario.ID
         };
         
         // Validar datos
@@ -229,13 +231,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Simular una llamada AJAX
         setTimeout(() => {
             // Actualizar los datos en sessionStorage
-            usuarioActual.nombre = formData.nombre;
-            usuarioActual.apellido = formData.apellido;
-            usuarioActual.sexo = formData.sexo;
-            usuarioActual.tipo_documento = formData.tipo_documento;
-            usuarioActual.telefono = formData.telefono;
+            usuario.nombre = formData.nombre;
+            usuario.apellido = formData.apellido;
+            usuario.sexo = formData.sexo;
+            usuario.tipo_documento = formData.tipo_documento;
+            usuario.telefono = formData.telefono;
             
-            sessionStorage.setItem('usuarioActual', JSON.stringify(usuarioActual));
+            // CORREGIDO: Mantener la coherencia en el nombre de la variable de sesión
+            sessionStorage.setItem('usuario', JSON.stringify(usuario));
             
             // Actualizar nombre en la barra de usuario
             const currentUserElement = document.getElementById('current-user');
@@ -251,9 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function cambiarContrasenaUsuario() {
         const mensajeElement = document.getElementById('contrasena-actualizacion-mensaje');
         
-        // Obtener el usuario actual
-        const usuarioActual = JSON.parse(sessionStorage.getItem('usuarioActual'));
-        if (!usuarioActual || !usuarioActual.ID) {
+        // CORREGIDO: Unificar la nomenclatura a 'usuario'
+        const usuario = JSON.parse(sessionStorage.getItem('usuario'));
+        if (!usuario || !usuario.ID) {
             mostrarMensaje(mensajeElement, 'Debe iniciar sesión para cambiar su contraseña', 'error');
             return;
         }

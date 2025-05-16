@@ -472,7 +472,6 @@ class EnfrentamientosFutbol {
         this.renderizarEnfrentamientos();
     }
 }
-
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
     const app = new EnfrentamientosFutbol();

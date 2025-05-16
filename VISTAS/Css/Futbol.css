@@ -236,3 +236,45 @@
 .contador-predicciones span {
     font-weight: bold;
 }
+
+/* Estilos para mostrar la predicción realizada */
+.prediccion-hecha {
+    margin-top: 8px;
+    padding: 6px 12px;
+    background-color: #e8f4ff;
+    border-left: 3px solid #3498db;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.prediccion-hecha:hover {
+    background-color: #d6eaff;
+    transform: translateX(2px);
+}
+
+/* Estilos específicos según el tipo de predicción */
+.prediccion-hecha[data-tipo="local"] {
+    border-left-color: #4caf50;
+    background-color: #e8f5e9;
+}
+
+.prediccion-hecha[data-tipo="empate"] {
+    border-left-color: #ff9800;
+    background-color: #fff3e0;
+}
+
+.prediccion-hecha[data-tipo="visitante"] {
+    border-left-color: #f44336;
+    background-color: #ffebee;
+}
+
+/* Añadir un pequeño ícono antes del texto */
+.prediccion-hecha::before {
+    content: "🎯 ";
+    margin-right: 5px;
+}
