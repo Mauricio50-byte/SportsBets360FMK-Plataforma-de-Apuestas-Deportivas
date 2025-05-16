@@ -1,4 +1,4 @@
-// MiCuentaService.js - Servicio para gestionar la sección "Mi Cuenta"
+// MiCuentaService.js corregido
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('MiCuentaService cargado correctamente');
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="numero-documento">Número de Documento</label>
-                                    <input type="text" id="numero-documento" name="documento" placeholder="Número de documento">
+                                    <input type="text" id="numero-documento" name="numero_documento" placeholder="Número de documento">
                                 </div>
                                 <div class="form-group">
                                     <label for="telefono">Teléfono</label>
@@ -122,26 +122,77 @@ document.addEventListener('DOMContentLoaded', function() {
         // Cargar los estilos si no están ya cargados
         cargarEstilosMiCuenta();
         
-        // Inicializar los formularios y cargar datos del usuario
-        inicializarMiCuenta();
+        // Verificar la sesión del usuario antes de inicializar
+        verificarSesionUsuario();
     }
     
     // Función para cargar estilos de Mi Cuenta
     function cargarEstilosMiCuenta() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/MiCuenta/StyleMiCuenta.css"]')) {
+        if (!document.querySelector('link[href*="/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/MiCuenta/StyleMiCuenta.css"]')) {
             console.log('Cargando estilos de Mi Cuenta');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/MiCuenta/StyleMiCuenta.css';
+            link.href = '/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/MiCuenta/StyleMiCuenta.css';
             document.head.appendChild(link);
+        }
+    }
+    
+    // Función para verificar la sesión del usuario y obtener datos actualizados
+    function verificarSesionUsuario() {
+        console.log('Verificando sesión del usuario');
+        
+        // Realizar una petición AJAX para verificar la sesión
+        fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                // Guardar datos actualizados en sessionStorage
+                sessionStorage.setItem('usuario', JSON.stringify(data));
+                // Inicializar formularios con datos actualizados
+                inicializarMiCuenta();
+            } else {
+                // Si no hay sesión, mostrar mensaje
+                mostrarMensajeNoSesion();
+            }
+        })
+        .catch(error => {
+            console.error('Error al verificar la sesión:', error);
+            // Intentar con los datos de sessionStorage como respaldo
+            const usuarioSessionStorage = JSON.parse(sessionStorage.getItem('usuario'));
+            if (usuarioSessionStorage) {
+                inicializarMiCuenta();
+            } else {
+                mostrarMensajeNoSesion();
+            }
+        });
+    }
+    
+    // Función para mostrar mensaje cuando no hay sesión
+    function mostrarMensajeNoSesion() {
+        const datosUsuarioSection = document.querySelector('.datos-usuario-section');
+        const cambiarContrasenaSection = document.querySelector('.cambiar-contrasena-section');
+        
+        const mensajeError = `
+            <div class="mensaje-error">
+                <p>Debe iniciar sesión para acceder a esta sección.</p>
+            </div>
+        `;
+        
+        if (datosUsuarioSection) {
+            datosUsuarioSection.innerHTML = mensajeError;
+        }
+        
+        if (cambiarContrasenaSection) {
+            cambiarContrasenaSection.innerHTML = mensajeError;
         }
     }
     
     // Función para inicializar la sección Mi Cuenta
     function inicializarMiCuenta() {
         // Cargar datos del usuario actual desde el almacenamiento de sesión
-        // CORREGIDO: Unificar la nomenclatura a 'usuario'
         const usuario = JSON.parse(sessionStorage.getItem('usuario'));
+        
+        console.log('Datos del usuario obtenidos:', usuario);
         
         if (usuario) {
             // Rellenar el formulario con los datos del usuario
@@ -150,47 +201,28 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('sexo').value = usuario.sexo || 'M';
             document.getElementById('tipo-documento').value = usuario.tipo_documento || 'CC';
             document.getElementById('numero-documento').value = usuario.documento || '';
-            document.getElementById('telefono').value = usuario.celular || '';
+            document.getElementById('telefono').value = usuario.telefono || '';
             document.getElementById('correo').value = usuario.correo || '';
+            
+            // Configurar el envío del formulario de actualización de datos
+            const actualizarDatosForm = document.getElementById('actualizar-datos-form');
+            if (actualizarDatosForm) {
+                actualizarDatosForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    actualizarDatosUsuario();
+                });
+            }
+            
+            // Configurar el envío del formulario de cambio de contraseña
+            const cambiarContrasenaForm = document.getElementById('cambiar-contrasena-form');
+            if (cambiarContrasenaForm) {
+                cambiarContrasenaForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    cambiarContrasenaUsuario();
+                });
+            }
         } else {
-            // Si no hay usuario en sesión, mostrar mensaje
-            const datosUsuarioSection = document.querySelector('usuario');
-            const cambiarContrasenaSection = document.querySelector('.cambiar-contrasena-section');
-            
-            if (datosUsuarioSection) {
-                datosUsuarioSection.innerHTML = `
-                    <div class="mensaje-error">
-                        <p>Debe iniciar sesión para acceder a esta sección.</p>
-                    </div>
-                `;
-            }
-            
-            if (cambiarContrasenaSection) {
-                cambiarContrasenaSection.innerHTML = `
-                    <div class="mensaje-error">
-                        <p>Debe iniciar sesión para acceder a esta sección.</p>
-                    </div>
-                `;
-            }
-            return;
-        }
-        
-        // Configurar el envío del formulario de actualización de datos
-        const actualizarDatosForm = document.getElementById('actualizar-datos-form');
-        if (actualizarDatosForm) {
-            actualizarDatosForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                actualizarDatosUsuario();
-            });
-        }
-        
-        // Configurar el envío del formulario de cambio de contraseña
-        const cambiarContrasenaForm = document.getElementById('cambiar-contrasena-form');
-        if (cambiarContrasenaForm) {
-            cambiarContrasenaForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                cambiarContrasenaUsuario();
-            });
+            mostrarMensajeNoSesion();
         }
     }
     
@@ -198,24 +230,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarDatosUsuario() {
         const mensajeElement = document.getElementById('datos-actualizacion-mensaje');
         
-        // CORREGIDO: Unificar la nomenclatura a 'usuario'
         const usuario = JSON.parse(sessionStorage.getItem('usuario'));
-        if (!usuario || !usuario.ID) {
+        if (!usuario || !usuario.id) {
             mostrarMensaje(mensajeElement, 'Debe iniciar sesión para actualizar sus datos', 'error');
             return;
         }
         
         // Obtener los datos del formulario
-        // CORREGIDO: Asegurarse de que los IDs coinciden con los del HTML
         const formData = {
             nombre: document.getElementById('nombre').value,
             apellido: document.getElementById('apellido').value,
             sexo: document.getElementById('sexo').value,
-            tipo_documento: document.getElementById('tipo-documento').value,  // CORREGIDO: Guion en id
-            numero_documento: document.getElementById('numero-documento').value,  // CORREGIDO: Guion en id
+            tipo_documento: document.getElementById('tipo-documento').value,
+            numero_documento: document.getElementById('numero-documento').value,
             telefono: document.getElementById('telefono').value,
             correo: document.getElementById('correo').value,
-            id: usuario.ID
+            id: usuario.id
         };
         
         // Validar datos
@@ -224,39 +254,56 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // En un entorno real, aquí iría la llamada a la API para actualizar los datos
-        // Por ahora, simularemos una actualización exitosa
-        console.log('Enviando datos de actualización:', formData);
-        
-        // Simular una llamada AJAX
-        setTimeout(() => {
-            // Actualizar los datos en sessionStorage
-            usuario.nombre = formData.nombre;
-            usuario.apellido = formData.apellido;
-            usuario.sexo = formData.sexo;
-            usuario.tipo_documento = formData.tipo_documento;
-            usuario.telefono = formData.telefono;
-            
-            // CORREGIDO: Mantener la coherencia en el nombre de la variable de sesión
-            sessionStorage.setItem('usuario', JSON.stringify(usuario));
-            
-            // Actualizar nombre en la barra de usuario
-            const currentUserElement = document.getElementById('current-user');
-            if (currentUserElement) {
-                currentUserElement.textContent = formData.nombre + ' ' + formData.apellido;
+        // Realizar llamada AJAX para actualizar los datos
+        fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/actualizar_usuario.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor: ' + response.status);
             }
-            
-            mostrarMensaje(mensajeElement, 'Datos actualizados correctamente', 'exito');
-        }, 1000);
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Actualizar los datos en sessionStorage
+                usuario.nombre = formData.nombre;
+                usuario.apellido = formData.apellido;
+                usuario.sexo = formData.sexo;
+                usuario.tipo_documento = formData.tipo_documento;
+                usuario.documento = formData.numero_documento; // Corregido: guardar en la propiedad correcta
+                usuario.telefono = formData.telefono;
+                usuario.correo = formData.correo;
+                
+                sessionStorage.setItem('usuario', JSON.stringify(usuario));
+                
+                // Actualizar nombre en la barra de usuario
+                const currentUserElement = document.getElementById('current-user');
+                if (currentUserElement) {
+                    currentUserElement.textContent = formData.nombre + ' ' + formData.apellido;
+                }
+                
+                mostrarMensaje(mensajeElement, 'Datos actualizados correctamente', 'exito');
+            } else {
+                mostrarMensaje(mensajeElement, data.message || 'Error al actualizar los datos', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarMensaje(mensajeElement, 'Error al conectar con el servidor', 'error');
+        });
     }
     
     // Función para cambiar la contraseña del usuario
     function cambiarContrasenaUsuario() {
         const mensajeElement = document.getElementById('contrasena-actualizacion-mensaje');
         
-        // CORREGIDO: Unificar la nomenclatura a 'usuario'
         const usuario = JSON.parse(sessionStorage.getItem('usuario'));
-        if (!usuario || !usuario.ID) {
+        if (!usuario || !usuario.id) {
             mostrarMensaje(mensajeElement, 'Debe iniciar sesión para cambiar su contraseña', 'error');
             return;
         }
@@ -282,19 +329,43 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // En un entorno real, aquí iría la llamada a la API para cambiar la contraseña
-        // Por ahora, simularemos un cambio exitoso
-        console.log('Enviando solicitud de cambio de contraseña');
+        // Datos para la petición
+        const formData = {
+            id: usuario.id,
+            contrasena_actual: contrasenaActual,
+            nueva_contrasena: nuevaContrasena
+        };
         
-        // Simular una llamada AJAX
-        setTimeout(() => {
-            // Limpiar el formulario
-            document.getElementById('contrasena-actual').value = '';
-            document.getElementById('nueva-contrasena').value = '';
-            document.getElementById('confirmar-contrasena').value = '';
-            
-            mostrarMensaje(mensajeElement, 'Contraseña actualizada correctamente', 'exito');
-        }, 1000);
+        // Realizar llamada AJAX para cambiar la contraseña
+        fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/cambiar_contrasena.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Limpiar el formulario
+                document.getElementById('contrasena-actual').value = '';
+                document.getElementById('nueva-contrasena').value = '';
+                document.getElementById('confirmar-contrasena').value = '';
+                
+                mostrarMensaje(mensajeElement, 'Contraseña actualizada correctamente', 'exito');
+            } else {
+                mostrarMensaje(mensajeElement, data.message || 'Error al cambiar la contraseña', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarMensaje(mensajeElement, 'Error al conectar con el servidor', 'error');
+        });
     }
     
     // Función auxiliar para mostrar mensajes

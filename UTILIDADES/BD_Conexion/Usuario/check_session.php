@@ -19,7 +19,8 @@ if (isset($_SESSION['usuario_id'])) {
         'apellido' => $_SESSION['usuario_apellido'],
         'correo' => $_SESSION['usuario_correo'],
         'saldo' => $_SESSION['usuario_saldo'],
-        'documento' => $_SESSION['usuario_documento']
+        'documento' => $_SESSION['usuario_documento'],
+        'telefono' => isset($_SESSION['usuario_telefono']) ? $_SESSION['usuario_telefono'] : '' // Agregar teléfono a la respuesta
     ]);
 } else {
     // No hay sesión activa

@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['usuario_correo'] = $usuario['correo'];
         $_SESSION['usuario_saldo'] = $usuario['saldo'];
         $_SESSION['usuario_documento'] = $usuario['numero_documento'];
+        $_SESSION['usuario_telefono'] = $usuario['telefono']; // Agregar teléfono a la sesión
         $_SESSION['ultimo_acceso'] = time();
         
         // Redireccionar al menú principal

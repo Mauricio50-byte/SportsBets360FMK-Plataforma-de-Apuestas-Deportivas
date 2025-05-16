@@ -44,10 +44,13 @@ class UsuarioPersistencia {
             // Encriptar la contraseña
             $contrasenaEncriptada = password_hash($usuario->getContrasena(), PASSWORD_DEFAULT);
             
+            // Procesar y validar el sexo
+            $sexo = $this->validarSexo($usuario->getSexo());
+            
             // Asignar los parámetros
             $stmt->bindValue(':nombre', $usuario->getNombre(), PDO::PARAM_STR);
             $stmt->bindValue(':apellido', $usuario->getApellido(), PDO::PARAM_STR);
-            $stmt->bindValue(':sexo', $usuario->getSexo(), PDO::PARAM_STR);
+            $stmt->bindValue(':sexo', $sexo, PDO::PARAM_STR);
             $stmt->bindValue(':tipo_documento', $usuario->getTipoDocumento(), PDO::PARAM_STR);
             $stmt->bindValue(':numero_documento', $usuario->getNumeroDocumento(), PDO::PARAM_STR);
             $stmt->bindValue(':telefono', $usuario->getTelefono(), PDO::PARAM_STR);
@@ -229,12 +232,49 @@ class UsuarioPersistencia {
     }
     
     /**
+     * Método para validar y formatear el valor del sexo
+     * @param string $sexo Valor del sexo a validar
+     * @return string Valor del sexo validado y formateado
+     */
+    private function validarSexo($sexo) {
+        // Convertir a formato esperado por la base de datos (enum 'Masculino', 'Femenino')
+        $sexo = trim($sexo);
+        
+        if (strtoupper($sexo) === 'MASCULINO' || strtoupper($sexo) === 'M') {
+            return 'Masculino';
+        } else if (strtoupper($sexo) === 'FEMENINO' || strtoupper($sexo) === 'F') {
+            return 'Femenino';
+        } else {
+            // Valor por defecto si no es válido
+            return 'Masculino';
+        }
+    }
+    
+    /**
      * Método para actualizar la información de un usuario
      * @param Usuario $usuario Objeto Usuario con la información actualizada
-     * @return bool True si la actualización es exitosa, false en caso contrario
+     * @return bool|string True si la actualización es exitosa, mensaje de error en caso contrario
      */
     public function actualizarUsuario($usuario) {
         try {
+            // Primero, verificar si el usuario existe
+            $usuarioExistente = $this->obtenerUsuarioPorId($usuario->getId());
+            if (!$usuarioExistente) {
+                return "El usuario no existe";
+            }
+            
+            // Verificar si el nuevo correo ya existe (y no es del mismo usuario)
+            if ($usuario->getCorreo() != $usuarioExistente['correo'] && 
+                $this->verificarCorreoExistente($usuario->getCorreo())) {
+                return "El correo electrónico ya está registrado por otro usuario";
+            }
+            
+            // Verificar si el nuevo documento ya existe (y no es del mismo usuario)
+            if ($usuario->getNumeroDocumento() != $usuarioExistente['numero_documento'] && 
+                $this->verificarDocumentoExistente($usuario->getNumeroDocumento())) {
+                return "El número de documento ya está registrado por otro usuario";
+            }
+            
             // Preparar la consulta
             $consulta = "UPDATE usuarios SET 
                         nombre = :nombre, 
@@ -248,22 +288,43 @@ class UsuarioPersistencia {
             
             $stmt = $this->conexion->prepare($consulta);
             
-            // Asignar los parámetros
+            // Almacenar los valores en variables temporales
             $id = $usuario->getId();
+            $nombre = $usuario->getNombre();
+            $apellido = $usuario->getApellido();
+            $sexo = $this->validarSexo($usuario->getSexo()); // Validar y formatear el sexo
+            $tipoDocumento = $usuario->getTipoDocumento();
+            $numeroDocumento = $usuario->getNumeroDocumento();
+            $telefono = $usuario->getTelefono();
+            $correo = $usuario->getCorreo();
+            
+            // Debug log para verificar los valores que se están actualizando
+            error_log("Actualizando usuario ID: $id, Nombre: $nombre, Apellido: $apellido, Sexo: $sexo, Documento: $numeroDocumento, Correo: $correo");
+            
+            // Asignar los parámetros usando las variables temporales
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':nombre', $usuario->getNombre(), PDO::PARAM_STR);
-            $stmt->bindParam(':apellido', $usuario->getApellido(), PDO::PARAM_STR);
-            $stmt->bindParam(':sexo', $usuario->getSexo(), PDO::PARAM_STR);
-            $stmt->bindParam(':tipo_documento', $usuario->getTipoDocumento(), PDO::PARAM_STR);
-            $stmt->bindParam(':numero_documento', $usuario->getNumeroDocumento(), PDO::PARAM_STR);
-            $stmt->bindParam(':telefono', $usuario->getTelefono(), PDO::PARAM_STR);
-            $stmt->bindParam(':correo', $usuario->getCorreo(), PDO::PARAM_STR);
+            $stmt->bindParam(':nombre', $nombre, PDO::PARAM_STR);
+            $stmt->bindParam(':apellido', $apellido, PDO::PARAM_STR);
+            $stmt->bindParam(':sexo', $sexo, PDO::PARAM_STR);
+            $stmt->bindParam(':tipo_documento', $tipoDocumento, PDO::PARAM_STR);
+            $stmt->bindParam(':numero_documento', $numeroDocumento, PDO::PARAM_STR);
+            $stmt->bindParam(':telefono', $telefono, PDO::PARAM_STR);
+            $stmt->bindParam(':correo', $correo, PDO::PARAM_STR);
             
             // Ejecutar la actualización
-            return $stmt->execute();
+            $resultado = $stmt->execute();
+            
+            if ($resultado) {
+                return true;
+            } else {
+                $errorInfo = $stmt->errorInfo();
+                error_log("Error en actualizarUsuario SQL: " . implode(", ", $errorInfo));
+                return "Error de base de datos: " . $errorInfo[2];
+            }
         } catch (Exception $e) {
-            error_log("Error en actualizarUsuario: " . $e->getMessage());
-            return false;
+            $errorMsg = "Error en actualizarUsuario: " . $e->getMessage();
+            error_log($errorMsg);
+            return $errorMsg;
         }
     }
     
@@ -286,6 +347,51 @@ class UsuarioPersistencia {
         } catch (Exception $e) {
             error_log("Error en cambiarEstadoUsuario: " . $e->getMessage());
             return false;
+        }
+    }
+    
+    /**
+     * Método para cambiar la contraseña de un usuario
+     * @param int $idUsuario ID del usuario
+     * @param string $contrasenaActual Contraseña actual para verificación
+     * @param string $nuevaContrasena Nueva contraseña a establecer
+     * @return bool|string True si el cambio es exitoso, mensaje de error en caso contrario
+     */
+    public function cambiarContrasena($idUsuario, $contrasenaActual, $nuevaContrasena) {
+        try {
+            // Obtener usuario actual
+            $usuario = $this->obtenerUsuarioPorId($idUsuario);
+            if (!$usuario) {
+                return "Usuario no encontrado";
+            }
+            
+            // Verificar contraseña actual
+            if (!password_verify($contrasenaActual, $usuario['contrasena'])) {
+                return "Contraseña actual incorrecta";
+            }
+            
+            // Encriptar nueva contraseña
+            $nuevaContrasenaHash = password_hash($nuevaContrasena, PASSWORD_DEFAULT);
+            
+            // Actualizar en la base de datos
+            $consulta = "UPDATE usuarios SET contrasena = :nueva_contrasena WHERE ID = :id_usuario";
+            $stmt = $this->conexion->prepare($consulta);
+            $stmt->bindParam(':nueva_contrasena', $nuevaContrasenaHash, PDO::PARAM_STR);
+            $stmt->bindParam(':id_usuario', $idUsuario, PDO::PARAM_INT);
+            
+            $resultado = $stmt->execute();
+            
+            if ($resultado) {
+                return true;
+            } else {
+                $errorInfo = $stmt->errorInfo();
+                error_log("Error en cambiarContrasena SQL: " . implode(", ", $errorInfo));
+                return "Error de base de datos: " . $errorInfo[2];
+            }
+        } catch (Exception $e) {
+            $errorMsg = "Error en cambiarContrasena: " . $e->getMessage();
+            error_log($errorMsg);
+            return $errorMsg;
         }
     }
 }
