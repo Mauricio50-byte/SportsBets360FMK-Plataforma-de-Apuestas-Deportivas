@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="numero-documento">Número de Documento</label>
-                                    <input type="text" id="numero-documento" name="numero_documento" placeholder="Número de documento">
+                                    <input type="text" id="numero-documento" name="numero_documento" placeholder="Número de documento" readonly style="background-color: #f0f0f0; color: #666;">
                                 </div>
                                 <div class="form-group">
                                     <label for="telefono">Teléfono</label>
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="correo">Correo Electrónico</label>
-                                    <input type="email" id="correo" name="correo" placeholder="Tu correo electrónico" >
+                                    <input type="email" id="correo" name="correo" placeholder="Tu correo electrónico" readonly style="background-color: #f0f0f0; color: #666;">
                                 </div>
                             </div>
                             
@@ -146,6 +146,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.loggedIn) {
+                console.log('Datos recibidos del servidor:', data);
+                // Asegurarse que los datos de documento y correo estén presentes
+                if (!data.documento) {
+                    console.warn('Advertencia: El documento no está presente en los datos recibidos');
+                }
+                if (!data.correo) {
+                    console.warn('Advertencia: El correo no está presente en los datos recibidos');
+                }
+                
                 // Guardar datos actualizados en sessionStorage
                 sessionStorage.setItem('usuario', JSON.stringify(data));
                 // Inicializar formularios con datos actualizados
@@ -195,14 +204,30 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Datos del usuario obtenidos:', usuario);
         
         if (usuario) {
+            // Mostrar los datos en la consola para depuración
+            console.log('Documento del usuario:', usuario.documento);
+            console.log('Correo del usuario:', usuario.correo);
+            
             // Rellenar el formulario con los datos del usuario
             document.getElementById('nombre').value = usuario.nombre || '';
             document.getElementById('apellido').value = usuario.apellido || '';
             document.getElementById('sexo').value = usuario.sexo || 'M';
             document.getElementById('tipo-documento').value = usuario.tipo_documento || 'CC';
-            document.getElementById('numero-documento').value = usuario.documento || '';
+            
+            // Asegurarnos de que los campos de solo lectura se llenen correctamente
+            const numDocumentoElement = document.getElementById('numero-documento');
+            numDocumentoElement.value = usuario.documento || '';
+            
+            const correoElement = document.getElementById('correo');
+            correoElement.value = usuario.correo || '';
+            
             document.getElementById('telefono').value = usuario.telefono || '';
-            document.getElementById('correo').value = usuario.correo || '';
+            
+            // Cambiar estilos para los campos de solo lectura
+            const camposReadonly = document.querySelectorAll('input[readonly]');
+            camposReadonly.forEach(campo => {
+                campo.classList.add('campo-readonly');
+            });
             
             // Configurar el envío del formulario de actualización de datos
             const actualizarDatosForm = document.getElementById('actualizar-datos-form');
@@ -236,16 +261,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Para depuración - verificar qué datos tenemos del usuario antes de actualizar
+        console.log('Datos del usuario antes de actualizar:', usuario);
+        console.log('Documento almacenado:', usuario.documento);
+        console.log('Correo almacenado:', usuario.correo);
+        
         // Obtener los datos del formulario
         const formData = {
             nombre: document.getElementById('nombre').value,
             apellido: document.getElementById('apellido').value,
             sexo: document.getElementById('sexo').value,
             tipo_documento: document.getElementById('tipo-documento').value,
-            numero_documento: document.getElementById('numero-documento').value,
             telefono: document.getElementById('telefono').value,
-            correo: document.getElementById('correo').value,
-            id: usuario.id
+            id: usuario.id,
+            // Mantenemos los campos de solo lectura con los valores originales
+            numero_documento: usuario.documento,
+            correo: usuario.correo
         };
         
         // Validar datos
@@ -275,9 +306,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 usuario.apellido = formData.apellido;
                 usuario.sexo = formData.sexo;
                 usuario.tipo_documento = formData.tipo_documento;
-                usuario.documento = formData.numero_documento; // Corregido: guardar en la propiedad correcta
                 usuario.telefono = formData.telefono;
-                usuario.correo = formData.correo;
+                // No actualizamos documento ni correo ya que son campos de solo lectura
                 
                 sessionStorage.setItem('usuario', JSON.stringify(usuario));
                 
