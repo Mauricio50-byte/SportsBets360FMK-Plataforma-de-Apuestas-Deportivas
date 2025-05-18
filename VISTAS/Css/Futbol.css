@@ -278,3 +278,185 @@
     content: "🎯 ";
     margin-right: 5px;
 }
+
+/* Estilos adicionales faltantes */
+
+/* Estilos para cuotas y apuestas */
+.cuotas-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.cuota-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.cuota-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.cuota-texto {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.cuota-valor {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a3b5d;
+}
+
+/* Formulario de apuesta */
+.apuesta-form {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.form-group {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #333;
+    min-width: 120px;
+}
+
+.monto-apuesta {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px;
+    font-size: 14px;
+}
+
+.monto-apuesta:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Estilos para la información de apuesta */
+.apuesta-info {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.monto-apostado {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #555;
+}
+
+.posible-ganancia {
+    font-size: 14px;
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+/* Estilos para el resultado */
+.resultado {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Estilos para saldo del usuario */
+.saldo-container {
+    background-color: #1a3b5d;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.saldo-container h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.saldo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4caf50;
+    background-color: white;
+    padding: 5px 15px;
+    border-radius: 30px;
+    display: inline-block;
+}
+
+/* Estilos para resumen financiero */
+.resumen-financiero {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;
+    color: #333;
+    text-align: left;
+}
+
+.resumen-financiero div {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Mejoras para responsive */
+@media (max-width: 768px) {
+    .enfrentamiento {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .horario, .estado {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .equipos {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .versus {
+        margin: 10px 0;
+    }
+    
+    .equipo {
+        width: 100%;
+    }
+    
+    .prediccion-botones {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .btn-prediccion {
+        width: 100%;
+    }
+}
