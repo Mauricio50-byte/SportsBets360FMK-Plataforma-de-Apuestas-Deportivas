@@ -30,47 +30,60 @@ class EnfrentamientosFutbol {
             { id: "ROM01", nombre: "AS Roma", pais: "Italia", ciudad: "Roma", liga: "Serie A" }
         ];
         
-        // Clave para almacenamiento local
+          // Clave para almacenamiento local
         this.STORAGE_KEY = 'enfrentamientos-futbol';
         this.PREDICCIONES_KEY = 'predicciones-futbol';
         this.APUESTAS_KEY = 'apuestas-futbol';
         
-        // Inicializar enfrentamientos
-        this.enfrentamientos = this.obtenerEnfrentamientosDia();
+        // Inicializar saldo y enfrentamientos
+        this.saldoUsuario = 0; // Valor inicial hasta que se cargue
         
-        // Inicializar predicciones
-        this.predicciones = this.obtenerPredicciones();
-        
-        // Inicializar apuestas
-        this.apuestas = this.obtenerApuestas();
-        
-        // Contador de aciertos
-        this.contadorAciertos = this.obtenerContadorAciertos();
-        
-        // Saldo del usuario
-        this.saldoUsuario = this.obtenerSaldoUsuario();
-        
-        // Iniciar intervalo para actualización automática
-        this.iniciarActualizacionAutomatica();
+        // Obtener saldo de sesión y luego inicializar lo demás
+        this.obtenerSaldoUsuario().then(() => {
+            // Inicializar enfrentamientos
+            this.enfrentamientos = this.obtenerEnfrentamientosDia();
+            
+            // Inicializar predicciones
+            this.predicciones = this.obtenerPredicciones();
+            
+            // Inicializar apuestas
+            this.apuestas = this.obtenerApuestas();
+            
+            // Contador de aciertos
+            this.contadorAciertos = this.obtenerContadorAciertos();
+            
+            // Iniciar intervalo para actualización automática
+            this.iniciarActualizacionAutomatica();
+        });
     }
     
     /**
-     * Obtiene el saldo del usuario actual
+     * Obtiene el saldo del usuario actual desde la sesión PHP
      * @returns {number} - Saldo del usuario
      */
     obtenerSaldoUsuario() {
-        // Primero intentamos obtener el saldo del elemento HTML
-        const saldoElement = document.getElementById('saldo-usuario');
-        if (saldoElement) {
-            const saldo = parseFloat(saldoElement.textContent.replace(/[^\d.-]/g, ''));
-            if (!isNaN(saldo)) {
-                return saldo;
-            }
-        }
-        
-        // Si no es posible, usamos localStorage como respaldo
-        const saldoGuardado = localStorage.getItem('saldo-usuario');
-        return saldoGuardado ? parseFloat(saldoGuardado) : 0;
+        // Hacer una petición AJAX para obtener datos de la sesión
+        return new Promise((resolve, reject) => {
+            fetch('check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.loggedIn) {
+                        this.saldoUsuario = parseFloat(data.saldo);
+                        resolve(this.saldoUsuario);
+                    } else {
+                        // Usuario no logueado
+                        this.saldoUsuario = 0;
+                        resolve(0);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener saldo de sesión:', error);
+                    // Fallback a localStorage como respaldo
+                    const saldoGuardado = localStorage.getItem('saldo-usuario');
+                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 0;
+                    resolve(this.saldoUsuario);
+                });
+        });
     }
     
     /**
@@ -81,6 +94,7 @@ class EnfrentamientosFutbol {
         // Actualizar la propiedad del objeto
         this.saldoUsuario = nuevoSaldo;
         
+        /*
         // Actualizar en localStorage como respaldo
         localStorage.setItem('saldo-usuario', nuevoSaldo.toString());
         
@@ -89,6 +103,7 @@ class EnfrentamientosFutbol {
         if (saldoElement) {
             saldoElement.textContent = `$${nuevoSaldo.toFixed(2)}`;
         }
+        */
     }
     
     /**
@@ -117,6 +132,10 @@ class EnfrentamientosFutbol {
             if (resultado.exito) {
                 // Actualizar el saldo localmente
                 this.actualizarSaldoUsuarioLocal(resultado.saldo);
+                
+                // Recargar saldo de la sesión para mantener sincronización
+                await this.obtenerSaldoUsuario();
+                
                 return true;
             } else {
                 console.error('Error al actualizar saldo:', resultado.mensaje);
@@ -513,7 +532,8 @@ class EnfrentamientosFutbol {
         
         // Limpiar contenedor
         container.innerHTML = '';
-        
+
+        /*
         // Mostrar el saldo actual del usuario
         const saldoContainer = document.createElement('div');
         saldoContainer.className = 'saldo-container';
@@ -522,6 +542,7 @@ class EnfrentamientosFutbol {
             <div class="saldo" id="saldo-usuario">$${this.saldoUsuario.toFixed(2)}</div>
         `;
         container.appendChild(saldoContainer);
+        */
         
         // Añadir cada enfrentamiento
         this.enfrentamientos.forEach(enfrentamiento => {
