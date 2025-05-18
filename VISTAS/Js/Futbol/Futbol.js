@@ -1,5 +1,5 @@
 /**
- * Clase para gestionar los enfrentamientos de fútbol
+ * Clase para gestionar los enfrentamientos de fútbol y apuestas
  * @class
  */
 class EnfrentamientosFutbol {
@@ -33,6 +33,7 @@ class EnfrentamientosFutbol {
         // Clave para almacenamiento local
         this.STORAGE_KEY = 'enfrentamientos-futbol';
         this.PREDICCIONES_KEY = 'predicciones-futbol';
+        this.APUESTAS_KEY = 'apuestas-futbol';
         
         // Inicializar enfrentamientos
         this.enfrentamientos = this.obtenerEnfrentamientosDia();
@@ -40,11 +41,91 @@ class EnfrentamientosFutbol {
         // Inicializar predicciones
         this.predicciones = this.obtenerPredicciones();
         
+        // Inicializar apuestas
+        this.apuestas = this.obtenerApuestas();
+        
         // Contador de aciertos
         this.contadorAciertos = this.obtenerContadorAciertos();
         
+        // Saldo del usuario
+        this.saldoUsuario = this.obtenerSaldoUsuario();
+        
         // Iniciar intervalo para actualización automática
         this.iniciarActualizacionAutomatica();
+    }
+    
+    /**
+     * Obtiene el saldo del usuario actual
+     * @returns {number} - Saldo del usuario
+     */
+    obtenerSaldoUsuario() {
+        // Primero intentamos obtener el saldo del elemento HTML
+        const saldoElement = document.getElementById('saldo-usuario');
+        if (saldoElement) {
+            const saldo = parseFloat(saldoElement.textContent.replace(/[^\d.-]/g, ''));
+            if (!isNaN(saldo)) {
+                return saldo;
+            }
+        }
+        
+        // Si no es posible, usamos localStorage como respaldo
+        const saldoGuardado = localStorage.getItem('saldo-usuario');
+        return saldoGuardado ? parseFloat(saldoGuardado) : 0;
+    }
+    
+    /**
+     * Actualiza el saldo del usuario en la interfaz y en localStorage
+     * @param {number} nuevoSaldo - Nuevo saldo del usuario
+     */
+    actualizarSaldoUsuarioLocal(nuevoSaldo) {
+        // Actualizar la propiedad del objeto
+        this.saldoUsuario = nuevoSaldo;
+        
+        // Actualizar en localStorage como respaldo
+        localStorage.setItem('saldo-usuario', nuevoSaldo.toString());
+        
+        // Actualizar en la interfaz si existe el elemento
+        const saldoElement = document.getElementById('saldo-usuario');
+        if (saldoElement) {
+            saldoElement.textContent = `$${nuevoSaldo.toFixed(2)}`;
+        }
+    }
+    
+    /**
+     * Actualiza el saldo del usuario en la base de datos
+     * @param {number} monto - Monto a agregar (positivo) o restar (negativo)
+     * @param {string} tipo - Tipo de transacción ('apuesta' o 'ganancia')
+     * @param {string} partidoId - ID del partido asociado a la transacción
+     * @returns {Promise<boolean>} - true si fue exitoso, false en caso contrario
+     */
+    async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
+        try {
+            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/TransaccionController.php';
+            const datos = new FormData();
+            datos.append('accion', 'actualizarSaldo');
+            datos.append('monto', monto);
+            datos.append('tipo', tipo);
+            datos.append('referencia', `partido-${partidoId}`);
+            
+            const respuesta = await fetch(url, {
+                method: 'POST',
+                body: datos
+            });
+            
+            const resultado = await respuesta.json();
+            
+            if (resultado.exito) {
+                // Actualizar el saldo localmente
+                this.actualizarSaldoUsuarioLocal(resultado.saldo);
+                return true;
+            } else {
+                console.error('Error al actualizar saldo:', resultado.mensaje);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error de conexión al actualizar saldo:', error);
+            return false;
+        }
     }
     
     /**
@@ -73,16 +154,20 @@ class EnfrentamientosFutbol {
             enfrentamientos: nuevosEnfrentamientos
         }));
         
-        // Reiniciar predicciones en nuevo día
+        // Reiniciar predicciones y apuestas en nuevo día
         localStorage.removeItem(this.PREDICCIONES_KEY);
+        localStorage.removeItem(this.APUESTAS_KEY);
         this.predicciones = {};
+        this.apuestas = {};
         
         // Reiniciar contador de aciertos
         localStorage.setItem('contador-aciertos', JSON.stringify({
             total: 0,
-            aciertos: 0
+            aciertos: 0,
+            montoApostado: 0,
+            montoGanado: 0
         }));
-        this.contadorAciertos = { total: 0, aciertos: 0 };
+        this.contadorAciertos = { total: 0, aciertos: 0, montoApostado: 0, montoGanado: 0 };
         
         return nuevosEnfrentamientos;
     }
@@ -117,6 +202,11 @@ class EnfrentamientosFutbol {
             const hora = Math.floor(Math.random() * 13) + 7 // 7 a 21
             const minuto = Math.random() < 0.5 ? 0 : 30; // 00 o 30
             
+            // Generar cuotas para cada resultado posible
+            const cuotaLocal = parseFloat((Math.random() * 2 + 1.2).toFixed(2)); // Entre 1.2 y 3.2
+            const cuotaEmpate = parseFloat((Math.random() * 2 + 2).toFixed(2)); // Entre 2 y 4
+            const cuotaVisitante = parseFloat((Math.random() * 2 + 1.5).toFixed(2)); // Entre 1.5 y 3.5
+            
             enfrentamientos.push({
                 id: `partido-${i + 1}`,
                 equipoLocal: equipoLocal,
@@ -127,7 +217,12 @@ class EnfrentamientosFutbol {
                     golesLocal: null,
                     golesVisitante: null
                 },
-                resultadoPredicho: false
+                resultadoPredicho: false,
+                cuotas: {
+                    local: cuotaLocal,
+                    empate: cuotaEmpate,
+                    visitante: cuotaVisitante
+                }
             });
         }
         
@@ -247,23 +342,91 @@ class EnfrentamientosFutbol {
     }
     
     /**
+     * Obtiene las apuestas guardadas
+     * @returns {Object} - Apuestas guardadas
+     */
+    obtenerApuestas() {
+        const apuestasGuardadas = localStorage.getItem(this.APUESTAS_KEY);
+        return apuestasGuardadas ? JSON.parse(apuestasGuardadas) : {};
+    }
+    
+    /**
      * Obtiene el contador de aciertos
      * @returns {Object} - Contador de aciertos
      */
     obtenerContadorAciertos() {
         const contadorGuardado = localStorage.getItem('contador-aciertos');
-        return contadorGuardado ? JSON.parse(contadorGuardado) : { total: 0, aciertos: 0 };
+        const contadorDefault = { 
+            total: 0, 
+            aciertos: 0, 
+            montoApostado: 0,
+            montoGanado: 0
+        };
+        
+        if (contadorGuardado) {
+            const contador = JSON.parse(contadorGuardado);
+            // Asegurar que tenga todas las propiedades
+            return {...contadorDefault, ...contador};
+        }
+        
+        return contadorDefault;
     }
     
     /**
-     * Guarda una predicción
+     * Guarda una predicción con apuesta
      * @param {string} partidoId - ID del partido
      * @param {string} prediccion - Predicción (local, empate, visitante)
+     * @param {number} montoApuesta - Monto apostado
      */
-    guardarPrediccion(partidoId, prediccion) {
+    async guardarPrediccion(partidoId, prediccion, montoApuesta) {
+        // Convertir a número
+        montoApuesta = parseFloat(montoApuesta);
+        
+        // Validar que sea un número válido y mayor que cero
+        if (isNaN(montoApuesta) || montoApuesta <= 0) {
+            alert('Por favor ingrese un monto válido para apostar');
+            return;
+        }
+        
+        // Validar que tenga saldo suficiente
+        if (montoApuesta > this.saldoUsuario) {
+            alert('Saldo insuficiente para realizar esta apuesta');
+            return;
+        }
+        
+        // Encontrar el enfrentamiento
+        const enfrentamiento = this.enfrentamientos.find(e => e.id === partidoId);
+        if (!enfrentamiento) {
+            console.error('No se encontró el enfrentamiento');
+            return;
+        }
+        
+        // Calcular posible ganancia según la cuota
+        const cuota = enfrentamiento.cuotas[prediccion];
+        const posibleGanancia = montoApuesta * cuota;
+        
+        // Actualizar el saldo en la BD (restar la apuesta)
+        const resultado = await this.actualizarSaldoUsuarioBD(-montoApuesta, 'apuesta', partidoId);
+        if (!resultado) {
+            alert('Error al procesar la apuesta. Inténtelo nuevamente.');
+            return;
+        }
+        
         // Guardar la predicción
         this.predicciones[partidoId] = prediccion;
         localStorage.setItem(this.PREDICCIONES_KEY, JSON.stringify(this.predicciones));
+        
+        // Guardar la apuesta
+        this.apuestas[partidoId] = {
+            monto: montoApuesta,
+            cuota: cuota,
+            posibleGanancia: posibleGanancia
+        };
+        localStorage.setItem(this.APUESTAS_KEY, JSON.stringify(this.apuestas));
+        
+        // Actualizar contador de montos apostados
+        this.contadorAciertos.montoApostado += montoApuesta;
+        localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
         
         // Marcar el partido como que ya se ha hecho predicción
         this.enfrentamientos = this.enfrentamientos.map(e => {
@@ -285,14 +448,18 @@ class EnfrentamientosFutbol {
     }
     
     /**
-     * Verifica si la predicción fue correcta y actualiza el contador
+     * Verifica si la predicción fue correcta y actualiza el contador y saldo
      * @param {Object} enfrentamiento - Enfrentamiento finalizado
      */
-    verificarPrediccion(enfrentamiento) {
+    async verificarPrediccion(enfrentamiento) {
         const prediccion = this.predicciones[enfrentamiento.id];
         
         // Si no hay predicción para este partido, salir
         if (!prediccion) return;
+        
+        const apuesta = this.apuestas[enfrentamiento.id];
+        // Si no hay apuesta para este partido, salir
+        if (!apuesta) return;
         
         const golesLocal = enfrentamiento.resultado.golesLocal;
         const golesVisitante = enfrentamiento.resultado.golesVisitante;
@@ -312,8 +479,18 @@ class EnfrentamientosFutbol {
         
         // Actualizar contador
         this.contadorAciertos.total++;
+        
         if (acierto) {
             this.contadorAciertos.aciertos++;
+            
+            // Calcular la ganancia
+            const ganancia = apuesta.posibleGanancia;
+            
+            // Acreditar la ganancia al saldo del usuario
+            await this.actualizarSaldoUsuarioBD(ganancia, 'ganancia', enfrentamiento.id);
+            
+            // Actualizar el contador de ganancias
+            this.contadorAciertos.montoGanado += ganancia;
         }
         
         // Guardar contador actualizado
@@ -336,6 +513,15 @@ class EnfrentamientosFutbol {
         
         // Limpiar contenedor
         container.innerHTML = '';
+        
+        // Mostrar el saldo actual del usuario
+        const saldoContainer = document.createElement('div');
+        saldoContainer.className = 'saldo-container';
+        saldoContainer.innerHTML = `
+            <h3>Tu Saldo Actual</h3>
+            <div class="saldo" id="saldo-usuario">$${this.saldoUsuario.toFixed(2)}</div>
+        `;
+        container.appendChild(saldoContainer);
         
         // Añadir cada enfrentamiento
         this.enfrentamientos.forEach(enfrentamiento => {
@@ -367,20 +553,42 @@ class EnfrentamientosFutbol {
                 </div>
             `;
             
-            // Si el partido no ha comenzado y no se ha predicho, añadir botones de predicción
+            // Si el partido no ha comenzado y no se ha predicho, añadir formulario de apuesta
             if (estado.clase === 'no-comenzado' && !enfrentamiento.resultadoPredicho) {
                 contenidoHTML += `
-                    <div class="prediccion-botones">
-                        <button class="btn-prediccion btn-pierde" data-prediccion="visitante">Pierde</button>
-                        <button class="btn-prediccion btn-empate" data-prediccion="empate">Empate</button>
-                        <button class="btn-prediccion btn-gana" data-prediccion="local">Gana</button>
+                    <div class="cuotas-container">
+                        <div class="cuota-item">
+                            <span class="cuota-texto">Local</span>
+                            <span class="cuota-valor">${enfrentamiento.cuotas.local}</span>
+                        </div>
+                        <div class="cuota-item">
+                            <span class="cuota-texto">Empate</span>
+                            <span class="cuota-valor">${enfrentamiento.cuotas.empate}</span>
+                        </div>
+                        <div class="cuota-item">
+                            <span class="cuota-texto">Visitante</span>
+                            <span class="cuota-valor">${enfrentamiento.cuotas.visitante}</span>
+                        </div>
+                    </div>
+                    <div class="apuesta-form">
+                        <div class="form-group">
+                            <label for="monto-${enfrentamiento.id}">Monto a apostar:</label>
+                            <input type="number" id="monto-${enfrentamiento.id}" min="1" step="1" placeholder="$" class="monto-apuesta">
+                        </div>
+                        <div class="prediccion-botones">
+                            <button class="btn-prediccion btn-pierde" data-prediccion="visitante" data-partido="${enfrentamiento.id}">Visitante</button>
+                            <button class="btn-prediccion btn-empate" data-prediccion="empate" data-partido="${enfrentamiento.id}">Empate</button>
+                            <button class="btn-prediccion btn-gana" data-prediccion="local" data-partido="${enfrentamiento.id}">Local</button>
+                        </div>
                     </div>
                 `;
             }
             
             // Si se ha hecho una predicción para este partido, mostrarla
             const prediccion = this.predicciones[enfrentamiento.id];
-            if (prediccion) {
+            const apuesta = this.apuestas[enfrentamiento.id];
+            
+            if (prediccion && apuesta) {
                 let textoPred = '';
                 switch (prediccion) {
                     case 'local': textoPred = 'Gana Local'; break;
@@ -388,7 +596,13 @@ class EnfrentamientosFutbol {
                     case 'empate': textoPred = 'Empate'; break;
                 }
                 
-                contenidoHTML += `<div class="prediccion-hecha">Tu predicción: ${textoPred}</div>`;
+                contenidoHTML += `
+                    <div class="apuesta-info">
+                        <div class="prediccion-hecha">Tu predicción: ${textoPred}</div>
+                        <div class="monto-apostado">Monto apostado: $${apuesta.monto.toFixed(2)}</div>
+                        <div class="posible-ganancia">Posible ganancia: $${apuesta.posibleGanancia.toFixed(2)}</div>
+                    </div>
+                `;
                 
                 // Si el partido ha finalizado, verificar si acertó
                 if (estado.clase === 'finalizado') {
@@ -408,7 +622,9 @@ class EnfrentamientosFutbol {
                     
                     contenidoHTML += `
                         <div class="prediccion-resultado ${acertado ? 'prediccion-correcta' : 'prediccion-incorrecta'}">
-                            ${acertado ? '¡Acertaste!' : 'No acertaste'}
+                            ${acertado ? 
+                                `¡Acertaste! Ganaste $${apuesta.posibleGanancia.toFixed(2)}` : 
+                                `No acertaste. Perdiste $${apuesta.monto.toFixed(2)}`}
                         </div>
                     `;
                 }
@@ -423,8 +639,13 @@ class EnfrentamientosFutbol {
         botonesPrediccion.forEach(boton => {
             boton.addEventListener('click', (e) => {
                 const prediccion = e.target.dataset.prediccion;
-                const partidoId = e.target.closest('.enfrentamiento').dataset.id;
-                this.guardarPrediccion(partidoId, prediccion);
+                const partidoId = e.target.dataset.partido;
+                // Obtener el monto apostado del input correspondiente
+                const inputMonto = document.getElementById(`monto-${partidoId}`);
+                const montoApuesta = inputMonto ? inputMonto.value : '';
+                
+                // Guardar predicción y apuesta
+                this.guardarPrediccion(partidoId, prediccion, montoApuesta);
             });
         });
         
@@ -450,11 +671,20 @@ class EnfrentamientosFutbol {
             ? Math.round((this.contadorAciertos.aciertos / this.contadorAciertos.total) * 100) 
             : 0;
             
+        const retornoInversion = this.contadorAciertos.montoApostado > 0
+            ? ((this.contadorAciertos.montoGanado / this.contadorAciertos.montoApostado) * 100).toFixed(2)
+            : 0;
+            
         resumenElement.innerHTML = `
             <h3>Resumen de Predicciones</h3>
             <div class="contador-predicciones">
                 Has acertado <span>${this.contadorAciertos.aciertos}</span> de 
                 <span>${this.contadorAciertos.total}</span> predicciones (${porcentaje}%)
+            </div>
+            <div class="resumen-financiero">
+                <div>Monto total apostado: $${this.contadorAciertos.montoApostado.toFixed(2)}</div>
+                <div>Monto total ganado: $${this.contadorAciertos.montoGanado.toFixed(2)}</div>
+                <div>Retorno de inversión: ${retornoInversion}%</div>
             </div>
         `;
     }
@@ -472,6 +702,7 @@ class EnfrentamientosFutbol {
         this.renderizarEnfrentamientos();
     }
 }
+
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
     const app = new EnfrentamientosFutbol();
