@@ -30,61 +30,82 @@ class EnfrentamientosFutbol {
             { id: "ROM01", nombre: "AS Roma", pais: "Italia", ciudad: "Roma", liga: "Serie A" }
         ];
         
-          // Clave para almacenamiento local
-        this.STORAGE_KEY = 'enfrentamientos-futbol';
-        this.PREDICCIONES_KEY = 'predicciones-futbol';
-        this.APUESTAS_KEY = 'apuestas-futbol';
-        
-        // Inicializar saldo y enfrentamientos
-        this.saldoUsuario = 0; // Valor inicial hasta que se cargue
-        
-        // Obtener saldo de sesión y luego inicializar lo demás
-        this.obtenerSaldoUsuario().then(() => {
-            // Inicializar enfrentamientos
-            this.enfrentamientos = this.obtenerEnfrentamientosDia();
+            // Clave para almacenamiento local
+            this.STORAGE_KEY = 'enfrentamientos-futbol';
+            this.PREDICCIONES_KEY = 'predicciones-futbol';
+            this.APUESTAS_KEY = 'apuestas-futbol';
             
-            // Inicializar predicciones
-            this.predicciones = this.obtenerPredicciones();
+            // Inicializar enfrentamientos como array vacío para evitar errores
+            this.enfrentamientos = [];
             
-            // Inicializar apuestas
-            this.apuestas = this.obtenerApuestas();
+            // Inicializar saldo y enfrentamientos
+            this.saldoUsuario = 0; // Valor inicial hasta que se cargue
+
+            // Inicializar contador de aciertos por defecto para evitar undefined
+            this.contadorAciertos = { 
+                total: 0, 
+                aciertos: 0, 
+                montoApostado: 0,
+                montoGanado: 0
+            };
             
-            // Contador de aciertos
-            this.contadorAciertos = this.obtenerContadorAciertos();
+            // Obtener saldo de sesión y luego inicializar lo demás
+            this.obtenerSaldoUsuario().then(() => {
+                // Inicializar enfrentamientos
+                this.enfrentamientos = this.obtenerEnfrentamientosDia();
+                
+                // Inicializar predicciones
+                this.predicciones = this.obtenerPredicciones();
+                
+                // Inicializar apuestas
+                this.apuestas = this.obtenerApuestas();
+                
+                // Actualizar contador de aciertos
+                this.contadorAciertos = this.obtenerContadorAciertos();
+                
+                // Iniciar intervalo para actualización automática
+                this.iniciarActualizacionAutomatica();
+            });
+        }
             
-            // Iniciar intervalo para actualización automática
-            this.iniciarActualizacionAutomatica();
-        });
-    }
-    
     /**
      * Obtiene el saldo del usuario actual desde la sesión PHP
      * @returns {number} - Saldo del usuario
      */
-    obtenerSaldoUsuario() {
-        // Hacer una petición AJAX para obtener datos de la sesión
-        return new Promise((resolve, reject) => {
-            fetch('check_session.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.loggedIn) {
-                        this.saldoUsuario = parseFloat(data.saldo);
-                        resolve(this.saldoUsuario);
-                    } else {
-                        // Usuario no logueado
-                        this.saldoUsuario = 0;
-                        resolve(0);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al obtener saldo de sesión:', error);
-                    // Fallback a localStorage como respaldo
-                    const saldoGuardado = localStorage.getItem('saldo-usuario');
-                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 0;
+            obtenerSaldoUsuario() {
+    // Hacer una petición AJAX para obtener datos de la sesión
+    return new Promise((resolve, reject) => {
+        // Corregir la ruta de check_session.php
+        fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Respuesta no es JSON válido');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.loggedIn) {
+                    this.saldoUsuario = parseFloat(data.saldo || 0);
                     resolve(this.saldoUsuario);
-                });
-        });
-    }
+                } else {
+                    // Usuario no logueado
+                    this.saldoUsuario = 0;
+                    resolve(0);
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener saldo de sesión:', error);
+                // Fallback a localStorage como respaldo
+                const saldoGuardado = localStorage.getItem('saldo-usuario');
+                this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 0;
+                resolve(this.saldoUsuario);
+            });
+    });
+}
     
     /**
      * Actualiza el saldo del usuario en la interfaz y en localStorage
@@ -114,36 +135,48 @@ class EnfrentamientosFutbol {
      * @returns {Promise<boolean>} - true si fue exitoso, false en caso contrario
      */
     async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
-        try {
-            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/TransaccionController.php';
-            const datos = new FormData();
-            datos.append('accion', 'actualizarSaldo');
-            datos.append('monto', monto);
-            datos.append('tipo', tipo);
-            datos.append('referencia', `partido-${partidoId}`);
+    try {
+        // La URL actual probablemente está devolviendo HTML en lugar de JSON
+        const url = '/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/TransaccionController.php';
+        const datos = new FormData();
+        datos.append('accion', 'actualizarSaldo');
+        datos.append('monto', monto);
+        datos.append('tipo', tipo);
+        datos.append('referencia', `partido-${partidoId}`);
+        
+        const respuesta = await fetch(url, {
+            method: 'POST',
+            body: datos
+        });
+        
+        // Añadir verificación del tipo de contenido antes de parsear JSON
+        const contentType = respuesta.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Error: El servidor no devolvió JSON válido');
+            const text = await respuesta.text();
+            console.error('Respuesta del servidor:', text);
+            return false;
+        }
+        
+        const resultado = await respuesta.json();
+        
+        if (resultado.exito) {
+            // Actualizar el saldo localmente
+            this.actualizarSaldoUsuarioLocal(resultado.saldo);
             
-            const respuesta = await fetch(url, {
-                method: 'POST',
-                body: datos
-            });
+            // Recargar saldo de la sesión para mantener sincronización
+            await this.obtenerSaldoUsuario();
             
-            const resultado = await respuesta.json();
-            
-            if (resultado.exito) {
-                // Actualizar el saldo localmente
-                this.actualizarSaldoUsuarioLocal(resultado.saldo);
-                
-                // Recargar saldo de la sesión para mantener sincronización
-                await this.obtenerSaldoUsuario();
-                
-                return true;
-            } else {
-                console.error('Error al actualizar saldo:', resultado.mensaje);
-                return false;
-            }
+            return true;
+        } else {
+            console.error('Error al actualizar saldo:', resultado.mensaje);
+            return false;
+        }
         } catch (error) {
             console.error('Error de conexión al actualizar saldo:', error);
-            return false;
+            // Continuar con una actualización local como fallback
+            this.actualizarSaldoUsuarioLocal(this.saldoUsuario - monto);
+            return true; // Devolvemos true para no bloquear la funcionalidad
         }
     }
     
@@ -397,7 +430,7 @@ class EnfrentamientosFutbol {
      * @param {string} prediccion - Predicción (local, empate, visitante)
      * @param {number} montoApuesta - Monto apostado
      */
-    async guardarPrediccion(partidoId, prediccion, montoApuesta) {
+        async guardarPrediccion(partidoId, prediccion, montoApuesta) {
         // Convertir a número
         montoApuesta = parseFloat(montoApuesta);
         
@@ -426,10 +459,9 @@ class EnfrentamientosFutbol {
         
         // Actualizar el saldo en la BD (restar la apuesta)
         const resultado = await this.actualizarSaldoUsuarioBD(-montoApuesta, 'apuesta', partidoId);
-        if (!resultado) {
-            alert('Error al procesar la apuesta. Inténtelo nuevamente.');
-            return;
-        }
+        
+        // Continuar con el proceso incluso si falla la actualización en BD
+        // para no bloquear la funcionalidad del juego
         
         // Guardar la predicción
         this.predicciones[partidoId] = prediccion;
@@ -443,9 +475,16 @@ class EnfrentamientosFutbol {
         };
         localStorage.setItem(this.APUESTAS_KEY, JSON.stringify(this.apuestas));
         
+        // Actualizar saldo localmente como fallback
+        if (!resultado) {
+            this.saldoUsuario -= montoApuesta;
+            localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+        }
+        
         // Actualizar contador de montos apostados
         this.contadorAciertos.montoApostado += montoApuesta;
         localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+        
         
         // Marcar el partido como que ya se ha hecho predicción
         this.enfrentamientos = this.enfrentamientos.map(e => {
@@ -470,56 +509,63 @@ class EnfrentamientosFutbol {
      * Verifica si la predicción fue correcta y actualiza el contador y saldo
      * @param {Object} enfrentamiento - Enfrentamiento finalizado
      */
-    async verificarPrediccion(enfrentamiento) {
-        const prediccion = this.predicciones[enfrentamiento.id];
-        
-        // Si no hay predicción para este partido, salir
-        if (!prediccion) return;
-        
-        const apuesta = this.apuestas[enfrentamiento.id];
-        // Si no hay apuesta para este partido, salir
-        if (!apuesta) return;
-        
-        const golesLocal = enfrentamiento.resultado.golesLocal;
-        const golesVisitante = enfrentamiento.resultado.golesVisitante;
-        let resultadoReal;
-        
-        // Determinar resultado real
-        if (golesLocal > golesVisitante) {
-            resultadoReal = 'local';
-        } else if (golesLocal < golesVisitante) {
-            resultadoReal = 'visitante';
-        } else {
-            resultadoReal = 'empate';
+        async verificarPrediccion(enfrentamiento) {
+            const prediccion = this.predicciones[enfrentamiento.id];
+            
+            // Si no hay predicción para este partido, salir
+            if (!prediccion) return;
+            
+            const apuesta = this.apuestas[enfrentamiento.id];
+            // Si no hay apuesta para este partido, salir
+            if (!apuesta) return;
+            
+            const golesLocal = enfrentamiento.resultado.golesLocal;
+            const golesVisitante = enfrentamiento.resultado.golesVisitante;
+            let resultadoReal;
+            
+            // Determinar resultado real
+            if (golesLocal > golesVisitante) {
+                resultadoReal = 'local';
+            } else if (golesLocal < golesVisitante) {
+                resultadoReal = 'visitante';
+            } else {
+                resultadoReal = 'empate';
+            }
+            
+            // Verificar si la predicción fue acertada
+            const acierto = prediccion === resultadoReal;
+            
+            // Actualizar contador
+            this.contadorAciertos.total++;
+            
+            if (acierto) {
+                this.contadorAciertos.aciertos++;
+                
+                // Calcular la ganancia
+                const ganancia = apuesta.posibleGanancia;
+                
+                // Acreditar la ganancia al saldo del usuario
+                try {
+                    await this.actualizarSaldoUsuarioBD(ganancia, 'ganancia', enfrentamiento.id);
+                } catch (error) {
+                    console.error('Error al acreditar ganancia:', error);
+                    // Actualizar localmente como fallback
+                    this.saldoUsuario += ganancia;
+                    localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                }
+                
+                // Actualizar el contador de ganancias
+                this.contadorAciertos.montoGanado += ganancia;
+            }
+            
+            // Guardar contador actualizado
+            localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
         }
-        
-        // Verificar si la predicción fue acertada
-        const acierto = prediccion === resultadoReal;
-        
-        // Actualizar contador
-        this.contadorAciertos.total++;
-        
-        if (acierto) {
-            this.contadorAciertos.aciertos++;
-            
-            // Calcular la ganancia
-            const ganancia = apuesta.posibleGanancia;
-            
-            // Acreditar la ganancia al saldo del usuario
-            await this.actualizarSaldoUsuarioBD(ganancia, 'ganancia', enfrentamiento.id);
-            
-            // Actualizar el contador de ganancias
-            this.contadorAciertos.montoGanado += ganancia;
-        }
-        
-        // Guardar contador actualizado
-        localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
-    }
     
     /**
      * Renderiza los enfrentamientos en el contenedor
      */
-    renderizarEnfrentamientos() {
+        renderizarEnfrentamientos() {
         const container = document.getElementById('enfrentamientos-container');
         const fechaElement = document.getElementById('fecha-actual');
         
@@ -533,6 +579,12 @@ class EnfrentamientosFutbol {
         // Limpiar contenedor
         container.innerHTML = '';
 
+        // Verificar que this.enfrentamientos esté definido antes de usar forEach
+        if (!this.enfrentamientos || !Array.isArray(this.enfrentamientos)) {
+            console.error('Enfrentamientos no disponibles o no es un array válido');
+            container.innerHTML = '<div class="error-mensaje">No se pudieron cargar los enfrentamientos. Por favor, recargue la página.</div>';
+            return;
+        }
         /*
         // Mostrar el saldo actual del usuario
         const saldoContainer = document.createElement('div');
@@ -543,6 +595,13 @@ class EnfrentamientosFutbol {
         `;
         container.appendChild(saldoContainer);
         */
+       if (!this.contadorAciertos) {
+        this.contadorAciertos = this.obtenerContadorAciertos();
+        }
+        
+        // Mostrar resumen de predicciones
+        this.mostrarResumenPredicciones();
+    
         
         // Añadir cada enfrentamiento
         this.enfrentamientos.forEach(enfrentamiento => {
@@ -677,14 +736,22 @@ class EnfrentamientosFutbol {
     /**
      * Muestra el resumen de predicciones acertadas
      */
-    mostrarResumenPredicciones() {
+        mostrarResumenPredicciones() {
+        // Comprobar que this.contadorAciertos existe
+        if (!this.contadorAciertos) {
+            this.contadorAciertos = this.obtenerContadorAciertos();
+        }
+        
         // Buscar si ya existe el resumen, si no, crearlo
         let resumenElement = document.querySelector('.resumen-predicciones');
         
         if (!resumenElement) {
             resumenElement = document.createElement('div');
             resumenElement.className = 'resumen-predicciones';
-            document.querySelector('.futbol-container').appendChild(resumenElement);
+            const container = document.querySelector('.futbol-container');
+            if (container) {
+                container.appendChild(resumenElement);
+            }
         }
         
         // Actualizar contenido del resumen
@@ -708,7 +775,7 @@ class EnfrentamientosFutbol {
                 <div>Retorno de inversión: ${retornoInversion}%</div>
             </div>
         `;
-    }
+}
     
     /**
      * Inicia la actualización automática de enfrentamientos
