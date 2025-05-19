@@ -9,7 +9,7 @@ class Conexion {
     private $host = "localhost";
     private $db = "bd_pltf_apuestas";
     private $usuario = "root";
-    private $password = "";
+    private $password = "root";
     private $charset = "utf8mb4";
 
     /**
