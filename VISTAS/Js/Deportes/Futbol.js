@@ -72,38 +72,38 @@ class EnfrentamientosFutbol {
      * Obtiene el saldo del usuario actual desde la sesión PHP
      * @returns {number} - Saldo del usuario
      */
-            obtenerSaldoUsuario() {
-    // Hacer una petición AJAX para obtener datos de la sesión
-    return new Promise((resolve, reject) => {
-        // Corregir la ruta de check_session.php
-        fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Respuesta no es JSON válido');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.loggedIn) {
-                    this.saldoUsuario = parseFloat(data.saldo || 0);
+    obtenerSaldoUsuario() {
+        // Hacer una petición AJAX para obtener datos de la sesión
+        return new Promise((resolve, reject) => {
+            // Corregir la ruta de check_session.php
+            fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Respuesta no es JSON válido');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.loggedIn) {
+                        this.saldoUsuario = parseFloat(data.saldo || 0);
+                        resolve(this.saldoUsuario);
+                    } else {
+                        // Usuario no logueado
+                        this.saldoUsuario = 0;
+                        resolve(0);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener saldo de sesión:', error);
+                    // Fallback a localStorage como respaldo
+                    const saldoGuardado = localStorage.getItem('saldo-usuario');
+                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 0;
                     resolve(this.saldoUsuario);
-                } else {
-                    // Usuario no logueado
-                    this.saldoUsuario = 0;
-                    resolve(0);
-                }
-            })
-            .catch(error => {
-                console.error('Error al obtener saldo de sesión:', error);
-                // Fallback a localStorage como respaldo
-                const saldoGuardado = localStorage.getItem('saldo-usuario');
-                this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 0;
-                resolve(this.saldoUsuario);
-            });
+                });
     });
 }
     
@@ -115,16 +115,6 @@ class EnfrentamientosFutbol {
         // Actualizar la propiedad del objeto
         this.saldoUsuario = nuevoSaldo;
         
-        /*
-        // Actualizar en localStorage como respaldo
-        localStorage.setItem('saldo-usuario', nuevoSaldo.toString());
-        
-        // Actualizar en la interfaz si existe el elemento
-        const saldoElement = document.getElementById('saldo-usuario');
-        if (saldoElement) {
-            saldoElement.textContent = `$${nuevoSaldo.toFixed(2)}`;
-        }
-        */
     }
     
     /**
@@ -135,43 +125,57 @@ class EnfrentamientosFutbol {
      * @returns {Promise<boolean>} - true si fue exitoso, false en caso contrario
      */
     async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
-    try {
-        // La URL actual probablemente está devolviendo HTML en lugar de JSON
-        const url = '/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/TransaccionController.php';
-        const datos = new FormData();
-        datos.append('accion', 'actualizarSaldo');
-        datos.append('monto', monto);
-        datos.append('tipo', tipo);
-        datos.append('referencia', `partido-${partidoId}`);
-        
-        const respuesta = await fetch(url, {
-            method: 'POST',
-            body: datos
-        });
-        
-        // Añadir verificación del tipo de contenido antes de parsear JSON
-        const contentType = respuesta.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            console.error('Error: El servidor no devolvió JSON válido');
-            const text = await respuesta.text();
-            console.error('Respuesta del servidor:', text);
-            return false;
-        }
-        
-        const resultado = await respuesta.json();
-        
-        if (resultado.exito) {
-            // Actualizar el saldo localmente
-            this.actualizarSaldoUsuarioLocal(resultado.saldo);
+        /*try {
+            // Cambiar la URL para apuntar a UsuarioController.php en lugar de TransaccionController
+            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/UsuarioController.php';
+            const datos = new FormData();
+            datos.append('accion', 'actualizarSaldo');
+            datos.append('monto', monto);
+            datos.append('tipo', tipo);
+            datos.append('referencia', `partido-${partidoId}`);
             
-            // Recargar saldo de la sesión para mantener sincronización
-            await this.obtenerSaldoUsuario();
+            const respuesta = await fetch(url, {
+                method: 'POST',
+                body: datos
+            });
+            */
+        try {
+            // Usar un script simple específico para esta función
+            const url = 'actualizar_saldo.php';
             
-            return true;
-        } else {
-            console.error('Error al actualizar saldo:', resultado.mensaje);
-            return false;
-        }
+            const datos = new FormData();
+            datos.append('monto', monto);
+            datos.append('tipo', tipo);
+            datos.append('referencia', `partido-${partidoId}`);
+            
+            const respuesta = await fetch(url, {
+                method: 'POST',
+                body: datos
+            });
+            
+            // Verificar el tipo de contenido antes de parsear JSON
+            const contentType = respuesta.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.error('Error: El servidor no devolvió JSON válido');
+                const text = await respuesta.text();
+                console.error('Respuesta del servidor:', text);
+                return false;
+            }
+            
+            const resultado = await respuesta.json();
+            
+            if (resultado.exito) {
+                // Actualizar el saldo localmente
+                this.actualizarSaldoUsuarioLocal(resultado.saldo);
+                
+                // Recargar saldo de la sesión para mantener sincronización
+                await this.obtenerSaldoUsuario();
+                
+                return true;
+            } else {
+                console.error('Error al actualizar saldo:', resultado.mensaje);
+                return false;
+            }
         } catch (error) {
             console.error('Error de conexión al actualizar saldo:', error);
             // Continuar con una actualización local como fallback
