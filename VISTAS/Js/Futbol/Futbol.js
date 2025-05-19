@@ -115,7 +115,7 @@ class EnfrentamientosFutbol {
      */
     async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
         try {
-            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/TransaccionController.php';
+            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/ControladorUsuario.php';
             const datos = new FormData();
             datos.append('accion', 'actualizarSaldo');
             datos.append('monto', monto);
