@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 
 // Conexión a la base de datos
 try {
-    $db = new PDO('mysql:host=localhost;port=3306;dbname=bd_pltf_apuestas', 'root', '');
+    $db = new PDO('mysql:host=localhost;port=3333;dbname=bd_pltf_apuestas', 'root', '');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Obtener datos del formulario
@@ -14,7 +14,7 @@ try {
     
     // Obtener ID de usuario de la sesión
     session_start();
-    $idUsuario = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : 0;
+    $idUsuario = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 0;
     
     if ($idUsuario > 0) {
         // Actualizar saldo de usuario
