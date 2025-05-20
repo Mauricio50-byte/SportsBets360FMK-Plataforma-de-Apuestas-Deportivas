@@ -2,7 +2,7 @@
  * Clase para gestionar los enfrentamientos de fútbol y apuestas
  * @class
  */
-class EnfrentamientosFutbol {
+class EnfrentamientosTenis {
     /**
      * Constructor de la clase
      */
@@ -807,5 +807,5 @@ class EnfrentamientosFutbol {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new EnfrentamientosFutbol();
+    const app = new EnfrentamientosTenis();
 });

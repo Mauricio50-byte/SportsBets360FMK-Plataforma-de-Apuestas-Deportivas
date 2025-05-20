@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Crear el contenedor para el contenido de tenis
         const tenisContainer = document.createElement('div');
-        tenisContainer.className = 'tenis-container';
+        tenisContainer.className = 'futbol-container';
         
         // Añadir el HTML del contenido de tenis
         tenisContainer.innerHTML = `
@@ -195,9 +195,9 @@ document.addEventListener('DOMContentLoaded', function() {
             script.onload = function() {
                 console.log('Script de Tenis cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof EnfrentamientosFutbol === 'function') {
+                if (typeof EnfrentamientosTenis === 'function') {
                     console.log('Inicializando PartidosTenis');
-                    const manager = new EnfrentamientosFutbol();
+                    const manager = new EnfrentamientosTenis();
                     manager.renderizarEnfrentamientos();
                 } else {
                     console.error('La clase PartidosTenis no está disponible');
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Script de Tenis ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
             if (typeof PartidosTenis === 'function') {
-                const manager = new EnfrentamientosFutbol();
+                const manager = new EnfrentamientosTenis();
                 manager.renderizarEnfrentamientos();
             }
         }
