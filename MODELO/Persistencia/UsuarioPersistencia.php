@@ -394,5 +394,31 @@ class UsuarioPersistencia {
             return $errorMsg;
         }
     }
+
+    /**
+     * Método para obtener el saldo actual de un usuario
+     * @param int $idUsuario ID del usuario
+     * @return float|bool Saldo del usuario o false si ocurre un error
+     */
+    public function obtenerSaldoUsuario($idUsuario) {
+        try {
+            // Preparar la consulta
+            $consulta = "SELECT saldo FROM usuarios WHERE ID = :id_usuario LIMIT 1";
+            $stmt = $this->conexion->prepare($consulta);
+            $stmt->bindParam(':id_usuario', $idUsuario, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            // Verificar si se encontró el usuario
+            if ($stmt->rowCount() > 0) {
+                $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+                return (float)$resultado['saldo'];
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            error_log("Error en obtenerSaldoUsuario: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

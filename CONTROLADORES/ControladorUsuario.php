@@ -159,5 +159,20 @@ class ControladorUsuario {
         
         return $this->usuarioPersistencia->cambiarEstadoUsuario($idUsuario, $nuevoEstado);
     }
+
+    /**
+     * Método para obtener el saldo actual de un usuario
+     * @param int $idUsuario ID del usuario
+     * @return float|bool Saldo del usuario o false si ocurre un error
+     */
+    public function obtenerSaldoUsuario($idUsuario) {
+        // Validar que el ID de usuario sea válido
+        if (!is_numeric($idUsuario) || $idUsuario <= 0) {
+            return false;
+        }
+        
+        // Llamar a la capa de persistencia para obtener el saldo
+        return $this->usuarioPersistencia->obtenerSaldoUsuario($idUsuario);
+    }
 }
 ?>

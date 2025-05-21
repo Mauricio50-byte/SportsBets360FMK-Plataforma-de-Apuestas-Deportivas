@@ -17,7 +17,7 @@ try {
     $idUsuario = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 0;
     
     if ($idUsuario > 0) {
-        // Actualizar saldo de usuario
+        // Actualizar saldo de usuario - Solo actualiza la tabla usuarios
         $stmt = $db->prepare("UPDATE usuarios SET saldo = saldo + :monto WHERE ID = :id");
         $stmt->bindParam(':monto', $monto, PDO::PARAM_STR);
         $stmt->bindParam(':id', $idUsuario, PDO::PARAM_INT);
@@ -28,19 +28,7 @@ try {
         $stmtSaldo->bindParam(':id', $idUsuario, PDO::PARAM_INT);
         $stmtSaldo->execute();
         $saldo = $stmtSaldo->fetchColumn();
-        
-        // Registrar transacción
-        $fecha = date('Y-m-d H:i:s');
-        $tipoTrans = $monto > 0 ? 'recarga' : 'retiro';
-        $montoAbs = abs($monto);
-        
-        $stmtTrans = $db->prepare("INSERT INTO transacciones (id_usuario, tipo, monto, fecha) VALUES (:id, :tipo, :monto, :fecha)");
-        $stmtTrans->bindParam(':id', $idUsuario, PDO::PARAM_INT);
-        $stmtTrans->bindParam(':tipo', $tipoTrans, PDO::PARAM_STR);
-        $stmtTrans->bindParam(':monto', $montoAbs, PDO::PARAM_STR);
-        $stmtTrans->bindParam(':fecha', $fecha, PDO::PARAM_STR);
-        $stmtTrans->execute();
-        
+
         echo json_encode([
             'exito' => true,
             'saldo' => $saldo,

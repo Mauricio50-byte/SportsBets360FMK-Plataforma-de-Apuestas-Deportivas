@@ -487,13 +487,7 @@ class EnfrentamientosFutbol {
         return contadorDefault;
     }
     
-    /**
-     * Guarda una predicción con apuesta
-     * @param {string} partidoId - ID del partido
-     * @param {string} prediccion - Predicción (local, empate, visitante)
-     * @param {number} montoApuesta - Monto apostado
-     */
-        async guardarPrediccion(partidoId, prediccion, montoApuesta) {
+    async guardarPrediccion(partidoId, prediccion, montoApuesta) {
         // Convertir a número
         montoApuesta = parseFloat(montoApuesta);
         
@@ -523,8 +517,10 @@ class EnfrentamientosFutbol {
         // Actualizar el saldo en la BD (restar la apuesta)
         const resultado = await this.actualizarSaldoUsuarioBD(-montoApuesta, 'apuesta', partidoId);
         
-        // Continuar con el proceso incluso si falla la actualización en BD
-        // para no bloquear la funcionalidad del juego
+        // Si falla la actualización en BD, mostrar mensaje de error
+        if (!resultado) {
+            alert('Error al actualizar el saldo en la base de datos. La apuesta se procesará en modo offline.');
+        }
         
         // Guardar la predicción
         this.predicciones[partidoId] = prediccion;
@@ -648,17 +644,8 @@ class EnfrentamientosFutbol {
             container.innerHTML = '<div class="error-mensaje">No se pudieron cargar los enfrentamientos. Por favor, recargue la página.</div>';
             return;
         }
-        /*
-        // Mostrar el saldo actual del usuario
-        const saldoContainer = document.createElement('div');
-        saldoContainer.className = 'saldo-container';
-        saldoContainer.innerHTML = `
-            <h3>Tu Saldo Actual</h3>
-            <div class="saldo" id="saldo-usuario">$${this.saldoUsuario.toFixed(2)}</div>
-        `;
-        container.appendChild(saldoContainer);
-        */
-       if (!this.contadorAciertos) {
+
+        if (!this.contadorAciertos) {
         this.contadorAciertos = this.obtenerContadorAciertos();
         }
         
