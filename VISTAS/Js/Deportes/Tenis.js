@@ -41,9 +41,9 @@ class EnfrentamientosTenis {
         ];
         
             // Clave para almacenamiento local
-            this.STORAGE_KEY = 'enfrentamientos-futbol';
-            this.PREDICCIONES_KEY = 'predicciones-futbol';
-            this.APUESTAS_KEY = 'apuestas-futbol';
+            this.STORAGE_KEY = 'enfrentamientos-tenis';
+            this.PREDICCIONES_KEY = 'predicciones-tenis';
+            this.APUESTAS_KEY = 'apuestas-tenis';
             
             // Inicializar enfrentamientos como array vacío para evitar errores
             this.enfrentamientos = [];
@@ -77,81 +77,94 @@ class EnfrentamientosTenis {
                 this.iniciarActualizacionAutomatica();
             });
         }
-            
-    /**
-     * Obtiene el saldo del usuario actual desde la sesión PHP
-     * @returns {number} - Saldo del usuario
-     */
-    obtenerSaldoUsuario() {
-        // Hacer una petición AJAX para obtener datos de la sesión
-        return new Promise((resolve, reject) => {
-            // Corregir la ruta de check_session.php
-            fetch('/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error HTTP: ${response.status}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error('Respuesta no es JSON válido');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.loggedIn) {
-                        this.saldoUsuario = parseFloat(data.saldo || 0);
-                        resolve(this.saldoUsuario);
-                    } else {
-                        // Usuario no logueado
-                        this.saldoUsuario = 0;
-                        resolve(0);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al obtener saldo de sesión:', error);
-                    // Fallback a localStorage como respaldo
-                    const saldoGuardado = localStorage.getItem('saldo-usuario');
-                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 0;
-                    resolve(this.saldoUsuario);
-                });
-    });
-}
     
-    /**
-     * Actualiza el saldo del usuario en la interfaz y en localStorage
-     * @param {number} nuevoSaldo - Nuevo saldo del usuario
-     */
-    actualizarSaldoUsuarioLocal(nuevoSaldo) {
-        // Actualizar la propiedad del objeto
-        this.saldoUsuario = nuevoSaldo;
-        
+    // Method to check if user is authenticated
+    async verificarSesion() {
+        try {
+            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php');
+            
+            if (!response.ok) {
+                console.log("Error de conexión al verificar sesión");
+                return false;
+            }
+            
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.log("Respuesta de sesión no es JSON");
+                return false;
+            }
+            
+            const data = await response.json();
+            
+            if (data.loggedIn) {
+                this.usuarioId = data.id;
+                this.usuarioNombre = data.nombre;
+                this.saldoUsuario = parseFloat(data.saldo || 0);
+                return true;
+            } else {
+                console.log("Usuario no autenticado");
+                return false;
+            }
+        } catch (error) {
+            console.error("Error al verificar sesión:", error);
+            return false;
+        }
     }
     
     /**
-     * Actualiza el saldo del usuario en la base de datos
+     * Función para actualizar el saldo del usuario localmente (en la interfaz)
+     * @param {number} nuevoSaldo - Nuevo saldo a mostrar
+     */
+    actualizarSaldoUsuarioLocal(nuevoSaldo) {
+        // Actualizar la propiedad en la clase
+        this.saldoUsuario = parseFloat(nuevoSaldo);
+        
+        // Actualizar en localStorage para modo offline
+        localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+        
+        // Actualizar elementos de la interfaz
+        const elementosSaldo = document.querySelectorAll('.saldo-usuario');
+        if (elementosSaldo.length > 0) {
+            elementosSaldo.forEach(elemento => {
+                elemento.textContent = `$${this.saldoUsuario.toFixed(2)}`;
+            });
+        } else {
+            // Si no se encuentra un elemento con la clase .saldo-usuario, buscar por ID
+            const saldoElement = document.getElementById('saldo-usuario');
+            if (saldoElement) {
+                saldoElement.textContent = `$${this.saldoUsuario.toFixed(2)}`;
+            }
+        }
+        
+        // Opcional: Disparar un evento personalizado para notificar cambios en el saldo
+        document.dispatchEvent(new CustomEvent('saldoActualizado', { 
+            detail: { saldo: this.saldoUsuario } 
+        }));
+        
+        console.log(`Saldo actualizado localmente: $${this.saldoUsuario.toFixed(2)}`);
+    }
+
+    /**
+     * Modifica la función actualizarSaldoUsuarioBD para manejar mejor la autenticación
      * @param {number} monto - Monto a agregar (positivo) o restar (negativo)
      * @param {string} tipo - Tipo de transacción ('apuesta' o 'ganancia')
      * @param {string} partidoId - ID del partido asociado a la transacción
      * @returns {Promise<boolean>} - true si fue exitoso, false en caso contrario
      */
     async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
-        /*try {
-            // Cambiar la URL para apuntar a UsuarioController.php en lugar de TransaccionController
-            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/CONTROLADORES/UsuarioController.php';
-            const datos = new FormData();
-            datos.append('accion', 'actualizarSaldo');
-            datos.append('monto', monto);
-            datos.append('tipo', tipo);
-            datos.append('referencia', `partido-${partidoId}`);
-            
-            const respuesta = await fetch(url, {
-                method: 'POST',
-                body: datos
-            });
-            */
         try {
-            // Usar un script simple específico para esta función
-            const url = 'actualizar_saldo.php';
+            // Primero verificar si el usuario está autenticado
+            const sesionResult = await this.verificarSesion();
+            
+            if (!sesionResult) {
+                console.log('Usuario no autenticado, utilizando modo offline');
+                // Si no está autenticado, actualizar solo localmente
+                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+                return true; // Devolvemos true para que el resto de la funcionalidad siga trabajando
+            }
+            
+            // Si está autenticado, seguir con la actualización en la BD
+            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/usuario/actualizar_saldo.php';
             
             const datos = new FormData();
             datos.append('monto', monto);
@@ -169,7 +182,10 @@ class EnfrentamientosTenis {
                 console.error('Error: El servidor no devolvió JSON válido');
                 const text = await respuesta.text();
                 console.error('Respuesta del servidor:', text);
-                return false;
+                
+                // Actualizar localmente como fallback
+                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+                return true;
             }
             
             const resultado = await respuesta.json();
@@ -177,21 +193,64 @@ class EnfrentamientosTenis {
             if (resultado.exito) {
                 // Actualizar el saldo localmente
                 this.actualizarSaldoUsuarioLocal(resultado.saldo);
-                
-                // Recargar saldo de la sesión para mantener sincronización
-                await this.obtenerSaldoUsuario();
-                
                 return true;
             } else {
                 console.error('Error al actualizar saldo:', resultado.mensaje);
-                return false;
+                // Actualizar localmente como fallback
+                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+                return true; // Seguimos devolviendo true para no interrumpir la lógica
             }
         } catch (error) {
             console.error('Error de conexión al actualizar saldo:', error);
             // Continuar con una actualización local como fallback
-            this.actualizarSaldoUsuarioLocal(this.saldoUsuario - monto);
+            this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
             return true; // Devolvemos true para no bloquear la funcionalidad
         }
+    }
+
+    /**
+     * Modifica la función obtenerSaldoUsuario para manejar mejor la autenticación
+     * @returns {Promise<number>} - Saldo del usuario
+     */
+    obtenerSaldoUsuario() {
+        // Hacer una petición AJAX para obtener datos de la sesión
+        return new Promise((resolve, reject) => {
+            // Corregir la ruta de check_session.php
+            fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Respuesta no es JSON válido');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.loggedIn) {
+                        this.saldoUsuario = parseFloat(data.saldo || 0);
+                        // Guardar el saldo también en localStorage para modo offline
+                        localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                        resolve(this.saldoUsuario);
+                    } else {
+                        console.log('Usuario no autenticado, usando modo offline');
+                        // Usuario no logueado, obtener de localStorage
+                        const saldoGuardado = localStorage.getItem('saldo-usuario');
+                        this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000; // Saldo inicial para modo offline
+                        localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                        resolve(this.saldoUsuario);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener saldo de sesión:', error);
+                    // Fallback a localStorage como respaldo
+                    const saldoGuardado = localStorage.getItem('saldo-usuario');
+                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000; // Saldo inicial para modo offline
+                    localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                    resolve(this.saldoUsuario);
+                });
+        });
     }
     
     /**
@@ -438,13 +497,7 @@ class EnfrentamientosTenis {
         return contadorDefault;
     }
     
-    /**
-     * Guarda una predicción con apuesta
-     * @param {string} partidoId - ID del partido
-     * @param {string} prediccion - Predicción (local, empate, visitante)
-     * @param {number} montoApuesta - Monto apostado
-     */
-        async guardarPrediccion(partidoId, prediccion, montoApuesta) {
+    async guardarPrediccion(partidoId, prediccion, montoApuesta) {
         // Convertir a número
         montoApuesta = parseFloat(montoApuesta);
         
@@ -474,8 +527,10 @@ class EnfrentamientosTenis {
         // Actualizar el saldo en la BD (restar la apuesta)
         const resultado = await this.actualizarSaldoUsuarioBD(-montoApuesta, 'apuesta', partidoId);
         
-        // Continuar con el proceso incluso si falla la actualización en BD
-        // para no bloquear la funcionalidad del juego
+        // Si falla la actualización en BD, mostrar mensaje de error
+        if (!resultado) {
+            alert('Error al actualizar el saldo en la base de datos. La apuesta se procesará en modo offline.');
+        }
         
         // Guardar la predicción
         this.predicciones[partidoId] = prediccion;
@@ -599,17 +654,8 @@ class EnfrentamientosTenis {
             container.innerHTML = '<div class="error-mensaje">No se pudieron cargar los enfrentamientos. Por favor, recargue la página.</div>';
             return;
         }
-        /*
-        // Mostrar el saldo actual del usuario
-        const saldoContainer = document.createElement('div');
-        saldoContainer.className = 'saldo-container';
-        saldoContainer.innerHTML = `
-            <h3>Tu Saldo Actual</h3>
-            <div class="saldo" id="saldo-usuario">$${this.saldoUsuario.toFixed(2)}</div>
-        `;
-        container.appendChild(saldoContainer);
-        */
-       if (!this.contadorAciertos) {
+
+        if (!this.contadorAciertos) {
         this.contadorAciertos = this.obtenerContadorAciertos();
         }
         
@@ -762,7 +808,7 @@ class EnfrentamientosTenis {
         if (!resumenElement) {
             resumenElement = document.createElement('div');
             resumenElement.className = 'resumen-predicciones';
-            const container = document.querySelector('.futbol-container');
+            const container = document.querySelector('.tenis-container');
             if (container) {
                 container.appendChild(resumenElement);
             }

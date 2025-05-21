@@ -76,11 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Fútbol
     function cargarEstilosFutbol() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Futbol.css"]')) {
             console.log('Cargando estilos de Fútbol');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Futbol.css';
             document.head.appendChild(link);
         }
     }
@@ -127,15 +127,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Crear el contenedor para el contenido de tenis
         const tenisContainer = document.createElement('div');
-        tenisContainer.className = 'futbol-container';
+        tenisContainer.className = 'tenis-container';
         
         // Añadir el HTML del contenido de tenis
         tenisContainer.innerHTML = `
-            <div class="futbol-container">
-                <h2 class="futbol-title">Enfrentamientos de Tenis del Día</h2>
-                <p class="fecha-enfrentamientos" id="fecha-actual">Cargando fecha...</p>
+            <div class="tenis-container">
+                <h2 class="tenis-title">Enfrentamientos de Tenis del Día</h2>
+                <p class="fecha-enfrentamientos" id="fecha-actual-tenis">Cargando fecha...</p>
                 
-                <div class="enfrentamientos-container" id="enfrentamientos-container">
+                <div class="enfrentamientos-container" id="enfrentamientos-container-tenis">
                     <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
                     <div class="cargando">Cargando enfrentamientos...</div>
                 </div>
@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `;
+            
         
         // Limpiar contenido actual y añadir el contenedor de tenis
         contenidoPrincipal.innerHTML = '';
@@ -176,44 +177,43 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Tenis
     function cargarEstilosTenis() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Tenis.css"]')) {
             console.log('Cargando estilos de Tenis');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Futbol.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Tenis.css';
             document.head.appendChild(link);
         }
     }
-    
+
     // Función para cargar script de Tenis
     function cargarScriptTenis() {
         // Verificar si ya existe el script
         if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Tenis.js"]')) {
-            console.log('Cargando script de Tenis');
+            console.log('Cargando script de Fútbol');
             const script = document.createElement('script');
             script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Tenis.js';
             script.onload = function() {
-                console.log('Script de Tenis cargado correctamente');
+                console.log('Script de Fútbol cargado correctamente');
                 // Si existe la clase, inicializar
                 if (typeof EnfrentamientosTenis === 'function') {
-                    console.log('Inicializando PartidosTenis');
+                    console.log('Inicializando EnfrentamientosFutbol');
                     const manager = new EnfrentamientosTenis();
                     manager.renderizarEnfrentamientos();
                 } else {
-                    console.error('La clase PartidosTenis no está disponible');
+                    console.error('La clase EnfrentamientosFutbol no está disponible');
                 }
             };
             document.body.appendChild(script);
         } else {
-            console.log('Script de Tenis ya está cargado, inicializando');
+            console.log('Script de Fútbol ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
-            if (typeof PartidosTenis === 'function') {
+            if (typeof EnfrentamientosTenis === 'function') {
                 const manager = new EnfrentamientosTenis();
                 manager.renderizarEnfrentamientos();
             }
         }
     }
-    
     // BOXEO
     // Función para cargar contenido de Boxeo
     function cargarContenidoBoxeo() {
