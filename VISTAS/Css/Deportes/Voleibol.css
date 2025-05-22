@@ -1,0 +1,823 @@
+/* Estilos generales para la sección de fútbol */
+.voleibol-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 15px;
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #1e2132;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+}
+
+.voleibol-title {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #4caf50;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.fecha-enfrentamientos {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #f8f9fa;
+    font-weight: bold;
+    padding: 6px 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+}
+
+.enfrentamientos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.enfrentamiento {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    background-color: #2a2f45;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid #4caf50;
+    flex-wrap: wrap;
+}
+
+.enfrentamiento:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background-color: #323750;
+}
+
+.horario {
+    width: 80px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #f8f9fa;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.equipos {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.equipo {
+    text-align: center;
+    width: 40%;
+    padding: 0 12px;
+    position: relative;
+}
+
+.equipo-nombre {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #ffffff;
+    font-size: 18px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.equipo-pais {
+    color: #adb5bd;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.versus {
+    margin: 0 15px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #ff9800;
+    text-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+    position: relative;
+}
+
+.versus::before,
+.versus::after {
+    content: "";
+    position: absolute;
+    height: 1px;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, #ff9800, transparent);
+    top: 50%;
+}
+
+.versus::before {
+    right: 100%;
+    margin-right: 6px;
+}
+
+.versus::after {
+    left: 100%;
+    margin-left: 6px;
+}
+
+.estado {
+    width: 150px;
+    text-align: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+}
+
+/* Estados de los enfrentamientos */
+.no-comenzado {
+    background-color: #546e7a;
+    color: white;
+    border: 2px solid #37474f;
+}
+
+.en-vivo {
+    background-color: #4caf50;
+    color: white;
+    border: 2px solid #2e7d32;
+    animation: pulsate 1.5s infinite;
+    position: relative;
+}
+
+.en-vivo::before {
+    content: "•";
+    position: absolute;
+    left: 10px;
+    font-size: 18px;
+    animation: blink 1s infinite;
+}
+
+.finalizado {
+    background-color: #f44336;
+    color: white;
+    border: 2px solid #c62828;
+}
+
+@keyframes pulsate {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(76, 175, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Leyenda de estados */
+.leyenda {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.estado-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+.estado-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.estado-indicator.no-comenzado {
+    background-color: #546e7a;
+}
+
+.estado-indicator.en-vivo {
+    background-color: #4caf50;
+    animation: pulsate 1.5s infinite;
+}
+
+.estado-indicator.finalizado {
+    background-color: #f44336;
+}
+
+.cargando {
+    text-align: center;
+    padding: 20px;
+    color: #adb5bd;
+    font-style: italic;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+/* Estilos para predicción */
+.prediccion-instrucciones {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #3f51b5;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.prediccion-instrucciones::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.prediccion-instrucciones h3 {
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.prediccion-instrucciones p {
+    color: #e0e0e0;
+    font-size: 16px;
+}
+
+.prediccion-botones {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.btn-prediccion {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    flex: 1;
+}
+
+.btn-prediccion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-prediccion:active {
+    transform: translateY(1px);
+}
+
+.btn-pierde {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-empate {
+    background-color: #ff9800;
+    color: white;
+}
+
+.btn-gana {
+    background-color: #4caf50;
+    color: white;
+}
+
+.prediccion-resultado {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.prediccion-correcta {
+    color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid #4caf50;
+}
+
+.prediccion-incorrecta {
+    color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid #f44336;
+}
+
+/* Estilos para el resumen de predicciones */
+.resumen-predicciones {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #1e88e5;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.resumen-predicciones::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #4caf50, #ff9800, #f44336);
+}
+
+.resumen-predicciones h3 {
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contador-predicciones {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #e0e0e0;
+}
+
+.contador-predicciones span {
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0 4px;
+}
+
+/* Estilos para mostrar la predicción realizada */
+.prediccion-hecha {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 4px solid #3498db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.prediccion-hecha:hover {
+    background-color: rgba(52, 152, 219, 0.15);
+    transform: translateX(2px);
+}
+
+/* Estilos específicos según el tipo de predicción */
+.prediccion-hecha[data-tipo="local"] {
+    border-left-color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.prediccion-hecha[data-tipo="empate"] {
+    border-left-color: #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
+}
+
+.prediccion-hecha[data-tipo="visitante"] {
+    border-left-color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.prediccion-hecha::before {
+    content: "🎯 ";
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+/* Estilos para cuotas y apuestas */
+.cuotas-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    width: 100%;
+}
+
+.cuota-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    flex: 1;
+    margin: 0 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cuota-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.cuota-texto {
+    font-size: 14px;
+    color: #adb5bd;
+    margin-bottom: 6px;
+}
+
+.cuota-valor {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-shadow: 0 0 4px rgba(255, 235, 59, 0.3);
+}
+
+/* Formulario de apuesta */
+.apuesta-form {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #e0e0e0;
+    min-width: 120px;
+    margin-right: 10px;
+}
+
+/* Campo de entrada para el monto a apostar */
+.monto-apuesta {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    width: 100px;
+    font-size: 14px;
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.monto-apuesta:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.monto-apuesta:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Campo de entrada modificado para el diseño actual */
+.input-monto-container {
+    display: flex;
+    align-items: center;
+    max-width: 200px;
+    position: relative;
+}
+
+.input-monto-container .monto-apuesta {
+    width: 100%;
+    padding-left: 25px;
+}
+
+.input-monto-container::before {
+    content: "$";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd;
+    font-weight: bold;
+}
+
+/* Estilos para la información de apuesta */
+.apuesta-info {
+    margin-top: 12px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    width: 100%;
+    border-left: 4px solid #3498db;
+}
+
+.monto-apostado {
+    font-size: 14px;
+    margin: 8px 0;
+    color: #e0e0e0;
+}
+
+.posible-ganancia {
+    font-size: 16px;
+    color: #2ecc71;
+    font-weight: bold;
+    text-shadow: 0 0 4px rgba(46, 204, 113, 0.3);
+}
+
+/* Estilos para el resultado */
+.resultado {
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para saldo del usuario */
+.saldo-container {
+    background: linear-gradient(135deg, #1a3b5d, #2c5282);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.saldo-container::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    transform: rotate(30deg);
+}
+
+.saldo-container h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+
+.saldo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #4caf50;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px 20px;
+    border-radius: 20px;
+    display: inline-block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+/* Estilos para resumen financiero */
+.resumen-financiero {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    color: #e0e0e0;
+    text-align: left;
+    border-left: 4px solid #3498db;
+}
+
+.resumen-financiero div {
+    margin: 8px 0;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.resumen-financiero div:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+/* Mejoras para el layout de la sección de apuestas */
+.apuestas-section {
+    background-color: #2c3e50;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.apuestas-title {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+/* Estilo específico para los montos a apostar */
+.monto-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.monto-label {
+    font-size: 14px;
+    flex: 0 0 120px;
+}
+
+.monto-input-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.monto-input {
+    width: 100%;
+    padding: 8px 8px 8px 25px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 14px;
+}
+
+.monto-input-wrapper::before {
+    content: "$";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd;
+}
+
+/* Mejoras para responsive */
+@media (max-width: 992px) {
+    .futbol-container {
+        padding: 12px;
+    }
+    
+    .futbol-title {
+        font-size: 22px;
+    }
+    
+    .enfrentamiento {
+        padding: 12px;
+    }
+    
+    .horario {
+        font-size: 16px;
+    }
+    
+    .equipo-nombre {
+        font-size: 16px;
+    }
+    
+    .versus {
+        font-size: 18px;
+    }
+    
+    .prediccion-instrucciones h3,
+    .resumen-predicciones h3 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .enfrentamiento {
+        flex-direction: column;
+        gap: 12px;
+        padding: 15px 12px;
+    }
+    
+    .horario, .estado {
+        width: 100%;
+        margin: 4px 0;
+    }
+    
+    .equipos {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .versus {
+        margin: 12px 0;
+    }
+    
+    .equipo {
+        width: 100%;
+    }
+    
+    .leyenda {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .cuotas-container {
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .form-group label {
+        min-width: auto;
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .futbol-title {
+        font-size: 20px;
+    }
+    
+    .fecha-enfrentamientos {
+        font-size: 14px;
+    }
+    
+    .equipo-nombre {
+        font-size: 16px;
+    }
+    
+    .prediccion-instrucciones h3,
+    .resumen-predicciones h3 {
+        font-size: 18px;
+    }
+    
+    .saldo {
+        font-size: 20px;
+    }
+    
+    .cuotas-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .cuota-item {
+        flex: 0 0 calc(33.33% - 8px);
+        margin: 4px;
+    }
+    
+    .prediccion-botones {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .btn-prediccion {
+        flex: 1 0 calc(33.33% - 8px);
+    }
+}

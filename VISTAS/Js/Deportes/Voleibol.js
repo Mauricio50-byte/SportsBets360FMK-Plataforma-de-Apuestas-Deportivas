@@ -2,48 +2,38 @@
  * Clase para gestionar los enfrentamientos de fútbol y apuestas
  * @class
  */
-class EnfrentamientosTenis {
+class EnfrentamientosVoleibol {
     /**
      * Constructor de la clase
      */
     constructor() {
         this.equipos = [
-            { id: "NR01", nombre: "Ninjas de la Red", pais: "Japón", ciudad: "Tokio", liga: "Liga Profesional de Tenis" },
-            { id: "RC01", nombre: "Reyes de la Corte", pais: "España", ciudad: "Madrid", liga: "European Tennis League" },
-            { id: "AA01", nombre: "Ace Avengers", pais: "Estados Unidos", ciudad: "Nueva York", liga: "American Tennis Association" },
-            { id: "RR01", nombre: "Racket Raiders", pais: "Australia", ciudad: "Melbourne", liga: "Oceania Tennis Circuit" },
-            { id: "MS01", nombre: "Maestros del Smash", pais: "Argentina", ciudad: "Buenos Aires", liga: "Sudamericana de Tenis" },
-            { id: "BL01", nombre: "Blazers de Línea Base", pais: "Suiza", ciudad: "Basilea", liga: "European Tennis League" },
-            { id: "AS01", nombre: "Ases del Servicio", pais: "Alemania", ciudad: "Berlín", liga: "European Tennis League" },
-            { id: "TT01", nombre: "Titanes del Tenis", pais: "Serbia", ciudad: "Belgrado", liga: "Eastern European Circuit" },
-            { id: "TC01", nombre: "Trituradores de la Corte", pais: "Italia", ciudad: "Roma", liga: "Mediterranean Tennis League" },
-            { id: "BR01", nombre: "Brigada de Revés", pais: "Francia", ciudad: "París", liga: "European Tennis League" },
-            { id: "SS01", nombre: "Escuadrón de Servicio", pais: "Canadá", ciudad: "Toronto", liga: "North American Tennis Tour" },
-            { id: "VV01", nombre: "Vencedores de Volea", pais: "Reino Unido", ciudad: "Londres", liga: "European Tennis League" },
-            { id: "PM01", nombre: "Partido Mavericks", pais: "Australia", ciudad: "Sydney", liga: "Oceania Tennis Circuit" },
-            { id: "LL01", nombre: "Leyendas del Amor-Amor", pais: "Francia", ciudad: "Niza", liga: "European Tennis League" },
-            { id: "RR02", nombre: "Rebeldes de la Raqueta", pais: "Estados Unidos", ciudad: "Miami", liga: "American Tennis Association" },
-            { id: "AA02", nombre: "Advantage All-Stars", pais: "Suecia", ciudad: "Estocolmo", liga: "Northern European Tour" },
-            { id: "DD01", nombre: "Deuce Dynamos", pais: "Rusia", ciudad: "Moscú", liga: "Eastern European Circuit" },
-            { id: "TD01", nombre: "Temerarios del Drop Shot", pais: "Brasil", ciudad: "Río de Janeiro", liga: "Sudamericana de Tenis" },
-            { id: "SP01", nombre: "Spinners", pais: "China", ciudad: "Shanghai", liga: "Asian Tennis Circuit" },
-            { id: "SS02", nombre: "Slice Slayers", pais: "Austria", ciudad: "Viena", liga: "European Tennis League" },
-            { id: "CC01", nombre: "Comandantes de la Corte", pais: "República Checa", ciudad: "Praga", liga: "Eastern European Circuit" },
-            { id: "BL02", nombre: "Bandidos de Línea Base", pais: "Chile", ciudad: "Santiago", liga: "Sudamericana de Tenis" },
-            { id: "EA01", nombre: "Estrellas Aplastantes", pais: "Polonia", ciudad: "Varsovia", liga: "Eastern European Circuit" },
-            { id: "SV01", nombre: "Equipo de Saque y Volea", pais: "Países Bajos", ciudad: "Ámsterdam", liga: "European Tennis League" },
-            { id: "AA03", nombre: "Asesinos Ases", pais: "Estados Unidos", ciudad: "Las Vegas", liga: "American Tennis Association" },
-            { id: "DD02", nombre: "Deuce Dominators", pais: "India", ciudad: "Nueva Delhi", liga: "Asian Tennis Circuit" },
-            { id: "TT02", nombre: "Titans del Top Spin", pais: "Croacia", ciudad: "Zagreb", liga: "Eastern European Circuit" },
-            { id: "ZZ01", nombre: "Zurdos Zumbadores", pais: "Nueva Zelanda", ciudad: "Auckland", liga: "Oceania Tennis Circuit" },
-            { id: "PM02", nombre: "Potencia Máxima", pais: "Sudáfrica", ciudad: "Johannesburgo", liga: "African Tennis Tour" },
-            { id: "LB01", nombre: "Lobbers de Lujo", pais: "Bélgica", ciudad: "Bruselas", liga: "European Tennis League" }
+            { id: "LUB01", nombre: "Lube Civitanova", pais: "Italia", ciudad: "Civitanova Marche", liga: "SuperLega" },
+            { id: "TRE01", nombre: "Trentino Volley", pais: "Italia", ciudad: "Trento", liga: "SuperLega" },
+            { id: "PER01", nombre: "Sir Safety Perugia", pais: "Italia", ciudad: "Perugia", liga: "SuperLega" },
+            { id: "ZAK01", nombre: "ZAKSA Kędzierzyn-Koźle", pais: "Polonia", ciudad: "Kędzierzyn-Koźle", liga: "PlusLiga" },
+            { id: "WAR01", nombre: "Projekt Warszawa", pais: "Polonia", ciudad: "Varsovia", liga: "PlusLiga" },
+            { id: "BER01", nombre: "Berlin Recycling Volleys", pais: "Alemania", ciudad: "Berlín", liga: "Bundesliga" },
+            { id: "ZEN01", nombre: "Zenit Kazan", pais: "Rusia", ciudad: "Kazan", liga: "Superliga Rusa" },
+            { id: "NOV01", nombre: "Lokomotiv Novosibirsk", pais: "Rusia", ciudad: "Novosibirsk", liga: "Superliga Rusa" },
+            { id: "SAD01", nombre: "Sada Cruzeiro", pais: "Brasil", ciudad: "Contagem", liga: "Superliga Brasileña" },
+            { id: "SESI01", nombre: "SESI-SP", pais: "Brasil", ciudad: "São Paulo", liga: "Superliga Brasileña" },
+            { id: "UPCN01", nombre: "UPCN Vóley Club", pais: "Argentina", ciudad: "San Juan", liga: "Liga Argentina" },
+            { id: "BOC01", nombre: "Boca Juniors Vóley", pais: "Argentina", ciudad: "Buenos Aires", liga: "Liga Argentina" },
+            { id: "ALH01", nombre: "Al Hilal", pais: "Arabia Saudita", ciudad: "Riad", liga: "Liga Saudí" },
+            { id: "PGE01", nombre: "Skra Bełchatów", pais: "Polonia", ciudad: "Bełchatów", liga: "PlusLiga" },
+            { id: "FEN01", nombre: "Fenerbahçe Voleybol", pais: "Turquía", ciudad: "Estambul", liga: "Efeler Ligi" },
+            { id: "EZA01", nombre: "Eczaclbaşl Dynavit", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" }, // Femenino
+            { id: "VAK01", nombre: "VakifBank SK", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" }, // Femenino
+            { id: "RCV01", nombre: "Río Duero Soria", pais: "España", ciudad: "Soria", liga: "Superliga Española" },
+            { id: "PAL01", nombre: "CV Guaguas", pais: "España", ciudad: "Las Palmas", liga: "Superliga Española" },
+            { id: "BAR01", nombre: "FC Barcelona Voleibol", pais: "España", ciudad: "Barcelona", liga: "Superliga Española" }
         ];
         
             // Clave para almacenamiento local
-            this.STORAGE_KEY = 'enfrentamientos-tenis';
-            this.PREDICCIONES_KEY = 'predicciones-tenis';
-            this.APUESTAS_KEY = 'apuestas-tenis';
+            this.STORAGE_KEY = 'enfrentamientos-veleibol';
+            this.PREDICCIONES_KEY = 'predicciones-voleibol';
+            this.APUESTAS_KEY = 'apuestas-voleibol';
             
             // Inicializar enfrentamientos como array vacío para evitar errores
             this.enfrentamientos = [];
@@ -635,8 +625,8 @@ class EnfrentamientosTenis {
      * Renderiza los enfrentamientos en el contenedor
      */
         renderizarEnfrentamientos() {
-        const container = document.getElementById('enfrentamientos-container-tenis');
-        const fechaElement = document.getElementById('fecha-actual-tenis');
+        const container = document.getElementById('enfrentamientos-container-voleibol');
+        const fechaElement = document.getElementById('fecha-actual-voleibol');
         
         if (!container || !fechaElement) return;
         
@@ -808,7 +798,7 @@ class EnfrentamientosTenis {
         if (!resumenElement) {
             resumenElement = document.createElement('div');
             resumenElement.className = 'resumen-predicciones';
-            const container = document.querySelector('.tenis-container');
+            const container = document.querySelector('.voleibol-container');
             if (container) {
                 container.appendChild(resumenElement);
             }
@@ -853,5 +843,5 @@ class EnfrentamientosTenis {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new EnfrentamientosTenis();
+    const app = VEnfrentamientosVoleibol();
 });

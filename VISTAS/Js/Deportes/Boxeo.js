@@ -2,48 +2,39 @@
  * Clase para gestionar los enfrentamientos de fútbol y apuestas
  * @class
  */
-class EnfrentamientosTenis {
+class EnfrentamientosBoxeo {
     /**
      * Constructor de la clase
      */
     constructor() {
         this.equipos = [
-            { id: "NR01", nombre: "Ninjas de la Red", pais: "Japón", ciudad: "Tokio", liga: "Liga Profesional de Tenis" },
-            { id: "RC01", nombre: "Reyes de la Corte", pais: "España", ciudad: "Madrid", liga: "European Tennis League" },
-            { id: "AA01", nombre: "Ace Avengers", pais: "Estados Unidos", ciudad: "Nueva York", liga: "American Tennis Association" },
-            { id: "RR01", nombre: "Racket Raiders", pais: "Australia", ciudad: "Melbourne", liga: "Oceania Tennis Circuit" },
-            { id: "MS01", nombre: "Maestros del Smash", pais: "Argentina", ciudad: "Buenos Aires", liga: "Sudamericana de Tenis" },
-            { id: "BL01", nombre: "Blazers de Línea Base", pais: "Suiza", ciudad: "Basilea", liga: "European Tennis League" },
-            { id: "AS01", nombre: "Ases del Servicio", pais: "Alemania", ciudad: "Berlín", liga: "European Tennis League" },
-            { id: "TT01", nombre: "Titanes del Tenis", pais: "Serbia", ciudad: "Belgrado", liga: "Eastern European Circuit" },
-            { id: "TC01", nombre: "Trituradores de la Corte", pais: "Italia", ciudad: "Roma", liga: "Mediterranean Tennis League" },
-            { id: "BR01", nombre: "Brigada de Revés", pais: "Francia", ciudad: "París", liga: "European Tennis League" },
-            { id: "SS01", nombre: "Escuadrón de Servicio", pais: "Canadá", ciudad: "Toronto", liga: "North American Tennis Tour" },
-            { id: "VV01", nombre: "Vencedores de Volea", pais: "Reino Unido", ciudad: "Londres", liga: "European Tennis League" },
-            { id: "PM01", nombre: "Partido Mavericks", pais: "Australia", ciudad: "Sydney", liga: "Oceania Tennis Circuit" },
-            { id: "LL01", nombre: "Leyendas del Amor-Amor", pais: "Francia", ciudad: "Niza", liga: "European Tennis League" },
-            { id: "RR02", nombre: "Rebeldes de la Raqueta", pais: "Estados Unidos", ciudad: "Miami", liga: "American Tennis Association" },
-            { id: "AA02", nombre: "Advantage All-Stars", pais: "Suecia", ciudad: "Estocolmo", liga: "Northern European Tour" },
-            { id: "DD01", nombre: "Deuce Dynamos", pais: "Rusia", ciudad: "Moscú", liga: "Eastern European Circuit" },
-            { id: "TD01", nombre: "Temerarios del Drop Shot", pais: "Brasil", ciudad: "Río de Janeiro", liga: "Sudamericana de Tenis" },
-            { id: "SP01", nombre: "Spinners", pais: "China", ciudad: "Shanghai", liga: "Asian Tennis Circuit" },
-            { id: "SS02", nombre: "Slice Slayers", pais: "Austria", ciudad: "Viena", liga: "European Tennis League" },
-            { id: "CC01", nombre: "Comandantes de la Corte", pais: "República Checa", ciudad: "Praga", liga: "Eastern European Circuit" },
-            { id: "BL02", nombre: "Bandidos de Línea Base", pais: "Chile", ciudad: "Santiago", liga: "Sudamericana de Tenis" },
-            { id: "EA01", nombre: "Estrellas Aplastantes", pais: "Polonia", ciudad: "Varsovia", liga: "Eastern European Circuit" },
-            { id: "SV01", nombre: "Equipo de Saque y Volea", pais: "Países Bajos", ciudad: "Ámsterdam", liga: "European Tennis League" },
-            { id: "AA03", nombre: "Asesinos Ases", pais: "Estados Unidos", ciudad: "Las Vegas", liga: "American Tennis Association" },
-            { id: "DD02", nombre: "Deuce Dominators", pais: "India", ciudad: "Nueva Delhi", liga: "Asian Tennis Circuit" },
-            { id: "TT02", nombre: "Titans del Top Spin", pais: "Croacia", ciudad: "Zagreb", liga: "Eastern European Circuit" },
-            { id: "ZZ01", nombre: "Zurdos Zumbadores", pais: "Nueva Zelanda", ciudad: "Auckland", liga: "Oceania Tennis Circuit" },
-            { id: "PM02", nombre: "Potencia Máxima", pais: "Sudáfrica", ciudad: "Johannesburgo", liga: "African Tennis Tour" },
-            { id: "LB01", nombre: "Lobbers de Lujo", pais: "Bélgica", ciudad: "Bruselas", liga: "European Tennis League" }
+            { id: "ALI01", nombre: "Muhammad Ali", pais: "Estados Unidos", ciudad: "Louisville", categoria: "Peso Pesado" },
+            { id: "TY01", nombre: "Mike Tyson", pais: "Estados Unidos", ciudad: "Brooklyn", categoria: "Peso Pesado" },
+            { id: "FM01", nombre: "Floyd Mayweather Jr.", pais: "Estados Unidos", ciudad: "Grand Rapids", categoria: "Peso Wélter" },
+            { id: "PAC01", nombre: "Manny Pacquiao", pais: "Filipinas", ciudad: "General Santos", categoria: "Peso Wélter" },
+            { id: "CANELO01", nombre: "Canelo Álvarez", pais: "México", ciudad: "Guadalajara", categoria: "Peso Supermediano" },
+            { id: "LEN01", nombre: "Lennox Lewis", pais: "Reino Unido", ciudad: "Londres", categoria: "Peso Pesado" },
+            { id: "HOL01", nombre: "Evander Holyfield", pais: "Estados Unidos", ciudad: "Atlanta", categoria: "Peso Pesado" },
+            { id: "GGG01", nombre: "Gennady Golovkin", pais: "Kazajistán", ciudad: "Karaganda", categoria: "Peso Mediano" },
+            { id: "USA01", nombre: "Oleksandr Usyk", pais: "Ucrania", ciudad: "Simferópol", categoria: "Peso Pesado" },
+            { id: "FUR01", nombre: "Tyson Fury", pais: "Reino Unido", ciudad: "Manchester", categoria: "Peso Pesado" },
+            { id: "ANT01", nombre: "Anthony Joshua", pais: "Reino Unido", ciudad: "Watford", categoria: "Peso Pesado" },
+            { id: "DELA01", nombre: "Óscar de la Hoya", pais: "Estados Unidos", ciudad: "Los Ángeles", categoria: "Peso Mediano" },
+            { id: "JULIO01", nombre: "Julio César Chávez", pais: "México", ciudad: "Ciudad Obregón", categoria: "Peso Súper Ligero" },
+            { id: "ROB01", nombre: "Sugar Ray Robinson", pais: "Estados Unidos", ciudad: "Ailey", categoria: "Peso Mediano" },
+            { id: "HAG01", nombre: "Marvelous Marvin Hagler", pais: "Estados Unidos", ciudad: "Newark", categoria: "Peso Mediano" },
+            { id: "DUR01", nombre: "Roberto Durán", pais: "Panamá", ciudad: "Ciudad de Panamá", categoria: "Peso Ligero" },
+            { id: "TYD01", nombre: "Teófimo López", pais: "Estados Unidos", ciudad: "Brooklyn", categoria: "Peso Superligero" },
+            { id: "LOM01", nombre: "Vasyl Lomachenko", pais: "Ucrania", ciudad: "Bilhorod-Dnistrovskyi", categoria: "Peso Ligero" },
+            { id: "CRAW01", nombre: "Terence Crawford", pais: "Estados Unidos", ciudad: "Omaha", categoria: "Peso Wélter" },
+            { id: "SPEN01", nombre: "Errol Spence Jr.", pais: "Estados Unidos", ciudad: "Long Island", categoria: "Peso Wélter" }
+
         ];
         
             // Clave para almacenamiento local
-            this.STORAGE_KEY = 'enfrentamientos-tenis';
-            this.PREDICCIONES_KEY = 'predicciones-tenis';
-            this.APUESTAS_KEY = 'apuestas-tenis';
+            this.STORAGE_KEY = 'enfrentamientos-boxeo';
+            this.PREDICCIONES_KEY = 'predicciones-boxeo';
+            this.APUESTAS_KEY = 'apuestas-boxeo';
             
             // Inicializar enfrentamientos como array vacío para evitar errores
             this.enfrentamientos = [];
@@ -635,8 +626,8 @@ class EnfrentamientosTenis {
      * Renderiza los enfrentamientos en el contenedor
      */
         renderizarEnfrentamientos() {
-        const container = document.getElementById('enfrentamientos-container-tenis');
-        const fechaElement = document.getElementById('fecha-actual-tenis');
+        const container = document.getElementById('enfrentamientos-container-boxeo');
+        const fechaElement = document.getElementById('fecha-actual-boxeo');
         
         if (!container || !fechaElement) return;
         
@@ -808,7 +799,7 @@ class EnfrentamientosTenis {
         if (!resumenElement) {
             resumenElement = document.createElement('div');
             resumenElement.className = 'resumen-predicciones';
-            const container = document.querySelector('.tenis-container');
+            const container = document.querySelector('.boxeo-container');
             if (container) {
                 container.appendChild(resumenElement);
             }
@@ -853,5 +844,5 @@ class EnfrentamientosTenis {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new EnfrentamientosTenis();
+    const app = new EnfrentamientosFutbol();
 });

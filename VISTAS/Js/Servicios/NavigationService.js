@@ -232,12 +232,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Añadir el HTML del contenido de boxeo
         boxeoContainer.innerHTML = `
             <div class="boxeo-container">
-                <h2 class="boxeo-title">Combates de Boxeo del Día</h2>
-                <p class="fecha-combates" id="fecha-actual-boxeo">Cargando fecha...</p>
+                <h2 class="boxeo-title">Enfrentamientos de Boxeo del Día</h2>
+                <p class="fecha-enfrentamientos" id="fecha-actual-boxeo">Cargando fecha...</p>
                 
-                <div class="combates-container" id="combates-container-boxeo">
-                    <!-- Aquí se cargarán dinámicamente los combates -->
-                    <div class="cargando">Cargando combates...</div>
+                <div class="enfrentamientos-container" id="enfrentamientos-container-boxeo">
+                    <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
+                    <div class="cargando">Cargando enfrentamientos...</div>
                 </div>
                 
                 <div class="leyenda">
@@ -257,8 +257,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <!-- Instrucciones para el juego de predicción -->
                 <div class="prediccion-instrucciones">
-                    <h3>¡Adivina el Ganador!</h3>
-                    <p>Haz tu predicción sobre los combates que aún no han comenzado.</p>
+                    <h3>¡Adivina el Resultado!</h3>
+                    <p>Haz tu predicción sobre los partidos que aún no han comenzado.</p>
                 </div>
             </div>
         `;
@@ -276,11 +276,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para cargar estilos de Boxeo
     function cargarEstilosBoxeo() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Boxeo.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Boxeo.css"]')) {
             console.log('Cargando estilos de Boxeo');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Boxeo.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Boxeo.css';
             document.head.appendChild(link);
         }
     }
@@ -288,17 +288,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar script de Boxeo
     function cargarScriptBoxeo() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Boxeo/Boxeo.js"]')) {
+        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Boxeo.js"]')) {
             console.log('Cargando script de Boxeo');
             const script = document.createElement('script');
-            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Boxeo/Boxeo.js';
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Boxeo.js';
             script.onload = function() {
                 console.log('Script de Boxeo cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof CombatesBoxeo === 'function') {
+                if (typeof EnfrentamientosBoxeoBoxeo === 'function') {
                     console.log('Inicializando CombatesBoxeo');
-                    const manager = new CombatesBoxeo();
-                    manager.renderizarCombates();
+                    const manager = new EnfrentamientosBoxeo();
+                    manager.renderizarEnfrentamientos();
                 } else {
                     console.error('La clase CombatesBoxeo no está disponible');
                 }
@@ -307,9 +307,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.log('Script de Boxeo ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
-            if (typeof CombatesBoxeo === 'function') {
-                const manager = new CombatesBoxeo();
-                manager.renderizarCombates();
+            if (typeof EnfrentamientosBoxeo === 'function') {
+                const manager = new EnfrentamientosBoxeo();
+                manager.renderizarEnfrentamientos();
             }
         }
     }
@@ -632,12 +632,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Añadir el HTML del contenido de voleibol
         voleibolContainer.innerHTML = `
             <div class="voleibol-container">
-                <h2 class="voleibol-title">Partidos de Voleibol del Día</h2>
-                <p class="fecha-partidos" id="fecha-actual-voleibol">Cargando fecha...</p>
+                <h2 class="voleibol-title">Enfrentamientos de Voleibol del Día</h2>
+                <p class="fecha-enfrentamientos" id="fecha-actual-voleibol">Cargando fecha...</p>
                 
-                <div class="partidos-container" id="partidos-container-voleibol">
-                    <!-- Aquí se cargarán dinámicamente los partidos -->
-                    <div class="cargando">Cargando partidos...</div>
+                <div class="enfrentamientos-container" id="enfrentamientos-container-voleibol">
+                    <!-- Aquí se cargarán dinámicamente los enfrentamientos -->
+                    <div class="cargando">Cargando enfrentamientos...</div>
                 </div>
                 
                 <div class="leyenda">
@@ -676,11 +676,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Voleibol
     function cargarEstilosVoleibol() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Voleibol.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Voleibol.css"]')) {
             console.log('Cargando estilos de Voleibol');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Voleibol.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Voleibol.css';
             document.head.appendChild(link);
         }
     }
@@ -688,17 +688,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar script de Voleibol
     function cargarScriptVoleibol() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Voleibol/Voleibol.js"]')) {
+        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Voleibol.js"]')) {
             console.log('Cargando script de Voleibol');
             const script = document.createElement('script');
-            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Voleibol/Voleibol.js';
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Voleibol.js';
             script.onload = function() {
                 console.log('Script de Voleibol cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof PartidosVoleibol === 'function') {
+                if (typeof EnfrentamientosVoleibol === 'function') {
                     console.log('Inicializando PartidosVoleibol');
-                    const manager = new PartidosVoleibol();
-                    manager.renderizarPartidos();
+                    const manager = new EnfrentamientosVoleibol();
+                    manager.renderizarEnfrentamientos();
                 } else {
                     console.error('La clase PartidosVoleibol no está disponible');
                 }
@@ -707,9 +707,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.log('Script de Voleibol ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
-            if (typeof PartidosVoleibol === 'function') {
-                const manager = new PartidosVoleibol();
-                manager.renderizarPartidos();
+            if (typeof EnfrentamientosVoleibol === 'function') {
+                const manager = new EnfrentamientosVoleibol();
+                manager.renderizarEnfrentamientos();
             }
         }
     }
