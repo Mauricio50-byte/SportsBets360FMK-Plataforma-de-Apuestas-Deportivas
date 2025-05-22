@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
             script.onload = function() {
                 console.log('Script de Boxeo cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof EnfrentamientosBoxeoBoxeo === 'function') {
+                if (typeof EnfrentamientosBoxeo === 'function') {
                     console.log('Inicializando CombatesBoxeo');
                     const manager = new EnfrentamientosBoxeo();
                     manager.renderizarEnfrentamientos();
