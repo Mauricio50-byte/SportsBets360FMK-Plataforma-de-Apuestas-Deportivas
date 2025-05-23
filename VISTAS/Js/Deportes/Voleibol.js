@@ -319,9 +319,8 @@ class EnfrentamientosVoleibol {
             
             // Generar cuotas para cada resultado posible
             const cuotaLocal = parseFloat((Math.random() * 2 + 1.2).toFixed(2)); // Entre 1.2 y 3.2
-            const cuotaEmpate = parseFloat((Math.random() * 2 + 2).toFixed(2)); // Entre 2 y 4
-            const cuotaVisitante = parseFloat((Math.random() * 2 + 1.5).toFixed(2)); // Entre 1.5 y 3.5
-            
+            const cuotaVisitante = parseFloat((Math.random() * 2 + 1.2).toFixed(2)); // Entre 1.2 y 3.2
+
             enfrentamientos.push({
                 id: `partido-${i + 1}`,
                 equipoLocal: equipoLocal,
@@ -335,10 +334,10 @@ class EnfrentamientosVoleibol {
                 resultadoPredicho: false,
                 cuotas: {
                     local: cuotaLocal,
-                    empate: cuotaEmpate,
                     visitante: cuotaVisitante
                 }
             });
+            
         }
         
         // Ordenar enfrentamientos por hora
@@ -371,9 +370,9 @@ class EnfrentamientosVoleibol {
         const horaPartido = parseInt(enfrentamiento.hora);
         const minutoPartido = parseInt(enfrentamiento.minuto);
         
-        // Duración de 90 minutos (1h30m)
-        const finPartidoHora = horaPartido + 1;
-        const finPartidoMinuto = minutoPartido + 30;
+        // Duración de 3 horas (típico para beisbol)
+        const finPartidoHora = horaPartido + 3;
+        const finPartidoMinuto = minutoPartido;
         
         // Ajustar minutos excedentes
         let horaFinAjustada = finPartidoHora;
@@ -389,10 +388,10 @@ class EnfrentamientosVoleibol {
             horaActual > horaFinAjustada || 
             (horaActual === horaFinAjustada && minutoActual > minutoFinAjustado)
         ) {
-            // Si terminó, generar resultado aleatorio si no existe
+
             if (enfrentamiento.resultado.golesLocal === null) {
-                enfrentamiento.resultado.golesLocal = Math.floor(Math.random() * 5);
-                enfrentamiento.resultado.golesVisitante = Math.floor(Math.random() * 5);
+                enfrentamiento.resultado.golesLocal = Math.floor(Math.random() * 15); // 0-14 carreras
+                enfrentamiento.resultado.golesVisitante = Math.floor(Math.random() * 15); // 0-14 carreras
                 
                 // Guardar resultado en localStorage
                 this.actualizarEnfrentamientoEnStorage(enfrentamiento);
@@ -400,7 +399,7 @@ class EnfrentamientosVoleibol {
                 // Verificar si se hizo predicción y actualizar contador
                 this.verificarPrediccion(enfrentamiento);
             }
-            
+                        
             return {
                 texto: "Finalizado",
                 clase: "finalizado"
@@ -582,13 +581,11 @@ class EnfrentamientosVoleibol {
             const golesVisitante = enfrentamiento.resultado.golesVisitante;
             let resultadoReal;
             
-            // Determinar resultado real
+            // Determinar resultado real (sin empate en beisbol)
             if (golesLocal > golesVisitante) {
                 resultadoReal = 'local';
-            } else if (golesLocal < golesVisitante) {
-                resultadoReal = 'visitante';
             } else {
-                resultadoReal = 'empate';
+                resultadoReal = 'visitante';
             }
             
             // Verificar si la predicción fue acertada
@@ -692,10 +689,6 @@ class EnfrentamientosVoleibol {
                             <span class="cuota-valor">${enfrentamiento.cuotas.local}</span>
                         </div>
                         <div class="cuota-item">
-                            <span class="cuota-texto">Empate</span>
-                            <span class="cuota-valor">${enfrentamiento.cuotas.empate}</span>
-                        </div>
-                        <div class="cuota-item">
                             <span class="cuota-texto">Visitante</span>
                             <span class="cuota-valor">${enfrentamiento.cuotas.visitante}</span>
                         </div>
@@ -706,9 +699,8 @@ class EnfrentamientosVoleibol {
                             <input type="number" id="monto-${enfrentamiento.id}" min="1" step="1" placeholder="$" class="monto-apuesta">
                         </div>
                         <div class="prediccion-botones">
-                            <button class="btn-prediccion btn-pierde" data-prediccion="visitante" data-partido="${enfrentamiento.id}">Visitante</button>
-                            <button class="btn-prediccion btn-empate" data-prediccion="empate" data-partido="${enfrentamiento.id}">Empate</button>
-                            <button class="btn-prediccion btn-gana" data-prediccion="local" data-partido="${enfrentamiento.id}">Local</button>
+                            <button class="btn-prediccion btn-visitante" data-prediccion="visitante" data-partido="${enfrentamiento.id}">Visitante</button>
+                            <button class="btn-prediccion btn-local" data-prediccion="local" data-partido="${enfrentamiento.id}">Local</button>
                         </div>
                     </div>
                 `;
@@ -723,7 +715,6 @@ class EnfrentamientosVoleibol {
                 switch (prediccion) {
                     case 'local': textoPred = 'Gana Local'; break;
                     case 'visitante': textoPred = 'Gana Visitante'; break;
-                    case 'empate': textoPred = 'Empate'; break;
                 }
                 
                 contenidoHTML += `
@@ -744,8 +735,6 @@ class EnfrentamientosVoleibol {
                         resultadoReal = 'local';
                     } else if (golesLocal < golesVisitante) {
                         resultadoReal = 'visitante';
-                    } else {
-                        resultadoReal = 'empate';
                     }
                     
                     const acertado = prediccion === resultadoReal;
@@ -843,5 +832,5 @@ class EnfrentamientosVoleibol {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = EnfrentamientosVoleibol();
+    const app = new EnfrentamientosVoleibol();
 });
