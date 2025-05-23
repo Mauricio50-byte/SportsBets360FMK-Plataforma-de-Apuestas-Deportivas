@@ -286,7 +286,7 @@ class EnfrentamientosTenis {
         this.apuestas = {};
         
         // Reiniciar contador de aciertos
-        localStorage.setItem('contador-aciertos', JSON.stringify({
+        localStorage.setItem('contador-aciertos-tenis', JSON.stringify({
             total: 0,
             aciertos: 0,
             montoApostado: 0,
@@ -329,7 +329,6 @@ class EnfrentamientosTenis {
             
             // Generar cuotas para cada resultado posible
             const cuotaLocal = parseFloat((Math.random() * 2 + 1.2).toFixed(2)); // Entre 1.2 y 3.2
-            const cuotaEmpate = parseFloat((Math.random() * 2 + 2).toFixed(2)); // Entre 2 y 4
             const cuotaVisitante = parseFloat((Math.random() * 2 + 1.5).toFixed(2)); // Entre 1.5 y 3.5
             
             enfrentamientos.push({
@@ -345,7 +344,6 @@ class EnfrentamientosTenis {
                 resultadoPredicho: false,
                 cuotas: {
                     local: cuotaLocal,
-                    empate: cuotaEmpate,
                     visitante: cuotaVisitante
                 }
             });
@@ -381,9 +379,9 @@ class EnfrentamientosTenis {
         const horaPartido = parseInt(enfrentamiento.hora);
         const minutoPartido = parseInt(enfrentamiento.minuto);
         
-        // Duración de 90 minutos (1h30m)
+        // Duración de 60 minutos
         const finPartidoHora = horaPartido + 1;
-        const finPartidoMinuto = minutoPartido + 30;
+        const finPartidoMinuto = minutoPartido;
         
         // Ajustar minutos excedentes
         let horaFinAjustada = finPartidoHora;
@@ -480,7 +478,7 @@ class EnfrentamientosTenis {
      * @returns {Object} - Contador de aciertos
      */
     obtenerContadorAciertos() {
-        const contadorGuardado = localStorage.getItem('contador-aciertos');
+        const contadorGuardado = localStorage.getItem('contador-aciertos-tenis');
         const contadorDefault = { 
             total: 0, 
             aciertos: 0, 
@@ -552,7 +550,7 @@ class EnfrentamientosTenis {
         
         // Actualizar contador de montos apostados
         this.contadorAciertos.montoApostado += montoApuesta;
-        localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+        localStorage.setItem('contador-aciertos-tenis', JSON.stringify(this.contadorAciertos));
         
         
         // Marcar el partido como que ya se ha hecho predicción
@@ -597,8 +595,6 @@ class EnfrentamientosTenis {
                 resultadoReal = 'local';
             } else if (golesLocal < golesVisitante) {
                 resultadoReal = 'visitante';
-            } else {
-                resultadoReal = 'empate';
             }
             
             // Verificar si la predicción fue acertada
@@ -628,7 +624,7 @@ class EnfrentamientosTenis {
             }
             
             // Guardar contador actualizado
-            localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+            localStorage.setItem('contador-aciertos-tenis', JSON.stringify(this.contadorAciertos));
         }
     
     /**
@@ -702,10 +698,6 @@ class EnfrentamientosTenis {
                             <span class="cuota-valor">${enfrentamiento.cuotas.local}</span>
                         </div>
                         <div class="cuota-item">
-                            <span class="cuota-texto">Empate</span>
-                            <span class="cuota-valor">${enfrentamiento.cuotas.empate}</span>
-                        </div>
-                        <div class="cuota-item">
                             <span class="cuota-texto">Visitante</span>
                             <span class="cuota-valor">${enfrentamiento.cuotas.visitante}</span>
                         </div>
@@ -717,7 +709,6 @@ class EnfrentamientosTenis {
                         </div>
                         <div class="prediccion-botones">
                             <button class="btn-prediccion btn-pierde" data-prediccion="visitante" data-partido="${enfrentamiento.id}">Visitante</button>
-                            <button class="btn-prediccion btn-empate" data-prediccion="empate" data-partido="${enfrentamiento.id}">Empate</button>
                             <button class="btn-prediccion btn-gana" data-prediccion="local" data-partido="${enfrentamiento.id}">Local</button>
                         </div>
                     </div>
@@ -733,7 +724,6 @@ class EnfrentamientosTenis {
                 switch (prediccion) {
                     case 'local': textoPred = 'Gana Local'; break;
                     case 'visitante': textoPred = 'Gana Visitante'; break;
-                    case 'empate': textoPred = 'Empate'; break;
                 }
                 
                 contenidoHTML += `
@@ -754,8 +744,6 @@ class EnfrentamientosTenis {
                         resultadoReal = 'local';
                     } else if (golesLocal < golesVisitante) {
                         resultadoReal = 'visitante';
-                    } else {
-                        resultadoReal = 'empate';
                     }
                     
                     const acertado = prediccion === resultadoReal;
@@ -803,11 +791,11 @@ class EnfrentamientosTenis {
         }
         
         // Buscar si ya existe el resumen, si no, crearlo
-        let resumenElement = document.querySelector('.resumen-predicciones');
+        let resumenElement = document.querySelector('.resumen-predicciones-tenis');
         
         if (!resumenElement) {
             resumenElement = document.createElement('div');
-            resumenElement.className = 'resumen-predicciones';
+            resumenElement.className = 'resumen-predicciones-tenis';
             const container = document.querySelector('.tenis-container');
             if (container) {
                 container.appendChild(resumenElement);
@@ -825,11 +813,11 @@ class EnfrentamientosTenis {
             
         resumenElement.innerHTML = `
             <h3>Resumen de Predicciones</h3>
-            <div class="contador-predicciones">
+            <div class="contador-predicciones-tenis">
                 Has acertado <span>${this.contadorAciertos.aciertos}</span> de 
                 <span>${this.contadorAciertos.total}</span> predicciones (${porcentaje}%)
             </div>
-            <div class="resumen-financiero">
+            <div class="resumen-financiero-tenis">
                 <div>Monto total apostado: $${this.contadorAciertos.montoApostado.toFixed(2)}</div>
                 <div>Monto total ganado: $${this.contadorAciertos.montoGanado.toFixed(2)}</div>
                 <div>Retorno de inversión: ${retornoInversion}%</div>

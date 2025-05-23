@@ -276,7 +276,7 @@ class EnfrentamientosVoleibol {
         this.apuestas = {};
         
         // Reiniciar contador de aciertos
-        localStorage.setItem('contador-aciertos', JSON.stringify({
+        localStorage.setItem('contador-aciertos-voleibol', JSON.stringify({
             total: 0,
             aciertos: 0,
             montoApostado: 0,
@@ -371,8 +371,8 @@ class EnfrentamientosVoleibol {
         const minutoPartido = parseInt(enfrentamiento.minuto);
         
         // Duración de 3 horas (típico para beisbol)
-        const finPartidoHora = horaPartido + 3;
-        const finPartidoMinuto = minutoPartido;
+        const finPartidoHora = horaPartido + 1;
+        const finPartidoMinuto = minutoPartido+ 10;
         
         // Ajustar minutos excedentes
         let horaFinAjustada = finPartidoHora;
@@ -469,7 +469,7 @@ class EnfrentamientosVoleibol {
      * @returns {Object} - Contador de aciertos
      */
     obtenerContadorAciertos() {
-        const contadorGuardado = localStorage.getItem('contador-aciertos');
+        const contadorGuardado = localStorage.getItem('contador-aciertos-voleibol');
         const contadorDefault = { 
             total: 0, 
             aciertos: 0, 
@@ -541,7 +541,7 @@ class EnfrentamientosVoleibol {
         
         // Actualizar contador de montos apostados
         this.contadorAciertos.montoApostado += montoApuesta;
-        localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+        localStorage.setItem('contador-aciertos-voleibol', JSON.stringify(this.contadorAciertos));
         
         
         // Marcar el partido como que ya se ha hecho predicción
@@ -615,7 +615,7 @@ class EnfrentamientosVoleibol {
             }
             
             // Guardar contador actualizado
-            localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+            localStorage.setItem('contador-aciertos-voleibol', JSON.stringify(this.contadorAciertos));
         }
     
     /**
@@ -782,11 +782,11 @@ class EnfrentamientosVoleibol {
         }
         
         // Buscar si ya existe el resumen, si no, crearlo
-        let resumenElement = document.querySelector('.resumen-predicciones');
+        let resumenElement = document.querySelector('.resumen-predicciones-voleibol');
         
         if (!resumenElement) {
             resumenElement = document.createElement('div');
-            resumenElement.className = 'resumen-predicciones';
+            resumenElement.className = 'resumen-predicciones-voleibol';
             const container = document.querySelector('.voleibol-container');
             if (container) {
                 container.appendChild(resumenElement);
@@ -804,11 +804,11 @@ class EnfrentamientosVoleibol {
             
         resumenElement.innerHTML = `
             <h3>Resumen de Predicciones</h3>
-            <div class="contador-predicciones">
+            <div class="contador-predicciones-voleibol">
                 Has acertado <span>${this.contadorAciertos.aciertos}</span> de 
                 <span>${this.contadorAciertos.total}</span> predicciones (${porcentaje}%)
             </div>
-            <div class="resumen-financiero">
+            <div class="resumen-financiero-voleibol">
                 <div>Monto total apostado: $${this.contadorAciertos.montoApostado.toFixed(2)}</div>
                 <div>Monto total ganado: $${this.contadorAciertos.montoGanado.toFixed(2)}</div>
                 <div>Retorno de inversión: ${retornoInversion}%</div>

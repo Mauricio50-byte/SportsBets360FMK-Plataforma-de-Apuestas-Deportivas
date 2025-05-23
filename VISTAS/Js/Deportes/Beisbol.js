@@ -372,9 +372,9 @@ class EnfrentamientosVeisbol {
         const horaPartido = parseInt(enfrentamiento.hora);
         const minutoPartido = parseInt(enfrentamiento.minuto);
         
-        // Duración de 90 minutos (1h30m)
-        const finPartidoHora = horaPartido + 1;
-        const finPartidoMinuto = minutoPartido + 30;
+        // Duración de 3 horas (típico para beisbol)
+        const finPartidoHora = horaPartido + 3;
+        const finPartidoMinuto = minutoPartido ;
         
         // Ajustar minutos excedentes
         let horaFinAjustada = finPartidoHora;
