@@ -120,17 +120,17 @@ class EnfrentamientosFutbol {
         this.saldoUsuario = parseFloat(nuevoSaldo);
         
         // Actualizar en localStorage para modo offline
-        localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+        localStorage.setItem('usuario', this.saldoUsuario.toString());
         
         // Actualizar elementos de la interfaz
-        const elementosSaldo = document.querySelectorAll('.saldo-usuario');
+        const elementosSaldo = document.querySelectorAll('.usuario');
         if (elementosSaldo.length > 0) {
             elementosSaldo.forEach(elemento => {
                 elemento.textContent = `$${this.saldoUsuario.toFixed(2)}`;
             });
         } else {
-            // Si no se encuentra un elemento con la clase .saldo-usuario, buscar por ID
-            const saldoElement = document.getElementById('saldo-usuario');
+            // Si no se encuentra un elemento con la clase .usuario, buscar por ID
+            const saldoElement = document.getElementById('usuario');
             if (saldoElement) {
                 saldoElement.textContent = `$${this.saldoUsuario.toFixed(2)}`;
             }
@@ -258,23 +258,23 @@ class EnfrentamientosFutbol {
                 if (data.loggedIn) {
                     this.saldoUsuario = parseFloat(data.saldo || 0);
                     // Guardar el saldo también en localStorage para modo offline
-                    localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                    localStorage.setItem('usuario', this.saldoUsuario.toString());
                     resolve(this.saldoUsuario);
                 } else {
                     console.log('Usuario no autenticado, usando modo offline');
                     // Usuario no logueado, obtener de localStorage
-                    const saldoGuardado = localStorage.getItem('saldo-usuario');
+                    const saldoGuardado = localStorage.getItem('usuario');
                     this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
-                    localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                    localStorage.setItem('usuario', this.saldoUsuario.toString());
                     resolve(this.saldoUsuario);
                 }
             })
             .catch(error => {
                 console.error('Error al obtener saldo de sesión:', error);
                 // Fallback a localStorage como respaldo
-                const saldoGuardado = localStorage.getItem('saldo-usuario');
+                const saldoGuardado = localStorage.getItem('usuario');
                 this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
-                localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                localStorage.setItem('usuario', this.saldoUsuario.toString());
                 resolve(this.saldoUsuario);
             });
         });
@@ -574,7 +574,7 @@ class EnfrentamientosFutbol {
         // Actualizar saldo localmente como fallback
         if (!resultado) {
             this.saldoUsuario -= montoApuesta;
-            localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+            localStorage.setItem('usuario', this.saldoUsuario.toString());
         }
         
         // Actualizar contador de montos apostados
@@ -647,7 +647,7 @@ class EnfrentamientosFutbol {
                     console.error('Error al acreditar ganancia:', error);
                     // Actualizar localmente como fallback
                     this.saldoUsuario += ganancia;
-                    localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                    localStorage.setItem('usuario', this.saldoUsuario.toString());
                 }
                 
                 // Actualizar el contador de ganancias
