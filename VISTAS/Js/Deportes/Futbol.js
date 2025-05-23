@@ -69,37 +69,47 @@ class EnfrentamientosFutbol {
         }
     
     // Method to check if user is authenticated
-    async verificarSesion() {
-        try {
-            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php');
-            
-            if (!response.ok) {
-                console.log("Error de conexión al verificar sesión");
+        async verificarSesion() {
+            try {
+                const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php', {
+                    credentials: 'include' // Incluir cookies de sesión
+                });
+                
+                if (!response.ok) {
+                    console.log("Error de conexión al verificar sesión");
+                    return false;
+                }
+                
+                // Obtener texto primero para validar
+                const textoRespuesta = await response.text();
+                
+                if (!textoRespuesta.trim()) {
+                    console.log("Respuesta vacía del servidor");
+                    return false;
+                }
+                
+                let data;
+                try {
+                    data = JSON.parse(textoRespuesta);
+                } catch (jsonError) {
+                    console.log("Respuesta de sesión no es JSON válido:", textoRespuesta);
+                    return false;
+                }
+                
+                if (data.loggedIn) {
+                    this.usuarioId = data.id;
+                    this.usuarioNombre = data.nombre;
+                    this.saldoUsuario = parseFloat(data.saldo || 0);
+                    return true;
+                } else {
+                    console.log("Usuario no autenticado");
+                    return false;
+                }
+            } catch (error) {
+                console.error("Error al verificar sesión:", error);
                 return false;
             }
-            
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                console.log("Respuesta de sesión no es JSON");
-                return false;
-            }
-            
-            const data = await response.json();
-            
-            if (data.loggedIn) {
-                this.usuarioId = data.id;
-                this.usuarioNombre = data.nombre;
-                this.saldoUsuario = parseFloat(data.saldo || 0);
-                return true;
-            } else {
-                console.log("Usuario no autenticado");
-                return false;
-            }
-        } catch (error) {
-            console.error("Error al verificar sesión:", error);
-            return false;
         }
-    }
     
     /**
      * Función para actualizar el saldo del usuario localmente (en la interfaz)
@@ -132,6 +142,20 @@ class EnfrentamientosFutbol {
         }));
         
         console.log(`Saldo actualizado localmente: $${this.saldoUsuario.toFixed(2)}`);
+
+        // Notificar al menú principal sobre el cambio de saldo
+        if (window.parent !== window) {
+            // Si estamos en un iframe
+            window.parent.postMessage({
+                type: 'saldoActualizado',
+                saldo: this.saldoUsuario
+            }, '*');
+        } else {
+            // Si estamos en la misma ventana
+            window.dispatchEvent(new CustomEvent('saldoGlobalActualizado', {
+                detail: { saldo: this.saldoUsuario }
+            }));
+        }
     }
 
     /**
@@ -142,104 +166,117 @@ class EnfrentamientosFutbol {
      * @returns {Promise<boolean>} - true si fue exitoso, false en caso contrario
      */
     async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
-        try {
-            // Primero verificar si el usuario está autenticado
-            const sesionResult = await this.verificarSesion();
-            
-            if (!sesionResult) {
-                console.log('Usuario no autenticado, utilizando modo offline');
-                // Si no está autenticado, actualizar solo localmente
-                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
-                return true; // Devolvemos true para que el resto de la funcionalidad siga trabajando
-            }
-            
-            // Si está autenticado, seguir con la actualización en la BD
-            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/usuario/actualizar_saldo.php';
-            
-            const datos = new FormData();
-            datos.append('monto', monto);
-            datos.append('tipo', tipo);
-            datos.append('referencia', `partido-${partidoId}`);
-            
-            const respuesta = await fetch(url, {
-                method: 'POST',
-                body: datos
-            });
-            
-            // Verificar el tipo de contenido antes de parsear JSON
-            const contentType = respuesta.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                console.error('Error: El servidor no devolvió JSON válido');
-                const text = await respuesta.text();
-                console.error('Respuesta del servidor:', text);
-                
-                // Actualizar localmente como fallback
-                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
-                return true;
-            }
-            
-            const resultado = await respuesta.json();
-            
-            if (resultado.exito) {
-                // Actualizar el saldo localmente
-                this.actualizarSaldoUsuarioLocal(resultado.saldo);
-                return true;
-            } else {
-                console.error('Error al actualizar saldo:', resultado.mensaje);
-                // Actualizar localmente como fallback
-                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
-                return true; // Seguimos devolviendo true para no interrumpir la lógica
-            }
-        } catch (error) {
-            console.error('Error de conexión al actualizar saldo:', error);
-            // Continuar con una actualización local como fallback
+    try {
+        // Primero verificar si el usuario está autenticado
+        const sesionResult = await this.verificarSesion();
+        
+        if (!sesionResult) {
+            console.log('Usuario no autenticado, utilizando modo offline');
+            // Si no está autenticado, actualizar solo localmente
             this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
-            return true; // Devolvemos true para no bloquear la funcionalidad
+            return true;
         }
+        
+        // Si está autenticado, seguir con la actualización en la BD
+        const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/actualizar_saldo.php';
+        
+        const datos = new FormData();
+        datos.append('monto', monto.toString());
+        datos.append('tipo', tipo);
+        datos.append('referencia', `partido-${partidoId}`);
+        
+        const respuesta = await fetch(url, {
+            method: 'POST',
+            body: datos,
+            credentials: 'include' // Incluir cookies de sesión
+        });
+        
+        if (!respuesta.ok) {
+            throw new Error(`HTTP error! status: ${respuesta.status}`);
+        }
+        
+        // Obtener el texto de la respuesta primero
+        const textoRespuesta = await respuesta.text();
+        
+        // Verificar si la respuesta está vacía
+        if (!textoRespuesta.trim()) {
+            throw new Error('Respuesta vacía del servidor');
+        }
+        
+        let resultado;
+        try {
+            resultado = JSON.parse(textoRespuesta);
+        } catch (jsonError) {
+            console.error('Error al parsear JSON:', jsonError);
+            console.error('Respuesta del servidor:', textoRespuesta);
+            throw new Error('Respuesta del servidor no es JSON válido');
+        }
+        
+        if (resultado.exito) {
+            // Actualizar el saldo localmente con el valor de la BD
+            this.actualizarSaldoUsuarioLocal(resultado.saldo);
+            return true;
+        } else {
+            console.error('Error al actualizar saldo:', resultado.mensaje);
+            // Actualizar localmente como fallback
+            this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+            return true;
+        }
+    } catch (error) {
+        console.error('Error de conexión al actualizar saldo:', error);
+        // Continuar con una actualización local como fallback
+        this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+        return true;
     }
+}
+
 
     /**
      * Modifica la función obtenerSaldoUsuario para manejar mejor la autenticación
      * @returns {Promise<number>} - Saldo del usuario
      */
-    obtenerSaldoUsuario() {
-        // Hacer una petición AJAX para obtener datos de la sesión
+        obtenerSaldoUsuario() {
         return new Promise((resolve, reject) => {
-            // Corregir la ruta de check_session.php
-            fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error HTTP: ${response.status}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new Error('Respuesta no es JSON válido');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.loggedIn) {
-                        this.saldoUsuario = parseFloat(data.saldo || 0);
-                        // Guardar el saldo también en localStorage para modo offline
-                        localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
-                        resolve(this.saldoUsuario);
-                    } else {
-                        console.log('Usuario no autenticado, usando modo offline');
-                        // Usuario no logueado, obtener de localStorage
-                        const saldoGuardado = localStorage.getItem('saldo-usuario');
-                        this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000; // Saldo inicial para modo offline
-                        localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
-                        resolve(this.saldoUsuario);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al obtener saldo de sesión:', error);
-                    // Fallback a localStorage como respaldo
-                    const saldoGuardado = localStorage.getItem('saldo-usuario');
-                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000; // Saldo inicial para modo offline
+            fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php', {
+                credentials: 'include' // Incluir cookies de sesión
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.text(); // Obtener como texto primero
+            })
+            .then(textoRespuesta => {
+                // Verificar si la respuesta está vacía
+                if (!textoRespuesta.trim()) {
+                    throw new Error('Respuesta vacía del servidor');
+                }
+                
+                // Intentar parsear JSON
+                const data = JSON.parse(textoRespuesta);
+                
+                if (data.loggedIn) {
+                    this.saldoUsuario = parseFloat(data.saldo || 0);
+                    // Guardar el saldo también en localStorage para modo offline
                     localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
                     resolve(this.saldoUsuario);
-                });
+                } else {
+                    console.log('Usuario no autenticado, usando modo offline');
+                    // Usuario no logueado, obtener de localStorage
+                    const saldoGuardado = localStorage.getItem('saldo-usuario');
+                    this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
+                    localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                    resolve(this.saldoUsuario);
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener saldo de sesión:', error);
+                // Fallback a localStorage como respaldo
+                const saldoGuardado = localStorage.getItem('saldo-usuario');
+                this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
+                localStorage.setItem('saldo-usuario', this.saldoUsuario.toString());
+                resolve(this.saldoUsuario);
+            });
         });
     }
     

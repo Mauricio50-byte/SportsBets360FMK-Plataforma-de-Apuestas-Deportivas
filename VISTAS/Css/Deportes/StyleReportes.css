@@ -1,0 +1,212 @@
+/* Estilos para Reportes */
+.reportes-menu {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.reporte-btn {
+    padding: 10px 20px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.reporte-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+.filtro-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-generar,
+.btn-limpiar,
+.btn-exportar {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-generar {
+    background: #28a745;
+    color: white;
+}
+
+.btn-limpiar {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-exportar {
+    background: #17a2b8;
+    color: white;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.reporte-resultado {
+    margin-top: 20px;
+}
+
+.reporte-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.reporte-resumen {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.resumen-card {
+    display: flex;
+    gap: 30px;
+}
+
+.resumen-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.resumen-label {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.resumen-valor {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.tabla-reporte {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla-reporte th,
+.tabla-reporte td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.tabla-reporte th {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+.monto.positivo {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.monto.negativo {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.no-datos {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.no-datos i {
+    font-size: 3em;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.mensaje-reporte {
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mensaje-reporte.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.mensaje-reporte.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.mensaje-reporte.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
