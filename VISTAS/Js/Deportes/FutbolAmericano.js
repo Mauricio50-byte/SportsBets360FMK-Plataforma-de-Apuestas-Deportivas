@@ -1,39 +1,39 @@
 /**
- * Clase para gestionar los enfrentamientos de fútbol y apuestas
+ * Clase para gestionar los enfrentamientos de fútbol americano y apuestas
  * @class
  */
-class EnfrentamientosVoleibol {
+class EnfrentamientosFutbolAmericano {
     /**
      * Constructor de la clase
      */
     constructor() {
         this.equipos = [
-            { id: "LUB01", nombre: "Lube Civitanova", pais: "Italia", ciudad: "Civitanova Marche", liga: "SuperLega" },
-            { id: "TRE01", nombre: "Trentino Volley", pais: "Italia", ciudad: "Trento", liga: "SuperLega" },
-            { id: "PER01", nombre: "Sir Safety Perugia", pais: "Italia", ciudad: "Perugia", liga: "SuperLega" },
-            { id: "ZAK01", nombre: "ZAKSA Kędzierzyn-Koźle", pais: "Polonia", ciudad: "Kędzierzyn-Koźle", liga: "PlusLiga" },
-            { id: "WAR01", nombre: "Projekt Warszawa", pais: "Polonia", ciudad: "Varsovia", liga: "PlusLiga" },
-            { id: "BER01", nombre: "Berlin Recycling Volleys", pais: "Alemania", ciudad: "Berlín", liga: "Bundesliga" },
-            { id: "ZEN01", nombre: "Zenit Kazan", pais: "Rusia", ciudad: "Kazan", liga: "Superliga Rusa" },
-            { id: "NOV01", nombre: "Lokomotiv Novosibirsk", pais: "Rusia", ciudad: "Novosibirsk", liga: "Superliga Rusa" },
-            { id: "SAD01", nombre: "Sada Cruzeiro", pais: "Brasil", ciudad: "Contagem", liga: "Superliga Brasileña" },
-            { id: "SESI01", nombre: "SESI-SP", pais: "Brasil", ciudad: "São Paulo", liga: "Superliga Brasileña" },
-            { id: "UPCN01", nombre: "UPCN Vóley Club", pais: "Argentina", ciudad: "San Juan", liga: "Liga Argentina" },
-            { id: "BOC01", nombre: "Boca Juniors Vóley", pais: "Argentina", ciudad: "Buenos Aires", liga: "Liga Argentina" },
-            { id: "ALH01", nombre: "Al Hilal", pais: "Arabia Saudita", ciudad: "Riad", liga: "Liga Saudí" },
-            { id: "PGE01", nombre: "Skra Bełchatów", pais: "Polonia", ciudad: "Bełchatów", liga: "PlusLiga" },
-            { id: "FEN01", nombre: "Fenerbahçe Voleybol", pais: "Turquía", ciudad: "Estambul", liga: "Efeler Ligi" },
-            { id: "EZA01", nombre: "Eczaclbaşl Dynavit", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" }, // Femenino
-            { id: "VAK01", nombre: "VakifBank SK", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" }, // Femenino
-            { id: "RCV01", nombre: "Río Duero Soria", pais: "España", ciudad: "Soria", liga: "Superliga Española" },
-            { id: "PAL01", nombre: "CV Guaguas", pais: "España", ciudad: "Las Palmas", liga: "Superliga Española" },
-            { id: "BAR01", nombre: "FC Barcelona Voleibol", pais: "España", ciudad: "Barcelona", liga: "Superliga Española" }
+            { id: "NE01", nombre: "New England Patriots", pais: "Estados Unidos", ciudad: "Foxborough", liga: "NFL" },
+            { id: "KC01", nombre: "Kansas City Chiefs", pais: "Estados Unidos", ciudad: "Kansas City", liga: "NFL" },
+            { id: "GB01", nombre: "Green Bay Packers", pais: "Estados Unidos", ciudad: "Green Bay", liga: "NFL" },
+            { id: "DAL01", nombre: "Dallas Cowboys", pais: "Estados Unidos", ciudad: "Dallas", liga: "NFL" },
+            { id: "PIT01", nombre: "Pittsburgh Steelers", pais: "Estados Unidos", ciudad: "Pittsburgh", liga: "NFL" },
+            { id: "SF01", nombre: "San Francisco 49ers", pais: "Estados Unidos", ciudad: "San Francisco", liga: "NFL" },
+            { id: "TB01", nombre: "Tampa Bay Buccaneers", pais: "Estados Unidos", ciudad: "Tampa Bay", liga: "NFL" },
+            { id: "BUF01", nombre: "Buffalo Bills", pais: "Estados Unidos", ciudad: "Buffalo", liga: "NFL" },
+            { id: "LAR01", nombre: "Los Angeles Rams", pais: "Estados Unidos", ciudad: "Los Angeles", liga: "NFL" },
+            { id: "BAL01", nombre: "Baltimore Ravens", pais: "Estados Unidos", ciudad: "Baltimore", liga: "NFL" },
+            { id: "SEA01", nombre: "Seattle Seahawks", pais: "Estados Unidos", ciudad: "Seattle", liga: "NFL" },
+            { id: "IND01", nombre: "Indianapolis Colts", pais: "Estados Unidos", ciudad: "Indianapolis", liga: "NFL" },
+            { id: "DEN01", nombre: "Denver Broncos", pais: "Estados Unidos", ciudad: "Denver", liga: "NFL" },
+            { id: "MIN01", nombre: "Minnesota Vikings", pais: "Estados Unidos", ciudad: "Minneapolis", liga: "NFL" },
+            { id: "PHI01", nombre: "Philadelphia Eagles", pais: "Estados Unidos", ciudad: "Philadelphia", liga: "NFL" },
+            { id: "NYG01", nombre: "New York Giants", pais: "Estados Unidos", ciudad: "East Rutherford", liga: "NFL" },
+            { id: "CHI01", nombre: "Chicago Bears", pais: "Estados Unidos", ciudad: "Chicago", liga: "NFL" },
+            { id: "LAC01", nombre: "Los Angeles Chargers", pais: "Estados Unidos", ciudad: "Los Angeles", liga: "NFL" },
+            { id: "MIA01", nombre: "Miami Dolphins", pais: "Estados Unidos", ciudad: "Miami Gardens", liga: "NFL" },
+            { id: "LV01", nombre: "Las Vegas Raiders", pais: "Estados Unidos", ciudad: "Las Vegas", liga: "NFL" }
         ];
         
             // Clave para almacenamiento local
-            this.STORAGE_KEY = 'enfrentamientos-veleibol';
-            this.PREDICCIONES_KEY = 'predicciones-voleibol';
-            this.APUESTAS_KEY = 'apuestas-voleibol';
+            this.STORAGE_KEY = 'enfrentamientos-futbol-americano';
+            this.PREDICCIONES_KEY = 'predicciones-futbol-americano';
+            this.APUESTAS_KEY = 'apuestas-futbol-americano';
             
             // Inicializar enfrentamientos como array vacío para evitar errores
             this.enfrentamientos = [];
@@ -276,7 +276,7 @@ class EnfrentamientosVoleibol {
         this.apuestas = {};
         
         // Reiniciar contador de aciertos
-        localStorage.setItem('contador-aciertos-voleibol', JSON.stringify({
+        localStorage.setItem('contador-aciertos-futbol-americano', JSON.stringify({
             total: 0,
             aciertos: 0,
             montoApostado: 0,
@@ -319,8 +319,9 @@ class EnfrentamientosVoleibol {
             
             // Generar cuotas para cada resultado posible
             const cuotaLocal = parseFloat((Math.random() * 2 + 1.2).toFixed(2)); // Entre 1.2 y 3.2
-            const cuotaVisitante = parseFloat((Math.random() * 2 + 1.2).toFixed(2)); // Entre 1.2 y 3.2
-
+            const cuotaEmpate = parseFloat((Math.random() * 2 + 2).toFixed(2)); // Entre 2 y 4
+            const cuotaVisitante = parseFloat((Math.random() * 2 + 1.5).toFixed(2)); // Entre 1.5 y 3.5
+            
             enfrentamientos.push({
                 id: `partido-${i + 1}`,
                 equipoLocal: equipoLocal,
@@ -334,10 +335,10 @@ class EnfrentamientosVoleibol {
                 resultadoPredicho: false,
                 cuotas: {
                     local: cuotaLocal,
+                    empate: cuotaEmpate,
                     visitante: cuotaVisitante
                 }
             });
-            
         }
         
         // Ordenar enfrentamientos por hora
@@ -370,9 +371,9 @@ class EnfrentamientosVoleibol {
         const horaPartido = parseInt(enfrentamiento.hora);
         const minutoPartido = parseInt(enfrentamiento.minuto);
         
-        // Duración de 3 horas (típico para beisbol)
+        // Duración de 90 minutos (1h30m)
         const finPartidoHora = horaPartido + 1;
-        const finPartidoMinuto = minutoPartido + 10;
+        const finPartidoMinuto = minutoPartido + 30;
         
         // Ajustar minutos excedentes
         let horaFinAjustada = finPartidoHora;
@@ -388,10 +389,10 @@ class EnfrentamientosVoleibol {
             horaActual > horaFinAjustada || 
             (horaActual === horaFinAjustada && minutoActual > minutoFinAjustado)
         ) {
-
+            // Si terminó, generar resultado aleatorio si no existe
             if (enfrentamiento.resultado.golesLocal === null) {
-                enfrentamiento.resultado.golesLocal = Math.floor(Math.random() * 15); // 0-14 carreras
-                enfrentamiento.resultado.golesVisitante = Math.floor(Math.random() * 15); // 0-14 carreras
+                enfrentamiento.resultado.golesLocal = Math.floor(Math.random() * 5);
+                enfrentamiento.resultado.golesVisitante = Math.floor(Math.random() * 5);
                 
                 // Guardar resultado en localStorage
                 this.actualizarEnfrentamientoEnStorage(enfrentamiento);
@@ -399,7 +400,7 @@ class EnfrentamientosVoleibol {
                 // Verificar si se hizo predicción y actualizar contador
                 this.verificarPrediccion(enfrentamiento);
             }
-                        
+            
             return {
                 texto: "Finalizado",
                 clase: "finalizado"
@@ -469,7 +470,7 @@ class EnfrentamientosVoleibol {
      * @returns {Object} - Contador de aciertos
      */
     obtenerContadorAciertos() {
-        const contadorGuardado = localStorage.getItem('contador-aciertos-voleibol');
+        const contadorGuardado = localStorage.getItem('contador-aciertos-futbol-americano');
         const contadorDefault = { 
             total: 0, 
             aciertos: 0, 
@@ -541,7 +542,7 @@ class EnfrentamientosVoleibol {
         
         // Actualizar contador de montos apostados
         this.contadorAciertos.montoApostado += montoApuesta;
-        localStorage.setItem('contador-aciertos-voleibol', JSON.stringify(this.contadorAciertos));
+        localStorage.setItem('contador-aciertos-futbol-americano', JSON.stringify(this.contadorAciertos));
         
         
         // Marcar el partido como que ya se ha hecho predicción
@@ -581,11 +582,13 @@ class EnfrentamientosVoleibol {
             const golesVisitante = enfrentamiento.resultado.golesVisitante;
             let resultadoReal;
             
-            // Determinar resultado real (sin empate en beisbol)
+            // Determinar resultado real
             if (golesLocal > golesVisitante) {
                 resultadoReal = 'local';
-            } else {
+            } else if (golesLocal < golesVisitante) {
                 resultadoReal = 'visitante';
+            } else {
+                resultadoReal = 'empate';
             }
             
             // Verificar si la predicción fue acertada
@@ -615,15 +618,15 @@ class EnfrentamientosVoleibol {
             }
             
             // Guardar contador actualizado
-            localStorage.setItem('contador-aciertos-voleibol', JSON.stringify(this.contadorAciertos));
+            localStorage.setItem('contador-aciertos-futbol-americano', JSON.stringify(this.contadorAciertos));
         }
     
     /**
      * Renderiza los enfrentamientos en el contenedor
      */
         renderizarEnfrentamientos() {
-        const container = document.getElementById('enfrentamientos-container-voleibol');
-        const fechaElement = document.getElementById('fecha-actual-voleibol');
+        const container = document.getElementById('enfrentamientos-container-futbol-americano');
+        const fechaElement = document.getElementById('fecha-actual-futbol-americano');
         
         if (!container || !fechaElement) return;
         
@@ -689,6 +692,10 @@ class EnfrentamientosVoleibol {
                             <span class="cuota-valor">${enfrentamiento.cuotas.local}</span>
                         </div>
                         <div class="cuota-item">
+                            <span class="cuota-texto">Empate</span>
+                            <span class="cuota-valor">${enfrentamiento.cuotas.empate}</span>
+                        </div>
+                        <div class="cuota-item">
                             <span class="cuota-texto">Visitante</span>
                             <span class="cuota-valor">${enfrentamiento.cuotas.visitante}</span>
                         </div>
@@ -700,6 +707,7 @@ class EnfrentamientosVoleibol {
                         </div>
                         <div class="prediccion-botones">
                             <button class="btn-prediccion btn-pierde" data-prediccion="visitante" data-partido="${enfrentamiento.id}">Visitante</button>
+                            <button class="btn-prediccion btn-empate" data-prediccion="empate" data-partido="${enfrentamiento.id}">Empate</button>
                             <button class="btn-prediccion btn-gana" data-prediccion="local" data-partido="${enfrentamiento.id}">Local</button>
                         </div>
                     </div>
@@ -715,6 +723,7 @@ class EnfrentamientosVoleibol {
                 switch (prediccion) {
                     case 'local': textoPred = 'Gana Local'; break;
                     case 'visitante': textoPred = 'Gana Visitante'; break;
+                    case 'empate': textoPred = 'Empate'; break;
                 }
                 
                 contenidoHTML += `
@@ -735,6 +744,8 @@ class EnfrentamientosVoleibol {
                         resultadoReal = 'local';
                     } else if (golesLocal < golesVisitante) {
                         resultadoReal = 'visitante';
+                    } else {
+                        resultadoReal = 'empate';
                     }
                     
                     const acertado = prediccion === resultadoReal;
@@ -782,12 +793,12 @@ class EnfrentamientosVoleibol {
         }
         
         // Buscar si ya existe el resumen, si no, crearlo
-        let resumenElement = document.querySelector('.resumen-predicciones-voleibol');
+        let resumenElement = document.querySelector('.resumen-predicciones-futbol-americano');
         
         if (!resumenElement) {
             resumenElement = document.createElement('div');
-            resumenElement.className = 'resumen-predicciones-voleibol';
-            const container = document.querySelector('.voleibol-container');
+            resumenElement.className = 'resumen-predicciones-futbol-americano';
+            const container = document.querySelector('.futbol-americano-container');
             if (container) {
                 container.appendChild(resumenElement);
             }
@@ -804,11 +815,11 @@ class EnfrentamientosVoleibol {
             
         resumenElement.innerHTML = `
             <h3>Resumen de Predicciones</h3>
-            <div class="contador-predicciones-voleibol">
+            <div class="contador-predicciones-futbol-americano">
                 Has acertado <span>${this.contadorAciertos.aciertos}</span> de 
                 <span>${this.contadorAciertos.total}</span> predicciones (${porcentaje}%)
             </div>
-            <div class="resumen-financiero-voleibol">
+            <div class="resumen-financiero-futbol-americano">
                 <div>Monto total apostado: $${this.contadorAciertos.montoApostado.toFixed(2)}</div>
                 <div>Monto total ganado: $${this.contadorAciertos.montoGanado.toFixed(2)}</div>
                 <div>Retorno de inversión: ${retornoInversion}%</div>
@@ -832,5 +843,5 @@ class EnfrentamientosVoleibol {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new EnfrentamientosVoleibol();
+    const app = new EnfrentamientosFutbolAmericano();
 });

@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 class="baloncesto-title">Partidos de Baloncesto del Día</h2>
                 <p class="fecha-partidos" id="fecha-actual-baloncesto">Cargando fecha...</p>
                 
-                <div class="partidos-container" id="partidos-container-baloncesto">
+                <div class="enfrentamientos-container" id="enfrentamientos-container-baloncesto">
                     <!-- Aquí se cargarán dinámicamente los partidos -->
                     <div class="cargando">Cargando partidos...</div>
                 </div>
@@ -376,11 +376,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Baloncesto
     function cargarEstilosBaloncesto() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Baloncesto.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Baloncesto.css"]')) {
             console.log('Cargando estilos de Baloncesto');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Baloncesto.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Baloncesto.css';
             document.head.appendChild(link);
         }
     }
@@ -388,28 +388,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar script de Baloncesto
     function cargarScriptBaloncesto() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Baloncesto/Baloncesto.js"]')) {
+        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Baloncesto.js"]')) {
             console.log('Cargando script de Baloncesto');
             const script = document.createElement('script');
-            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Baloncesto/Baloncesto.js';
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Baloncesto.js';
             script.onload = function() {
                 console.log('Script de Baloncesto cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof PartidosBaloncesto === 'function') {
-                    console.log('Inicializando PartidosBaloncesto');
-                    const manager = new PartidosBaloncesto();
-                    manager.renderizarPartidos();
+                if (typeof EnfrentamientosBaloncesto === 'function') {
+                    console.log('Inicializando EnfrentamientosBaloncesto');
+                    const manager = new EnfrentamientosBaloncesto();
+                    manager.renderizarEnfrentamientos();
                 } else {
-                    console.error('La clase PartidosBaloncesto no está disponible');
+                    console.error('La clase EnfrentamientosBaloncesto no está disponible');
                 }
             };
             document.body.appendChild(script);
         } else {
             console.log('Script de Baloncesto ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
-            if (typeof PartidosBaloncesto === 'function') {
-                const manager = new PartidosBaloncesto();
-                manager.renderizarPartidos();
+            if (typeof EnfrentamientosBaloncesto === 'function') {
+                const manager = new EnfrentamientosBaloncesto();
+                manager.renderizarEnfrentamientos();
             }
         }
     }
@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 class="futbol-americano-title">Partidos de Fútbol Americano del Día</h2>
                 <p class="fecha-partidos" id="fecha-actual-futbol-americano">Cargando fecha...</p>
                 
-                <div class="partidos-container" id="partidos-container-futbol-americano">
+                <div class="enfrentamientos-container" id="enfrentamientos-container-futbol-americano">
                     <!-- Aquí se cargarán dinámicamente los partidos -->
                     <div class="cargando">Cargando partidos...</div>
                 </div>
@@ -476,11 +476,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Fútbol Americano
     function cargarEstilosFutbolAmericano() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/FutbolAmericano.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/FutbolAmericano.css"]')) {
             console.log('Cargando estilos de Fútbol Americano');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/FutbolAmericano.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/FutbolAmericano.css';
             document.head.appendChild(link);
         }
     }
@@ -488,28 +488,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar script de Fútbol Americano
     function cargarScriptFutbolAmericano() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/FutbolAmericano/FutbolAmericano.js"]')) {
+        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/FutbolAmericano.js"]')) {
             console.log('Cargando script de Fútbol Americano');
             const script = document.createElement('script');
-            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/FutbolAmericano/FutbolAmericano.js';
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/FutbolAmericano.js';
             script.onload = function() {
                 console.log('Script de Fútbol Americano cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof PartidosFutbolAmericano === 'function') {
-                    console.log('Inicializando PartidosFutbolAmericano');
-                    const manager = new PartidosFutbolAmericano();
-                    manager.renderizarPartidos();
+                if (typeof EnfrentamientosFutbolAmericano === 'function') {
+                    console.log('Inicializando EnfrentamientosFutbolAmericano');
+                    const manager = new EnfrentamientosFutbolAmericano();
+                    manager.renderizarEnfrentamientos();
                 } else {
-                    console.error('La clase PartidosFutbolAmericano no está disponible');
+                    console.error('La clase EnfrentamientosFutbolAmericano no está disponible');
                 }
             };
             document.body.appendChild(script);
         } else {
             console.log('Script de Fútbol Americano ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
-            if (typeof PartidosFutbolAmericano === 'function') {
-                const manager = new PartidosFutbolAmericano();
-                manager.renderizarPartidos();
+            if (typeof EnfrentamientosFutbolAmericano === 'function') {
+                const manager = new EnfrentamientosFutbolAmericano();
+                manager.renderizarEnfrentamientos();
             }
         }
     }

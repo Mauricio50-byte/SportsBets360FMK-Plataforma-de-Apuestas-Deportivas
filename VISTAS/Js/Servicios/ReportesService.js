@@ -20,7 +20,7 @@ class ReportesService {
             if (reportesLink) {
                 reportesLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    this.mostrarMenuReportes();
+                    this.mostrarMenuReportes(); // Ahora mostrará directamente en contenido principal
                     this.setActiveNavLink('reportes-link');
                 });
             }
@@ -32,24 +32,6 @@ class ReportesService {
                     this.mostrarFiltrosReporte(tipo);
                 }
             });
-
-            // Event listener para cerrar modal
-            const closeModal = document.querySelector('#reportes-modal .close-modal');
-            if (closeModal) {
-                closeModal.addEventListener('click', () => {
-                    this.cerrarModalReportes();
-                });
-            }
-
-            // Cerrar modal al hacer clic fuera de él
-            const modal = document.getElementById('reportes-modal');
-            if (modal) {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        this.cerrarModalReportes();
-                    }
-                });
-            }
         });
     }
 
@@ -57,26 +39,39 @@ class ReportesService {
      * Muestra el menú principal de reportes
      */
     mostrarMenuReportes() {
-        const modal = document.getElementById('reportes-modal');
         const contenidoPrincipal = document.getElementById('contenido-principal');
         
-        // Ocultar contenido principal y mostrar modal
-        if (contenidoPrincipal) {
-            contenidoPrincipal.style.display = 'none';
+        if (!contenidoPrincipal) {
+            console.error('No se encontró el elemento contenido-principal');
+            return;
         }
         
-        if (modal) {
-            modal.style.display = 'block';
-            
-            // Limpiar contenido previo
-            this.limpiarFiltrosYResultados();
-            
-            // Asegurar que los botones de tipo de reporte estén visibles
-            const reportesMenu = modal.querySelector('.reportes-menu');
-            if (reportesMenu) {
-                reportesMenu.style.display = 'block';
-            }
-        }
+        // Limpiar contenido previo
+        this.limpiarFiltrosYResultados();
+        
+        // Crear el menú de reportes directamente en contenido principal
+        const menuContainer = document.createElement('div');
+        menuContainer.className = 'reportes-menu-container';
+        
+        menuContainer.innerHTML = `
+            <div class="reportes-menu">
+                <h2>Seleccionar Tipo de Reporte</h2>
+                <div class="reportes-opciones">
+                    <button type="button" class="btn btn-primary reporte-btn" data-tipo="Reportes_recarga">
+                        <i class="bi bi-arrow-up-circle"></i>
+                        Reporte de Recargas
+                    </button>
+                    <button type="button" class="btn btn-info reporte-btn" data-tipo="Reportes_retiro">
+                        <i class="bi bi-arrow-down-circle"></i>
+                        Reporte de Retiros
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        contenidoPrincipal.innerHTML = '';
+        contenidoPrincipal.appendChild(menuContainer);
+        contenidoPrincipal.style.display = 'block';
     }
 
     /**
@@ -84,13 +79,25 @@ class ReportesService {
      */
     mostrarFiltrosReporte(tipo) {
         this.currentReportType = tipo;
-        const filtroContainer = document.getElementById('filtro-reporte');
         
+        // Obtener el contenido principal en lugar del filtro-reporte específico
+        const contenidoPrincipal = document.getElementById('contenido-principal');
+        
+        if (!contenidoPrincipal) {
+            console.error('No se encontró el elemento contenido-principal');
+            return;
+        }
+
         let tipoTexto = tipo === 'Reportes_recarga' ? 'Recargas' : 'Retiros';
+
+        // Crear el contenedor para los filtros de reporte
+        const filtrosContainer = document.createElement('div');
+        filtrosContainer.className = 'filtros-reporte-container';
         
-        const filtrosHTML = `
+        // Añadir el HTML de los filtros
+        filtrosContainer.innerHTML = `
             <div class="filtros-reporte">
-                <h3>Filtros para Reporte de ${tipoTexto}</h3>
+                <h2>Filtros para Reporte de ${tipoTexto}</h2>
                 
                 <div class="form-row">
                     <div class="form-group">
@@ -125,11 +132,17 @@ class ReportesService {
                         <i class="bi bi-file-earmark-spreadsheet"></i> Reporte Completo (Ambos)
                     </button>
                 </div>
+                
+                <!-- Contenedor para mostrar los resultados del reporte -->
+                <div id="resultados-reporte" class="resultados-reporte" style="display: none;">
+                    <!-- Aquí se mostrarán los resultados -->
+                </div>
             </div>
         `;
         
-        filtroContainer.innerHTML = filtrosHTML;
-        filtroContainer.style.display = 'block';
+        // Limpiar contenido actual y añadir el contenedor de filtros
+        contenidoPrincipal.innerHTML = '';
+        contenidoPrincipal.appendChild(filtrosContainer);
         
         // Establecer fechas por defecto (último mes)
         this.establecerFechasPorDefecto();
@@ -335,7 +348,12 @@ class ReportesService {
      * Muestra los resultados del reporte en pantalla
      */
     mostrarResultadosEnPantalla(response) {
-        const resultadoContainer = document.getElementById('resultado-reporte');
+        const resultadoContainer = document.getElementById('resultados-reporte');
+        if (!resultadoContainer) {
+            console.error('No se encontró el contenedor de resultados');
+            return;
+        }
+        
         this.currentReportData = response;
         
         let html = `
@@ -596,13 +614,7 @@ class ReportesService {
      * Limpia los filtros y resultados
      */
     limpiarFiltrosYResultados() {
-        const filtroContainer = document.getElementById('filtro-reporte');
-        const resultadoContainer = document.getElementById('resultado-reporte');
-        
-        if (filtroContainer) {
-            filtroContainer.innerHTML = '';
-            filtroContainer.style.display = 'none';
-        }
+        const resultadoContainer = document.getElementById('resultados-reporte');
         
         if (resultadoContainer) {
             resultadoContainer.innerHTML = '';
@@ -616,18 +628,7 @@ class ReportesService {
     /**
      * Cierra el modal de reportes
      */
-    cerrarModalReportes() {
-        const modal = document.getElementById('reportes-modal');
-        const contenidoPrincipal = document.getElementById('contenido-principal');
-        
-        if (modal) {
-            modal.style.display = 'none';
-        }
-        
-        if (contenidoPrincipal) {
-            contenidoPrincipal.style.display = 'block';
-        }
-        
+    cerrarModalReportes() {        
         this.limpiarFiltrosYResultados();
         this.setActiveNavLink('inicio-link');
     }
