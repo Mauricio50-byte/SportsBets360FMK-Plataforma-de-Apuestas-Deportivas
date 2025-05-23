@@ -843,5 +843,5 @@ class EnfrentamientosVoleibol {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = VEnfrentamientosVoleibol();
+    const app = EnfrentamientosVoleibol();
 });

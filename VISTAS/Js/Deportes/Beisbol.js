@@ -1,40 +1,40 @@
 /**
- * Clase para gestionar los enfrentamientos de fútbol y apuestas
+ * Clase para gestionar los enfrentamientos de beilbol y apuestas
  * @class
  */
-class EnfrentamientosBoxeo {
+class EnfrentamientosVeisbol {
     /**
      * Constructor de la clase
      */
     constructor() {
         this.equipos = [
-            { id: "ALI01", nombre: "Muhammad Ali", pais: "Estados Unidos", ciudad: "Louisville", categoria: "Peso Pesado" },
-            { id: "TY01", nombre: "Mike Tyson", pais: "Estados Unidos", ciudad: "Brooklyn", categoria: "Peso Pesado" },
-            { id: "FM01", nombre: "Floyd Mayweather Jr.", pais: "Estados Unidos", ciudad: "Grand Rapids", categoria: "Peso Wélter" },
-            { id: "PAC01", nombre: "Manny Pacquiao", pais: "Filipinas", ciudad: "General Santos", categoria: "Peso Wélter" },
-            { id: "CANELO01", nombre: "Canelo Álvarez", pais: "México", ciudad: "Guadalajara", categoria: "Peso Supermediano" },
-            { id: "LEN01", nombre: "Lennox Lewis", pais: "Reino Unido", ciudad: "Londres", categoria: "Peso Pesado" },
-            { id: "HOL01", nombre: "Evander Holyfield", pais: "Estados Unidos", ciudad: "Atlanta", categoria: "Peso Pesado" },
-            { id: "GGG01", nombre: "Gennady Golovkin", pais: "Kazajistán", ciudad: "Karaganda", categoria: "Peso Mediano" },
-            { id: "USA01", nombre: "Oleksandr Usyk", pais: "Ucrania", ciudad: "Simferópol", categoria: "Peso Pesado" },
-            { id: "FUR01", nombre: "Tyson Fury", pais: "Reino Unido", ciudad: "Manchester", categoria: "Peso Pesado" },
-            { id: "ANT01", nombre: "Anthony Joshua", pais: "Reino Unido", ciudad: "Watford", categoria: "Peso Pesado" },
-            { id: "DELA01", nombre: "Óscar de la Hoya", pais: "Estados Unidos", ciudad: "Los Ángeles", categoria: "Peso Mediano" },
-            { id: "JULIO01", nombre: "Julio César Chávez", pais: "México", ciudad: "Ciudad Obregón", categoria: "Peso Súper Ligero" },
-            { id: "ROB01", nombre: "Sugar Ray Robinson", pais: "Estados Unidos", ciudad: "Ailey", categoria: "Peso Mediano" },
-            { id: "HAG01", nombre: "Marvelous Marvin Hagler", pais: "Estados Unidos", ciudad: "Newark", categoria: "Peso Mediano" },
-            { id: "DUR01", nombre: "Roberto Durán", pais: "Panamá", ciudad: "Ciudad de Panamá", categoria: "Peso Ligero" },
-            { id: "TYD01", nombre: "Teófimo López", pais: "Estados Unidos", ciudad: "Brooklyn", categoria: "Peso Superligero" },
-            { id: "LOM01", nombre: "Vasyl Lomachenko", pais: "Ucrania", ciudad: "Bilhorod-Dnistrovskyi", categoria: "Peso Ligero" },
-            { id: "CRAW01", nombre: "Terence Crawford", pais: "Estados Unidos", ciudad: "Omaha", categoria: "Peso Wélter" },
-            { id: "SPEN01", nombre: "Errol Spence Jr.", pais: "Estados Unidos", ciudad: "Long Island", categoria: "Peso Wélter" }
-
+            { id: "VAK01", nombre: "VakifBank SK", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" },
+            { id: "EZA01", nombre: "Eczacanab Dynavit", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" },
+            { id: "FBV01", nombre: "Fenerbahçe Opet", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" },
+            { id: "IMO01", nombre: "Imoco Volley Conegliano", pais: "Italia", ciudad: "Conegliano", liga: "Serie A1" },
+            { id: "NOVF01", nombre: "Igor Gorgonzola Novara", pais: "Italia", ciudad: "Novara", liga: "Serie A1" },
+            { id: "MON01", nombre: "Vero Volley Milano", pais: "Italia", ciudad: "Milán", liga: "Serie A1" },
+            { id: "MIN01", nombre: "Minas Tênis Clube", pais: "Brasil", ciudad: "Belo Horizonte", liga: "Superliga Femenina" },
+            { id: "PRA01", nombre: "Praia Clube", pais: "Brasil", ciudad: "Uberlândia", liga: "Superliga Femenina" },
+            { id: "BARF01", nombre: "Barueri Volleyball Club", pais: "Brasil", ciudad: "Barueri", liga: "Superliga Femenina" },
+            { id: "BOCF01", nombre: "Boca Juniors Vóley Femenino", pais: "Argentina", ciudad: "Buenos Aires", liga: "Liga Argentina Femenina" },
+            { id: "UNL01", nombre: "Universidad de La Matanza", pais: "Argentina", ciudad: "La Matanza", liga: "Liga Argentina Femenina" },
+            { id: "ALH02", nombre: "Al Ahly SC", pais: "Egipto", ciudad: "El Cairo", liga: "Liga Egipcia" },
+            { id: "DRE01", nombre: "Dresdner SC", pais: "Alemania", ciudad: "Dresde", liga: "Bundesliga Femenina" },
+            { id: "SCH01", nombre: "Allianz MTV Stuttgart", pais: "Alemania", ciudad: "Stuttgart", liga: "Bundesliga Femenina" },
+            { id: "LODZ01", nombre: "ŁKS Commercecon Łódź", pais: "Polonia", ciudad: "Łódź", liga: "Liga Polaca Femenina" },
+            { id: "RZ01", nombre: "Developres Rzeszów", pais: "Polonia", ciudad: "Rzeszów", liga: "Liga Polaca Femenina" },
+            { id: "THY01", nombre: "THY Istanbul", pais: "Turquía", ciudad: "Estambul", liga: "Sultanlar Ligi" },
+            { id: "HAR01", nombre: "CV Haris", pais: "España", ciudad: "Tenerife", liga: "Superliga Femenina" },
+            { id: "LEG01", nombre: "CV Leganés", pais: "España", ciudad: "Madrid", liga: "Superliga Femenina" },
+            { id: "LOG01", nombre: "CV Logroño", pais: "España", ciudad: "Logroño", liga: "Superliga Femenina" }
         ];
         
+        
             // Clave para almacenamiento local
-            this.STORAGE_KEY = 'enfrentamientos-boxeo';
-            this.PREDICCIONES_KEY = 'predicciones-boxeo';
-            this.APUESTAS_KEY = 'apuestas-boxeo';
+            this.STORAGE_KEY = 'enfrentamientos-veisbol';
+            this.PREDICCIONES_KEY = 'predicciones-veisbol';
+            this.APUESTAS_KEY = 'apuestas-veisbol';
             
             // Inicializar enfrentamientos como array vacío para evitar errores
             this.enfrentamientos = [];
@@ -277,7 +277,7 @@ class EnfrentamientosBoxeo {
         this.apuestas = {};
         
         // Reiniciar contador de aciertos
-        localStorage.setItem('contador-aciertos-boxeo', JSON.stringify({
+        localStorage.setItem('contador-aciertos-veisbol', JSON.stringify({
             total: 0,
             aciertos: 0,
             montoApostado: 0,
@@ -471,7 +471,7 @@ class EnfrentamientosBoxeo {
      * @returns {Object} - Contador de aciertos
      */
     obtenerContadorAciertos() {
-        const contadorGuardado = localStorage.getItem('contador-aciertos-boxeo');
+        const contadorGuardado = localStorage.getItem('contador-aciertos-veisbol');
         const contadorDefault = { 
             total: 0, 
             aciertos: 0, 
@@ -543,7 +543,7 @@ class EnfrentamientosBoxeo {
         
         // Actualizar contador de montos apostados
         this.contadorAciertos.montoApostado += montoApuesta;
-        localStorage.setItem('contador-aciertos-boxeo', JSON.stringify(this.contadorAciertos));
+        localStorage.setItem('contador-aciertos-veisbol', JSON.stringify(this.contadorAciertos));
         
         
         // Marcar el partido como que ya se ha hecho predicción
@@ -619,15 +619,15 @@ class EnfrentamientosBoxeo {
             }
             
             // Guardar contador actualizado
-            localStorage.setItem('contador-aciertos-boxeo', JSON.stringify(this.contadorAciertos));
+            localStorage.setItem('contador-aciertos-veisbol', JSON.stringify(this.contadorAciertos));
         }
     
     /**
      * Renderiza los enfrentamientos en el contenedor
      */
         renderizarEnfrentamientos() {
-        const container = document.getElementById('enfrentamientos-container-boxeo');
-        const fechaElement = document.getElementById('fecha-actual-boxeo');
+        const container = document.getElementById('enfrentamientos-container-veisbol');
+        const fechaElement = document.getElementById('fecha-actual-veisbol');
         
         if (!container || !fechaElement) return;
         
@@ -794,12 +794,12 @@ class EnfrentamientosBoxeo {
         }
         
         // Buscar si ya existe el resumen, si no, crearlo
-        let resumenElement = document.querySelector('.resumen-predicciones-boxeo');
+        let resumenElement = document.querySelector('.resumen-predicciones-veisbol');
         
         if (!resumenElement) {
             resumenElement = document.createElement('div');
-            resumenElement.className = 'resumen-predicciones-boxeo';
-            const container = document.querySelector('.boxeo-container');
+            resumenElement.className = 'resumen-predicciones-veisbol';
+            const container = document.querySelector('.veisbol-container');
             if (container) {
                 container.appendChild(resumenElement);
             }
@@ -816,11 +816,11 @@ class EnfrentamientosBoxeo {
             
         resumenElement.innerHTML = `
             <h3>Resumen de Predicciones</h3>
-            <div class="contador-predicciones-boxeo">
+            <div class="contador-predicciones-veisbol">
                 Has acertado <span>${this.contadorAciertos.aciertos}</span> de 
                 <span>${this.contadorAciertos.total}</span> predicciones (${porcentaje}%)
             </div>
-            <div class="resumen-financiero-boxeo">
+            <div class="resumen-financiero-veisbol">
                 <div>Monto total apostado: $${this.contadorAciertos.montoApostado.toFixed(2)}</div>
                 <div>Monto total ganado: $${this.contadorAciertos.montoGanado.toFixed(2)}</div>
                 <div>Retorno de inversión: ${retornoInversion}%</div>
@@ -844,5 +844,5 @@ class EnfrentamientosBoxeo {
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new EnfrentamientosBoxeo();
+    const app = EnfrentamientosVeisbol();
 });

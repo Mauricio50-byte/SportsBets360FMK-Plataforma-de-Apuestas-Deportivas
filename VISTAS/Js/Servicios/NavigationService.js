@@ -527,15 +527,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Crear el contenedor para el contenido de béisbol
         const beisbolContainer = document.createElement('div');
-        beisbolContainer.className = 'beisbol-container';
+        beisbolContainer.className = 'veisbol-container';
         
         // Añadir el HTML del contenido de béisbol
         beisbolContainer.innerHTML = `
-            <div class="beisbol-container">
-                <h2 class="beisbol-title">Partidos de Béisbol del Día</h2>
-                <p class="fecha-partidos" id="fecha-actual-beisbol">Cargando fecha...</p>
+            <div class="veisbol-container">
+                <h2 class="veisbol-title">Partidos de Béisbol del Día</h2>
+                <p class="fecha-partidos" id="fecha-actual-veisbol">Cargando fecha...</p>
                 
-                <div class="partidos-container" id="partidos-container-beisbol">
+                <div class="enfrentamientos-container" id="enfrentamientos-container-veisbol">
                     <!-- Aquí se cargarán dinámicamente los partidos -->
                     <div class="cargando">Cargando partidos...</div>
                 </div>
@@ -576,11 +576,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar estilos de Béisbol
     function cargarEstilosBeisbol() {
-        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Beisbol.css"]')) {
+        if (!document.querySelector('link[href*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Beisbol.css"]')) {
             console.log('Cargando estilos de Béisbol');
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Beisbol.css';
+            link.href = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Css/Deportes/Beisbol.css';
             document.head.appendChild(link);
         }
     }
@@ -588,17 +588,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para cargar script de Béisbol
     function cargarScriptBeisbol() {
         // Verificar si ya existe el script
-        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Beisbol/Beisbol.js"]')) {
+        if (!document.querySelector('script[src*="http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Beisbol.js"]')) {
             console.log('Cargando script de Béisbol');
             const script = document.createElement('script');
-            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Beisbol/Beisbol.js';
+            script.src = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/VISTAS/Js/Deportes/Beisbol.js';
             script.onload = function() {
                 console.log('Script de Béisbol cargado correctamente');
                 // Si existe la clase, inicializar
-                if (typeof PartidosBeisbol === 'function') {
+                if (typeof EnfrentamientosVeisbol === 'function') {
                     console.log('Inicializando PartidosBeisbol');
-                    const manager = new PartidosBeisbol();
-                    manager.renderizarPartidos();
+                    const manager = new EnfrentamientosVeisbol();
+                    manager.renderizarEnfrentamientos();
                 } else {
                     console.error('La clase PartidosBeisbol no está disponible');
                 }
@@ -607,9 +607,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.log('Script de Béisbol ya está cargado, inicializando');
             // Si el script ya está cargado, intentar inicializar
-            if (typeof PartidosBeisbol === 'function') {
-                const manager = new PartidosBeisbol();
-                manager.renderizarPartidos();
+            if (typeof EnfrentamientosVeisbol === 'function') {
+                const manager = new EnfrentamientosVeisbol();
+                manager.renderizarEnfrentamientos();
             }
         }
     }
