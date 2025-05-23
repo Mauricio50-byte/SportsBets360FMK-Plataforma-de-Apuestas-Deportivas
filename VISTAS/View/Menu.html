@@ -296,37 +296,61 @@
 
     <!-- Script para el temporizador de sesión -->
     <script>
-        // Script para el manejo del botón "Inicio" usando solo UserService
         document.addEventListener('DOMContentLoaded', function() {
-            
-            // Acción mejorada para el botón "Inicio"
-            document.getElementById('inicio-link').addEventListener('click', async function(e) {
-                e.preventDefault(); // Evitar que el enlace haga un salto #
+        
+        // Función para cargar el saldo del usuario automáticamente
+        function cargarSaldoUsuario() {
+            // Esperar a que RecargaRetiroService esté disponible
+            if (window.recargaRetiroService) {
+                const saldo = window.recargaRetiroService.obtenerSaldoUsuario();
+                const elementoSaldo = document.getElementById('user-balance');
                 
-                // Mostrar indicador de carga
-                const inicioLink = document.getElementById('inicio-link');
-                const originalText = inicioLink.innerHTML;
-                inicioLink.innerHTML = '<i class="bi bi-arrow-clockwise nav-icon"></i> Cargando...';
-                inicioLink.style.pointerEvents = 'none'; // Deshabilitar clics múltiples
-                
-                try {
-                    // Usar UserService para verificar sesión y actualizar saldo
-                    await window.userService.checkSession();
-                    
-                    // Pequeña pausa para que se vea la actualización
-                    setTimeout(() => {
-                        location.reload(); // Recargar la página
-                    }, 300);
-                    
-                } catch (error) {
-                    console.error('Error al actualizar antes de recargar:', error);
-                    // Restaurar el botón en caso de error
-                    inicioLink.innerHTML = originalText;
-                    inicioLink.style.pointerEvents = 'auto';
-                    // Recargar de todas formas
-                    location.reload();
+                if (elementoSaldo) {
+                    elementoSaldo.textContent = `$ ${saldo.toFixed(2)}`;
+                    console.log('Saldo cargado automáticamente:', saldo);
                 }
-            });
+            } else {
+                // Si el servicio no está listo, intentar de nuevo en 100ms
+                setTimeout(cargarSaldoUsuario, 100);
+            }
+        }
+        
+        // Cargar el saldo inmediatamente cuando se carga la página
+        cargarSaldoUsuario();
+        
+        // Acción mejorada para el botón "Inicio"
+        document.getElementById('inicio-link').addEventListener('click', async function(e) {
+            e.preventDefault(); // Evitar que el enlace haga un salto #
+            
+            // Mostrar indicador de carga
+            const inicioLink = document.getElementById('inicio-link');
+            const originalText = inicioLink.innerHTML;
+            inicioLink.innerHTML = '<i class="bi bi-arrow-clockwise nav-icon"></i> Cargando...';
+            inicioLink.style.pointerEvents = 'none'; // Deshabilitar clics múltiples
+            
+            try {
+                // Usar UserService para verificar sesión y actualizar saldo
+                if (window.userService) {
+                    await window.userService.checkSession();
+                }
+                
+                // Recargar el saldo usando RecargaRetiroService
+                cargarSaldoUsuario();
+                
+                // Pequeña pausa para que se vea la actualización
+                setTimeout(() => {
+                    location.reload(); // Recargar la página
+                }, 300);
+                
+            } catch (error) {
+                console.error('Error al actualizar antes de recargar:', error);
+                // Restaurar el botón en caso de error
+                inicioLink.innerHTML = originalText;
+                inicioLink.style.pointerEvents = 'auto';
+                // Recargar de todas formas
+                location.reload();
+            }
+        });
             
             // Resto del código existente para el temporizador...
             

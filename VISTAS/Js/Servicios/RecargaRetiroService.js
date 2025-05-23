@@ -298,15 +298,82 @@ class RecargaRetiroService {
     }
     
     /**
-     * Obtiene el saldo actual del usuario
-     * @returns {number} Saldo actual
+     * Obtiene el saldo actual del usuario (versión mejorada)
+     * @returns {Promise<number>} Saldo actual
      */
-    obtenerSaldoUsuario() {
+    async obtenerSaldoUsuario() {
         // Primero intentar obtener de sessionStorage
         if (window.sessionStorage) {
-            const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
-            if (usuario && usuario.saldo !== undefined) {
-                return parseFloat(usuario.saldo);
+            const usuario = sessionStorage.getItem('usuario');
+            if (usuario) {
+                try {
+                    const datosUsuario = JSON.parse(usuario);
+                    if (datosUsuario && datosUsuario.saldo !== undefined) {
+                        return parseFloat(datosUsuario.saldo);
+                    }
+                } catch (error) {
+                    console.error('Error al parsear datos de usuario:', error);
+                }
+            }
+        }
+        
+        // Si no hay datos en sessionStorage, intentar obtener del servidor
+        try {
+            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/obtener_saldo_usuario.php', {
+                method: 'GET',
+                credentials: 'include' // Importante: envía cookies con la solicitud
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === 'success' && data.saldo !== undefined) {
+                    // Guardar en sessionStorage para próximas consultas
+                    if (window.sessionStorage) {
+                        const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+                        usuario.saldo = parseFloat(data.saldo);
+                        sessionStorage.setItem('usuario', JSON.stringify(usuario));
+                    }
+                    
+                    // Actualizar también en la interfaz
+                    const elementoSaldo = document.getElementById('user-balance');
+                    if (elementoSaldo) {
+                        elementoSaldo.textContent = `$ ${parseFloat(data.saldo).toFixed(2)}`;
+                    }
+                    
+                    return parseFloat(data.saldo);
+                }
+            }
+        } catch (error) {
+            console.error('Error al obtener saldo del servidor:', error);
+        }
+        
+        // Alternativa: obtener del elemento en el DOM
+        const elementoSaldo = document.getElementById('user-balance');
+        if (elementoSaldo) {
+            const saldoTexto = elementoSaldo.textContent || '$ 0';
+            return parseFloat(saldoTexto.replace('$', '').trim()) || 0;
+        }
+        
+        return 0;
+    }
+
+    /**
+     * Versión síncrona del método para compatibilidad hacia atrás
+     * @returns {number} Saldo actual
+     */
+    obtenerSaldoUsuarioSync() {
+        // Primero intentar obtener de sessionStorage
+        if (window.sessionStorage) {
+            const usuario = sessionStorage.getItem('usuario');
+            if (usuario) {
+                try {
+                    const datosUsuario = JSON.parse(usuario);
+                    if (datosUsuario && datosUsuario.saldo !== undefined) {
+                        return parseFloat(datosUsuario.saldo);
+                    }
+                } catch (error) {
+                    console.error('Error al parsear datos de usuario:', error);
+                }
             }
         }
         
