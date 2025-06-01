@@ -1,6 +1,6 @@
 <?php
 /**
- * obtener_saldo_usuario.php
+ * Obtener_saldo.php
  * Script para obtener el saldo actual del usuario desde la base de datos
  */
 
@@ -8,71 +8,78 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, Accept');
 
 // Iniciar sesión
 session_start();
 
+// Configuración de la base de datos
+$host = "localhost";
+$db = "bd_pltf_apuestas";
+$usuario = "root";
+$password = "";
+$charset = "utf8mb4";
+
+// Función para enviar respuesta JSON
+function enviarRespuesta($status, $message, $saldo = 0, $usuario = null) {
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+        'saldo' => floatval($saldo),
+        'usuario' => $usuario,
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+    exit;
+}
+
 try {
     // Verificar que el usuario esté logueado
     if (!isset($_SESSION['id_usuario']) || !isset($_SESSION['numero_documento'])) {
-        throw new Exception('Usuario no autenticado');
+        enviarRespuesta('error', 'Usuario no autenticado');
     }
     
-    // Incluir la conexión a la base de datos
-    require_once '../../../Conexion.php';
+    // Crear conexión PDO
+    $dsn = "mysql:host={$host};port=3306;dbname={$db};charset={$charset}";
+    $opciones = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false
+    ];
+    
+    $conexion = new PDO($dsn, $usuario, $password, $opciones);
     
     // Obtener documento del usuario de la sesión
     $documento_usuario = $_SESSION['numero_documento'];
     
     // Preparar la consulta para obtener el saldo actual
-    $sql = "SELECT saldo FROM Usuarios WHERE numero_documento = ?";
+    $sql = "SELECT saldo, nombre_completo FROM Usuarios WHERE numero_documento = ?";
     $stmt = $conexion->prepare($sql);
-    
-    if (!$stmt) {
-        throw new Exception('Error al preparar la consulta: ' . $conexion->error);
-    }
-    
-    // Bind parameters y ejecutar
-    $stmt->bind_param("s", $documento_usuario);
-    $stmt->execute();
+    $stmt->execute([$documento_usuario]);
     
     // Obtener resultado
-    $resultado = $stmt->get_result();
+    $resultado = $stmt->fetch();
     
-    if ($resultado->num_rows === 0) {
-        throw new Exception('Usuario no encontrado');
+    if (!$resultado) {
+        enviarRespuesta('error', 'Usuario no encontrado');
     }
     
-    $fila = $resultado->fetch_assoc();
-    $saldo_actual = floatval($fila['saldo']);
-    
-    // Cerrar statement
-    $stmt->close();
+    $saldo_actual = floatval($resultado['saldo']);
+    $nombre_usuario = $resultado['nombre_completo'] ?? $_SESSION['usuario'] ?? '';
     
     // Actualizar la sesión con el saldo actual
     $_SESSION['saldo'] = $saldo_actual;
     
     // Respuesta exitosa
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Saldo obtenido correctamente',
-        'saldo' => $saldo_actual,
-        'usuario' => $_SESSION['usuario']
-    ]);
+    enviarRespuesta('success', 'Saldo obtenido correctamente', $saldo_actual, $nombre_usuario);
+    
+} catch (PDOException $e) {
+    // Error de conexión o consulta
+    error_log("Error de BD en Obtener_saldo.php: " . $e->getMessage());
+    enviarRespuesta('error', 'Error de base de datos');
     
 } catch (Exception $e) {
-    // Respuesta de error
-    echo json_encode([
-        'status' => 'error',
-        'message' => $e->getMessage(),
-        'saldo' => 0
-    ]);
-    
-} finally {
-    // Cerrar conexión si existe
-    if (isset($conexion)) {
-        $conexion->close();
-    }
+    // Otros errores
+    error_log("Error general en Obtener_saldo.php: " . $e->getMessage());
+    enviarRespuesta('error', $e->getMessage());
 }
 ?>

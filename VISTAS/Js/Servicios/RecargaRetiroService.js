@@ -357,13 +357,22 @@ class RecargaRetiroService {
         
         // Si no hay datos en sessionStorage, intentar obtener del servidor
         try {
-            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/obtener_saldo_usuario.php', {
+            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/Obtener_saldo.php', {
                 method: 'GET',
-                credentials: 'include' // Importante: envía cookies con la solicitud
+                credentials: 'include', // Importante: envía cookies con la solicitud
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             });
+            
+            console.log('Response status:', response.status);
+            console.log('Response URL:', response.url);
             
             if (response.ok) {
                 const data = await response.json();
+                console.log('Datos recibidos del servidor:', data);
+                
                 if (data.status === 'success' && data.saldo !== undefined) {
                     // Guardar en sessionStorage para próximas consultas
                     if (window.sessionStorage) {
@@ -379,7 +388,11 @@ class RecargaRetiroService {
                     }
                     
                     return parseFloat(data.saldo);
+                } else {
+                    console.error('Error en respuesta del servidor:', data.message || 'Respuesta inválida');
                 }
+            } else {
+                console.error('Error HTTP:', response.status, await response.text());
             }
         } catch (error) {
             console.error('Error al obtener saldo del servidor:', error);

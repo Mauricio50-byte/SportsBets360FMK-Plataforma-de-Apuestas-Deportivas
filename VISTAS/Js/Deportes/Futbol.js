@@ -130,7 +130,7 @@ class EnfrentamientosFutbol {
         this.saldoUsuario = parseFloat(nuevoSaldo);
         
         // MODIFICADO: Actualizar tanto localStorage como sessionStorage
-        const claveUsuario = this.usuarioId && this.usuarioId !== 'guest' ? `usuario-${this.usuarioId}` : 'usuario';
+        const claveUsuario = this.usuarioId && this.usuarioId !== 'guest' ? `usuario-${this.usuarioId}` : 'user-balance';
         localStorage.setItem(claveUsuario, this.saldoUsuario.toString());
         sessionStorage.setItem('user-balance', this.saldoUsuario.toString());
         
@@ -141,7 +141,7 @@ class EnfrentamientosFutbol {
                 elemento.textContent = `$${this.saldoUsuario.toFixed(2)}`;
             });
         } else {
-            const saldoElement = document.getElementById('usuario');
+            const saldoElement = document.getElementById('user-balance');
             if (saldoElement) {
                 saldoElement.textContent = `$${this.saldoUsuario.toFixed(2)}`;
             }
@@ -278,9 +278,9 @@ class EnfrentamientosFutbol {
                     this.usuarioId = 'guest';
                     
                     // MODIFICADO: Usar clave específica para usuario guest
-                    const saldoGuardado = localStorage.getItem('usuario-guest');
+                    const saldoGuardado = localStorage.getItem('user-balance');
                     this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
-                    localStorage.setItem('usuario-guest', this.saldoUsuario.toString());
+                    localStorage.setItem('user-balance', this.saldoUsuario.toString());
                     sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
                     
                     resolve(this.saldoUsuario);
@@ -291,9 +291,9 @@ class EnfrentamientosFutbol {
                 this.usuarioId = 'guest';
                 
                 // MODIFICADO: Fallback con clave específica
-                const saldoGuardado = localStorage.getItem('usuario-guest');
+                const saldoGuardado = localStorage.getItem('user-balance');
                 this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
-                localStorage.setItem('usuario-guest', this.saldoUsuario.toString());
+                localStorage.setItem('user-balance', this.saldoUsuario.toString());
                 sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
                 
                 resolve(this.saldoUsuario);
@@ -639,7 +639,7 @@ class EnfrentamientosFutbol {
             } catch (error) {
                 console.error('Error al acreditar ganancia:', error);
                 this.saldoUsuario += ganancia;
-                const claveUsuario = this.usuarioId && this.usuarioId !== 'guest' ? `usuario-${this.usuarioId}` : 'usuario-guest';
+                const claveUsuario = this.usuarioId && this.usuarioId !== 'guest' ? `usuario-${this.usuarioId}` : 'user-balance';
                 localStorage.setItem(claveUsuario, this.saldoUsuario.toString());
                 // NUEVO: Actualizar sessionStorage
                 sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
