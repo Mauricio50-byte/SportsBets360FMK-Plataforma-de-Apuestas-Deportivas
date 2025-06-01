@@ -10,7 +10,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 // Conexión a la base de datos
 try {
-    $db = new PDO('mysql:host=localhost;port=3333;dbname=bd_pltf_apuestas', 'root', '');
+    $db = new PDO('mysql:host=localhost;port=3306;dbname=bd_pltf_apuestas', 'root', '');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Obtener datos del formulario

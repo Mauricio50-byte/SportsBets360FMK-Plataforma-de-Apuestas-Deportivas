@@ -30,10 +30,9 @@ class EnfrentamientosFutbol {
             { id: "ROM01", nombre: "AS Roma", pais: "Italia", ciudad: "Roma", liga: "Serie A" }
         ];
         
-            // Clave para almacenamiento local
+            // Clave para almacenamiento local 
             this.STORAGE_KEY = 'enfrentamientos-futbol';
-            this.PREDICCIONES_KEY = 'predicciones-futbol';
-            this.APUESTAS_KEY = 'apuestas-futbol';
+            this.usuarioId = null; // Inicializar como null
             
             // Inicializar enfrentamientos como array vacío para evitar errores
             this.enfrentamientos = [];
@@ -51,6 +50,11 @@ class EnfrentamientosFutbol {
             
             // Obtener saldo de sesión y luego inicializar lo demás
             this.obtenerSaldoUsuario().then(() => {
+                // MODIFICADO: Ahora las claves incluyen el ID del usuario
+                this.PREDICCIONES_KEY = `predicciones-futbol-${this.usuarioId || 'guest'}`;
+                this.APUESTAS_KEY = `apuestas-futbol-${this.usuarioId || 'guest'}`;
+                this.CONTADOR_KEY = `contador-aciertos-${this.usuarioId || 'guest'}`;
+                
                 // Inicializar enfrentamientos
                 this.enfrentamientos = this.obtenerEnfrentamientosDia();
                 
@@ -69,47 +73,53 @@ class EnfrentamientosFutbol {
         }
     
     // Method to check if user is authenticated
-        async verificarSesion() {
-            try {
-                const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php', {
-                    credentials: 'include' // Incluir cookies de sesión
-                });
-                
-                if (!response.ok) {
-                    console.log("Error de conexión al verificar sesión");
-                    return false;
-                }
-                
-                // Obtener texto primero para validar
-                const textoRespuesta = await response.text();
-                
-                if (!textoRespuesta.trim()) {
-                    console.log("Respuesta vacía del servidor");
-                    return false;
-                }
-                
-                let data;
-                try {
-                    data = JSON.parse(textoRespuesta);
-                } catch (jsonError) {
-                    console.log("Respuesta de sesión no es JSON válido:", textoRespuesta);
-                    return false;
-                }
-                
-                if (data.loggedIn) {
-                    this.usuarioId = data.id;
-                    this.usuarioNombre = data.nombre;
-                    this.saldoUsuario = parseFloat(data.saldo || 0);
-                    return true;
-                } else {
-                    console.log("Usuario no autenticado");
-                    return false;
-                }
-            } catch (error) {
-                console.error("Error al verificar sesión:", error);
+    async verificarSesion() {
+        try {
+            const response = await fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php', {
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                console.log("Error de conexión al verificar sesión");
                 return false;
             }
+            
+            const textoRespuesta = await response.text();
+            
+            if (!textoRespuesta.trim()) {
+                console.log("Respuesta vacía del servidor");
+                return false;
+            }
+            
+            let data;
+            try {
+                data = JSON.parse(textoRespuesta);
+            } catch (jsonError) {
+                console.log("Respuesta de sesión no es JSON válido:", textoRespuesta);
+                return false;
+            }
+            
+            if (data.loggedIn) {
+                this.usuarioId = data.id;
+                this.usuarioNombre = data.nombre;
+                this.saldoUsuario = parseFloat(data.saldo || 0);
+                
+                // NUEVO: Actualizar sessionStorage
+                sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
+                sessionStorage.setItem('usuarioId', this.usuarioId.toString());
+                
+                return true;
+            } else {
+                console.log("Usuario no autenticado");
+                this.usuarioId = 'guest'; // Asignar guest para usuarios no autenticados
+                return false;
+            }
+        } catch (error) {
+            console.error("Error al verificar sesión:", error);
+            this.usuarioId = 'guest'; // Asignar guest en caso de error
+            return false;
         }
+    }
     
     /**
      * Función para actualizar el saldo del usuario localmente (en la interfaz)
@@ -119,8 +129,10 @@ class EnfrentamientosFutbol {
         // Actualizar la propiedad en la clase
         this.saldoUsuario = parseFloat(nuevoSaldo);
         
-        // Actualizar en localStorage para modo offline
-        localStorage.setItem('usuario', this.saldoUsuario.toString());
+        // MODIFICADO: Actualizar tanto localStorage como sessionStorage
+        const claveUsuario = this.usuarioId && this.usuarioId !== 'guest' ? `usuario-${this.usuarioId}` : 'usuario';
+        localStorage.setItem(claveUsuario, this.saldoUsuario.toString());
+        sessionStorage.setItem('user-balance', this.saldoUsuario.toString());
         
         // Actualizar elementos de la interfaz
         const elementosSaldo = document.querySelectorAll('.usuario');
@@ -129,7 +141,6 @@ class EnfrentamientosFutbol {
                 elemento.textContent = `$${this.saldoUsuario.toFixed(2)}`;
             });
         } else {
-            // Si no se encuentra un elemento con la clase .usuario, buscar por ID
             const saldoElement = document.getElementById('usuario');
             if (saldoElement) {
                 saldoElement.textContent = `$${this.saldoUsuario.toFixed(2)}`;
@@ -145,13 +156,11 @@ class EnfrentamientosFutbol {
 
         // Notificar al menú principal sobre el cambio de saldo
         if (window.parent !== window) {
-            // Si estamos en un iframe
             window.parent.postMessage({
                 type: 'saldoActualizado',
                 saldo: this.saldoUsuario
             }, '*');
         } else {
-            // Si estamos en la misma ventana
             window.dispatchEvent(new CustomEvent('saldoGlobalActualizado', {
                 detail: { saldo: this.saldoUsuario }
             }));
@@ -166,120 +175,132 @@ class EnfrentamientosFutbol {
      * @returns {Promise<boolean>} - true si fue exitoso, false en caso contrario
      */
     async actualizarSaldoUsuarioBD(monto, tipo, partidoId) {
-    try {
-        // Primero verificar si el usuario está autenticado
-        const sesionResult = await this.verificarSesion();
-        
-        if (!sesionResult) {
-            console.log('Usuario no autenticado, utilizando modo offline');
-            // Si no está autenticado, actualizar solo localmente
-            this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
-            return true;
-        }
-        
-        // Si está autenticado, seguir con la actualización en la BD
-        const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/actualizar_saldo.php';
-        
-        const datos = new FormData();
-        datos.append('monto', monto.toString());
-        datos.append('tipo', tipo);
-        datos.append('referencia', `partido-${partidoId}`);
-        
-        const respuesta = await fetch(url, {
-            method: 'POST',
-            body: datos,
-            credentials: 'include' // Incluir cookies de sesión
-        });
-        
-        if (!respuesta.ok) {
-            throw new Error(`HTTP error! status: ${respuesta.status}`);
-        }
-        
-        // Obtener el texto de la respuesta primero
-        const textoRespuesta = await respuesta.text();
-        
-        // Verificar si la respuesta está vacía
-        if (!textoRespuesta.trim()) {
-            throw new Error('Respuesta vacía del servidor');
-        }
-        
-        let resultado;
         try {
-            resultado = JSON.parse(textoRespuesta);
-        } catch (jsonError) {
-            console.error('Error al parsear JSON:', jsonError);
-            console.error('Respuesta del servidor:', textoRespuesta);
-            throw new Error('Respuesta del servidor no es JSON válido');
-        }
-        
-        if (resultado.exito) {
-            // Actualizar el saldo localmente con el valor de la BD
-            this.actualizarSaldoUsuarioLocal(resultado.saldo);
-            return true;
-        } else {
-            console.error('Error al actualizar saldo:', resultado.mensaje);
-            // Actualizar localmente como fallback
+            // Primero verificar si el usuario está autenticado
+            const sesionResult = await this.verificarSesion();
+            
+            if (!sesionResult) {
+                console.log('Usuario no autenticado, utilizando modo offline');
+                // Si no está autenticado, actualizar solo localmente
+                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+                return true;
+            }
+            
+            // Si está autenticado, seguir con la actualización en la BD
+            const url = 'http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/actualizar_saldo.php';
+            
+            const datos = new FormData();
+            datos.append('monto', monto.toString());
+            datos.append('tipo', tipo);
+            datos.append('referencia', `partido-${partidoId}`);
+            
+            const respuesta = await fetch(url, {
+                method: 'POST',
+                body: datos,
+                credentials: 'include' // Incluir cookies de sesión
+            });
+            
+            if (!respuesta.ok) {
+                throw new Error(`HTTP error! status: ${respuesta.status}`);
+            }
+            
+            // Obtener el texto de la respuesta primero
+            const textoRespuesta = await respuesta.text();
+            
+            // Verificar si la respuesta está vacía
+            if (!textoRespuesta.trim()) {
+                throw new Error('Respuesta vacía del servidor');
+            }
+            
+            let resultado;
+            try {
+                resultado = JSON.parse(textoRespuesta);
+            } catch (jsonError) {
+                console.error('Error al parsear JSON:', jsonError);
+                console.error('Respuesta del servidor:', textoRespuesta);
+                throw new Error('Respuesta del servidor no es JSON válido');
+            }
+            
+            if (resultado.exito) {
+                // Actualizar el saldo localmente con el valor de la BD
+                this.actualizarSaldoUsuarioLocal(resultado.saldo);
+                return true;
+            } else {
+                console.error('Error al actualizar saldo:', resultado.mensaje);
+                // Actualizar localmente como fallback
+                this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
+                return true;
+            }
+        } catch (error) {
+            console.error('Error de conexión al actualizar saldo:', error);
+            // Continuar con una actualización local como fallback
             this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
             return true;
         }
-    } catch (error) {
-        console.error('Error de conexión al actualizar saldo:', error);
-        // Continuar con una actualización local como fallback
-        this.actualizarSaldoUsuarioLocal(this.saldoUsuario + parseFloat(monto));
-        return true;
     }
-}
 
 
     /**
      * Modifica la función obtenerSaldoUsuario para manejar mejor la autenticación
      * @returns {Promise<number>} - Saldo del usuario
      */
-        obtenerSaldoUsuario() {
+    obtenerSaldoUsuario() {
         return new Promise((resolve, reject) => {
             fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/Usuario/check_session.php', {
-                credentials: 'include' // Incluir cookies de sesión
+                credentials: 'include'
             })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);
                 }
-                return response.text(); // Obtener como texto primero
+                return response.text();
             })
             .then(textoRespuesta => {
-                // Verificar si la respuesta está vacía
                 if (!textoRespuesta.trim()) {
                     throw new Error('Respuesta vacía del servidor');
                 }
                 
-                // Intentar parsear JSON
                 const data = JSON.parse(textoRespuesta);
                 
                 if (data.loggedIn) {
+                    this.usuarioId = data.id;
                     this.saldoUsuario = parseFloat(data.saldo || 0);
-                    // Guardar el saldo también en localStorage para modo offline
-                    localStorage.setItem('usuario', this.saldoUsuario.toString());
+                    
+                    // MODIFICADO: Guardar en ambos storages con clave específica del usuario
+                    const claveUsuario = `usuario-${this.usuarioId}`;
+                    localStorage.setItem(claveUsuario, this.saldoUsuario.toString());
+                    sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
+                    sessionStorage.setItem('usuarioId', this.usuarioId.toString());
+                    
                     resolve(this.saldoUsuario);
                 } else {
                     console.log('Usuario no autenticado, usando modo offline');
-                    // Usuario no logueado, obtener de localStorage
-                    const saldoGuardado = localStorage.getItem('usuario');
+                    this.usuarioId = 'guest';
+                    
+                    // MODIFICADO: Usar clave específica para usuario guest
+                    const saldoGuardado = localStorage.getItem('usuario-guest');
                     this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
-                    localStorage.setItem('usuario', this.saldoUsuario.toString());
+                    localStorage.setItem('usuario-guest', this.saldoUsuario.toString());
+                    sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
+                    
                     resolve(this.saldoUsuario);
                 }
             })
             .catch(error => {
                 console.error('Error al obtener saldo de sesión:', error);
-                // Fallback a localStorage como respaldo
-                const saldoGuardado = localStorage.getItem('usuario');
+                this.usuarioId = 'guest';
+                
+                // MODIFICADO: Fallback con clave específica
+                const saldoGuardado = localStorage.getItem('usuario-guest');
                 this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000;
-                localStorage.setItem('usuario', this.saldoUsuario.toString());
+                localStorage.setItem('usuario-guest', this.saldoUsuario.toString());
+                sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
+                
                 resolve(this.saldoUsuario);
             });
         });
     }
-    
+
     /**
      * Obtiene los enfrentamientos almacenados o genera nuevos
      * @returns {Array} - Enfrentamientos del día
@@ -291,38 +312,31 @@ class EnfrentamientosFutbol {
         if (enfrentamientosGuardados) {
             const datos = JSON.parse(enfrentamientosGuardados);
             
-            // Verificar si los enfrentamientos son del día actual
             if (datos.fecha === hoy) {
                 return datos.enfrentamientos;
             }
         }
         
-        // Si no hay enfrentamientos guardados o son de otro día, generar nuevos
         const nuevosEnfrentamientos = this.generarEnfrentamientosAleatorios();
         
-        // Guardar en localStorage
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
             fecha: hoy,
             enfrentamientos: nuevosEnfrentamientos
         }));
         
-        // Reiniciar predicciones y apuestas en nuevo día
-        localStorage.removeItem(this.PREDICCIONES_KEY);
-        localStorage.removeItem(this.APUESTAS_KEY);
+        // MODIFICADO: Reiniciar con claves específicas del usuario
+        if (this.PREDICCIONES_KEY) localStorage.removeItem(this.PREDICCIONES_KEY);
+        if (this.APUESTAS_KEY) localStorage.removeItem(this.APUESTAS_KEY);
+        if (this.CONTADOR_KEY) localStorage.removeItem(this.CONTADOR_KEY);
+        
         this.predicciones = {};
         this.apuestas = {};
         
-        // Reiniciar contador de aciertos
-        localStorage.setItem('contador-aciertos', JSON.stringify({
-            total: 0,
-            aciertos: 0,
-            montoApostado: 0,
-            montoGanado: 0
-        }));
         this.contadorAciertos = { total: 0, aciertos: 0, montoApostado: 0, montoGanado: 0 };
         
         return nuevosEnfrentamientos;
     }
+    
     
     /**
      * Obtiene la fecha actual en formato YYYY-MM-DD
@@ -507,7 +521,7 @@ class EnfrentamientosFutbol {
      * @returns {Object} - Contador de aciertos
      */
     obtenerContadorAciertos() {
-        const contadorGuardado = localStorage.getItem('contador-aciertos');
+        const contadorGuardado = localStorage.getItem(this.CONTADOR_KEY);
         const contadorDefault = { 
             total: 0, 
             aciertos: 0, 
@@ -517,53 +531,45 @@ class EnfrentamientosFutbol {
         
         if (contadorGuardado) {
             const contador = JSON.parse(contadorGuardado);
-            // Asegurar que tenga todas las propiedades
             return {...contadorDefault, ...contador};
         }
         
         return contadorDefault;
     }
     
+    
     async guardarPrediccion(partidoId, prediccion, montoApuesta) {
-        // Convertir a número
         montoApuesta = parseFloat(montoApuesta);
         
-        // Validar que sea un número válido y mayor que cero
         if (isNaN(montoApuesta) || montoApuesta <= 0) {
             alert('Por favor ingrese un monto válido para apostar');
             return;
         }
         
-        // Validar que tenga saldo suficiente
         if (montoApuesta > this.saldoUsuario) {
             alert('Saldo insuficiente para realizar esta apuesta');
             return;
         }
         
-        // Encontrar el enfrentamiento
         const enfrentamiento = this.enfrentamientos.find(e => e.id === partidoId);
         if (!enfrentamiento) {
             console.error('No se encontró el enfrentamiento');
             return;
         }
         
-        // Calcular posible ganancia según la cuota
         const cuota = enfrentamiento.cuotas[prediccion];
         const posibleGanancia = montoApuesta * cuota;
         
-        // Actualizar el saldo en la BD (restar la apuesta)
         const resultado = await this.actualizarSaldoUsuarioBD(-montoApuesta, 'apuesta', partidoId);
         
-        // Si falla la actualización en BD, mostrar mensaje de error
         if (!resultado) {
             alert('Error al actualizar el saldo en la base de datos. La apuesta se procesará en modo offline.');
         }
         
-        // Guardar la predicción
+        // MODIFICADO: Usar claves específicas del usuario
         this.predicciones[partidoId] = prediccion;
         localStorage.setItem(this.PREDICCIONES_KEY, JSON.stringify(this.predicciones));
         
-        // Guardar la apuesta
         this.apuestas[partidoId] = {
             monto: montoApuesta,
             cuota: cuota,
@@ -571,18 +577,12 @@ class EnfrentamientosFutbol {
         };
         localStorage.setItem(this.APUESTAS_KEY, JSON.stringify(this.apuestas));
         
-        // Actualizar saldo localmente como fallback
-        if (!resultado) {
-            this.saldoUsuario -= montoApuesta;
-            localStorage.setItem('usuario', this.saldoUsuario.toString());
-        }
+        // NUEVO: Actualizar sessionStorage también
+        sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
         
-        // Actualizar contador de montos apostados
         this.contadorAciertos.montoApostado += montoApuesta;
-        localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+        localStorage.setItem(this.CONTADOR_KEY, JSON.stringify(this.contadorAciertos));
         
-        
-        // Marcar el partido como que ya se ha hecho predicción
         this.enfrentamientos = this.enfrentamientos.map(e => {
             if (e.id === partidoId) {
                 return {...e, resultadoPredicho: true};
@@ -590,73 +590,67 @@ class EnfrentamientosFutbol {
             return e;
         });
         
-        // Actualizar en storage
         const datosGuardados = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
         if (datosGuardados.enfrentamientos) {
             datosGuardados.enfrentamientos = this.enfrentamientos;
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(datosGuardados));
         }
         
-        // Volver a renderizar
         this.renderizarEnfrentamientos();
     }
+
+
     
     /**
      * Verifica si la predicción fue correcta y actualiza el contador y saldo
      * @param {Object} enfrentamiento - Enfrentamiento finalizado
      */
-        async verificarPrediccion(enfrentamiento) {
-            const prediccion = this.predicciones[enfrentamiento.id];
-            
-            // Si no hay predicción para este partido, salir
-            if (!prediccion) return;
-            
-            const apuesta = this.apuestas[enfrentamiento.id];
-            // Si no hay apuesta para este partido, salir
-            if (!apuesta) return;
-            
-            const golesLocal = enfrentamiento.resultado.golesLocal;
-            const golesVisitante = enfrentamiento.resultado.golesVisitante;
-            let resultadoReal;
-            
-            // Determinar resultado real
-            if (golesLocal > golesVisitante) {
-                resultadoReal = 'local';
-            } else if (golesLocal < golesVisitante) {
-                resultadoReal = 'visitante';
-            } else {
-                resultadoReal = 'empate';
-            }
-            
-            // Verificar si la predicción fue acertada
-            const acierto = prediccion === resultadoReal;
-            
-            // Actualizar contador
-            this.contadorAciertos.total++;
-            
-            if (acierto) {
-                this.contadorAciertos.aciertos++;
-                
-                // Calcular la ganancia
-                const ganancia = apuesta.posibleGanancia;
-                
-                // Acreditar la ganancia al saldo del usuario
-                try {
-                    await this.actualizarSaldoUsuarioBD(ganancia, 'ganancia', enfrentamiento.id);
-                } catch (error) {
-                    console.error('Error al acreditar ganancia:', error);
-                    // Actualizar localmente como fallback
-                    this.saldoUsuario += ganancia;
-                    localStorage.setItem('usuario', this.saldoUsuario.toString());
-                }
-                
-                // Actualizar el contador de ganancias
-                this.contadorAciertos.montoGanado += ganancia;
-            }
-            
-            // Guardar contador actualizado
-            localStorage.setItem('contador-aciertos', JSON.stringify(this.contadorAciertos));
+    async verificarPrediccion(enfrentamiento) {
+        const prediccion = this.predicciones[enfrentamiento.id];
+        
+        if (!prediccion) return;
+        
+        const apuesta = this.apuestas[enfrentamiento.id];
+        if (!apuesta) return;
+        
+        const golesLocal = enfrentamiento.resultado.golesLocal;
+        const golesVisitante = enfrentamiento.resultado.golesVisitante;
+        let resultadoReal;
+        
+        if (golesLocal > golesVisitante) {
+            resultadoReal = 'local';
+        } else if (golesLocal < golesVisitante) {
+            resultadoReal = 'visitante';
+        } else {
+            resultadoReal = 'empate';
         }
+        
+        const acierto = prediccion === resultadoReal;
+        
+        this.contadorAciertos.total++;
+        
+        if (acierto) {
+            this.contadorAciertos.aciertos++;
+            
+            const ganancia = apuesta.posibleGanancia;
+            
+            try {
+                await this.actualizarSaldoUsuarioBD(ganancia, 'ganancia', enfrentamiento.id);
+            } catch (error) {
+                console.error('Error al acreditar ganancia:', error);
+                this.saldoUsuario += ganancia;
+                const claveUsuario = this.usuarioId && this.usuarioId !== 'guest' ? `usuario-${this.usuarioId}` : 'usuario-guest';
+                localStorage.setItem(claveUsuario, this.saldoUsuario.toString());
+                // NUEVO: Actualizar sessionStorage
+                sessionStorage.setItem('usuarioSaldo', this.saldoUsuario.toString());
+            }
+            
+            this.contadorAciertos.montoGanado += ganancia;
+        }
+        
+        // MODIFICADO: Usar clave específica del usuario
+        localStorage.setItem(this.CONTADOR_KEY, JSON.stringify(this.contadorAciertos));
+    }
     
     /**
      * Renderiza los enfrentamientos en el contenedor

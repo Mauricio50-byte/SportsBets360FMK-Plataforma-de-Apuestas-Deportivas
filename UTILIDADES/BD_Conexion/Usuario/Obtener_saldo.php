@@ -20,7 +20,7 @@ try {
     }
     
     // Incluir la conexión a la base de datos
-    require_once '../../../BD_Conexion.php';
+    require_once '../../../Conexion.php';
     
     // Obtener documento del usuario de la sesión
     $documento_usuario = $_SESSION['numero_documento'];

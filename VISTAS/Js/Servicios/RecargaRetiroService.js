@@ -131,53 +131,78 @@ class RecargaRetiroService {
     procesarRecarga(e) {
         e.preventDefault();
         
-        // Obtener datos del formulario
-        const idRecarga = document.getElementById('id-recarga').value;
-        const fechaRecarga = document.getElementById('fecha-recarga').value;
-        
-        const datosRecarga = {
-            id_transaccion: idRecarga,
-            fecha: fechaRecarga,
-            usuario: document.getElementById('nombre-usuario').value,
-            documento: document.getElementById('documento-usuario').value,
-            correo: document.getElementById('correo-usuario').value,
-            monto: document.getElementById('monto-recarga').value
-        };
-        
-        // Validar datos
-        if (!this.validarDatosTransaccion(datosRecarga)) {
-            return;
-        }
-        
-        console.log('Enviando datos de recarga:', datosRecarga);
-        
-        // Convertir a FormData para enviar como application/x-www-form-urlencoded
-        const formData = new FormData();
-        for (const key in datosRecarga) {
-            formData.append(key, datosRecarga[key]);
-        }
-        
-        // Realizar petición al servidor
-        fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecrgasRetiros/procesar_recarga.php', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include' // Importante: envía cookies con la solicitud
-        })
-        .then(response => {
-            console.log('Respuesta del servidor:', response);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+        try {
+            // Obtener datos del formulario
+            const idRecarga = document.getElementById('id-recarga')?.value;
+            const fechaRecarga = document.getElementById('fecha-recarga')?.value;
+            
+            // Verificar que los elementos existen
+            if (!idRecarga || !fechaRecarga) {
+                throw new Error('No se pudieron obtener todos los campos del formulario');
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Datos recibidos:', data);
-            this.manejarRespuestaServidor(data, 'recarga');
-        })
-        .catch(error => {
-            console.error('Error al procesar recarga:', error);
-            alert('Error al procesar la recarga. Por favor, intente nuevamente.');
-        });
+            
+            const datosRecarga = {
+                id_transaccion: idRecarga,
+                fecha: fechaRecarga,
+                usuario: document.getElementById('nombre-usuario')?.value,
+                documento: document.getElementById('documento-usuario')?.value,
+                correo: document.getElementById('correo-usuario')?.value,
+                monto: document.getElementById('monto-recarga')?.value
+            };
+            
+            // Validar que todos los campos tienen valor
+            for (const [key, value] of Object.entries(datosRecarga)) {
+                if (!value) {
+                    throw new Error(`El campo ${key} es obligatorio`);
+                }
+            }
+            
+            // Validar datos
+            if (!this.validarDatosTransaccion(datosRecarga)) {
+                return;
+            }
+            
+            console.log('Enviando datos de recarga:', datosRecarga);
+            
+            // Convertir a FormData para enviar como application/x-www-form-urlencoded
+            const formData = new FormData();
+            for (const key in datosRecarga) {
+                formData.append(key, datosRecarga[key]);
+            }
+            
+            // Realizar petición al servidor
+            fetch('http://localhost/SportsBets360FMK-Plataforma-de-Apuestas-Deportivas/UTILIDADES/BD_Conexion/bd_RecrgasRetiros/procesar_recarga.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Error HTTP ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos:', data);
+                if (!data) {
+                    throw new Error('No se recibieron datos del servidor');
+                }
+                this.manejarRespuestaServidor(data, 'recarga');
+            })
+            .catch(error => {
+                console.error('Error detallado al procesar recarga:', error);
+                alert(`Error al procesar la recarga: ${error.message}`);
+            });
+            
+        } catch (error) {
+            console.error('Error en el procesamiento del formulario:', error);
+            alert(`Error al procesar el formulario: ${error.message}`);
+        }
     }
     
     /**
@@ -279,21 +304,34 @@ class RecargaRetiroService {
     actualizarSaldoInterfaz(monto, esRecarga) {
         const elementoSaldo = document.getElementById('user-balance');
         if (!elementoSaldo) return;
-        
+
         // Obtener saldo actual
-        let saldoActual = this.obtenerSaldoUsuario();
-        
+        let saldoActual = this.obtenerSaldoUsuarioSync();
+
         // Calcular nuevo saldo
         const nuevoSaldo = esRecarga ? saldoActual + monto : saldoActual - monto;
-        
+
         // Actualizar en la interfaz
         elementoSaldo.textContent = `$ ${nuevoSaldo.toFixed(2)}`;
-        
-        // Guardar nuevo saldo en localStorage para persistencia durante la sesión
+
+        // Actualizar en sessionStorage
         if (window.sessionStorage) {
-            const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+            let usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+            if (typeof usuario !== 'object') {
+                usuario = {}; // Asegurarse de que usuario sea un objeto
+            }
             usuario.saldo = nuevoSaldo;
             sessionStorage.setItem('usuario', JSON.stringify(usuario));
+        }
+
+        // Actualizar en localStorage
+        if (window.localStorage) {
+            let usuarioLS = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (typeof usuarioLS !== 'object') {
+                usuarioLS = {}; // Asegurarse de que usuarioLS sea un objeto
+            }
+            usuarioLS.saldo = nuevoSaldo;
+            localStorage.setItem('usuario', JSON.stringify(usuarioLS));
         }
     }
     

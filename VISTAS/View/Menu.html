@@ -306,7 +306,13 @@
                 const elementoSaldo = document.getElementById('user-balance');
                 
                 if (elementoSaldo) {
-                    elementoSaldo.textContent = `$ ${saldo.toFixed(2)}`;
+                    // Convertir el saldo a número y verificar que sea válido
+                    const saldoNumerico = parseFloat(saldo);
+                    if (!isNaN(saldoNumerico)) {
+                        elementoSaldo.textContent = `$ ${saldoNumerico.toFixed(2)}`;
+                    } else {
+                        elementoSaldo.textContent = '$ 0.00'; // Valor por defecto si el saldo no es válido
+                    }
                     console.log('Saldo cargado automáticamente:', saldo);
                 }
             } else {
