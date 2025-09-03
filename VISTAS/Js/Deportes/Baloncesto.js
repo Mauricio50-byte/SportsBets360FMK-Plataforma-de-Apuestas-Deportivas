@@ -110,7 +110,7 @@ class EnfrentamientosBaloncesto {
         this.saldoUsuario = parseFloat(nuevoSaldo);
         
         // Actualizar en localStorage para modo offline
-        localStorage.setItem('usuario', this.saldoUsuario.toString());
+        localStorage.setItem('user-balance', this.saldoUsuario.toString());
         
         // Actualizar elementos de la interfaz
         const elementosSaldo = document.querySelectorAll('.usuario');
@@ -221,23 +221,23 @@ class EnfrentamientosBaloncesto {
                     if (data.loggedIn) {
                         this.saldoUsuario = parseFloat(data.saldo || 0);
                         // Guardar el saldo también en localStorage para modo offline
-                        localStorage.setItem('usuario', this.saldoUsuario.toString());
+                        localStorage.setItem('user-balance', this.saldoUsuario.toString());
                         resolve(this.saldoUsuario);
                     } else {
                         console.log('Usuario no autenticado, usando modo offline');
                         // Usuario no logueado, obtener de localStorage
-                        const saldoGuardado = localStorage.getItem('usuario');
+                        const saldoGuardado = localStorage.getItem('user-balance');
                         this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000; // Saldo inicial para modo offline
-                        localStorage.setItem('usuario', this.saldoUsuario.toString());
+                        localStorage.setItem('user-balance', this.saldoUsuario.toString());
                         resolve(this.saldoUsuario);
                     }
                 })
                 .catch(error => {
                     console.error('Error al obtener saldo de sesión:', error);
                     // Fallback a localStorage como respaldo
-                    const saldoGuardado = localStorage.getItem('usuario');
+                    const saldoGuardado = localStorage.getItem('user-balance');
                     this.saldoUsuario = saldoGuardado ? parseFloat(saldoGuardado) : 1000; // Saldo inicial para modo offline
-                    localStorage.setItem('usuario', this.saldoUsuario.toString());
+                    localStorage.setItem('user-balance', this.saldoUsuario.toString());
                     resolve(this.saldoUsuario);
                 });
         });
@@ -610,7 +610,7 @@ class EnfrentamientosBaloncesto {
                     console.error('Error al acreditar ganancia:', error);
                     // Actualizar localmente como fallback
                     this.saldoUsuario += ganancia;
-                    localStorage.setItem('usuario', this.saldoUsuario.toString());
+                    localStorage.setItem('user-balance', this.saldoUsuario.toString());
                 }
                 
                 // Actualizar el contador de ganancias
